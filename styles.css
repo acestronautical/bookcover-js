@@ -6,7 +6,7 @@ body {
 }
 
 header {
-    background-color: #303338;
+    background-color: #454244;
     color: #cad7dd;
     padding: 20px;
     text-align: center;
@@ -37,6 +37,10 @@ main {
     padding: 12px;
 }
 
+.pt-12 {
+    padding-top: 12px;
+}
+
 .upload-section {
     text-align: center;
 }
@@ -57,6 +61,7 @@ main {
 .settings {
     background-color: #f0f0f0;
     padding: 20px;
+    margin: 18px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     min-width: 300px;
@@ -78,15 +83,16 @@ main {
 }
 
 .input-group input[type="text"],
+.input-group input[type="number"],
 .input-group input[type="color"] {
-    width: calc(100% - 20px);
-    padding: 8px;
+    width: calc(100% - 12px);
+    padding: 2px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
 .color-input input[type="color"] {
-    padding: 5px;
+    padding: 4px;
 }
 
 button {
@@ -107,6 +113,7 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+    border-radius: 3px;
 }
 
 #output svg {

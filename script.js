@@ -11,10 +11,12 @@ let SpineHeight = CoverHeight;
 let SpineWidth = SpineHeight / SpineProportions;
 const BorderGap = CoverWidth / 16;
 let FontSize = 18;
-let ImageScale = 1;
+let ImageScale = 1.5;
 const NumColumns = 5;
 let Mirror = false;
-let RotateAngle = 0;
+let RotateAngle = 180;
+let TitleText = 'Tales of the Feline';
+let AuthorText = 'Felix Pawsley';
 // This is gross but it works for now
 let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns1="http://sozi.baierouge.fr" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" id="svg3228" xml:space="preserve" viewBox="0 0 700 700">
                 <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
@@ -27,6 +29,18 @@ let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
 window.addEventListener('DOMContentLoaded', () => {
   generateCovers();
 });
+
+document.getElementById('titleInput').addEventListener('change', handleTitleInputChange);
+function handleTitleInputChange(event) {
+  TitleText = event.target.value;
+  generateCovers();
+}
+
+document.getElementById('authorInput').addEventListener('change', handleAuthorInputChange);
+function handleAuthorInputChange(event) {
+  AuthorText = event.target.value;
+  generateCovers();
+}
 
 document.getElementById('elementColorInput').addEventListener('change', handleElementColorChange);
 function handleElementColorChange(event) {
@@ -251,7 +265,7 @@ function tesselateUserSvg(parentElem, svgText, middleColumnRepeats) {
   for (let i = 0; i <= middleColumnIndex; i++) {
     columnRepeatCounts[middleColumnIndex + i] = repeats;
     columnRepeatCounts[middleColumnIndex - i] = repeats;
-    repeats == 4 ? (repeats = 3) : (repeats = repeats + 1);
+    repeats == MaxRepeats ? (repeats = MaxRepeats - 1) : (repeats = repeats + 1);
   }
 
   const maxRepeats = Math.max(...columnRepeatCounts);
@@ -394,13 +408,13 @@ function generateFrontCover() {
 
   // Create centered title
   const titleY = BorderGap * 2;
-  const titleString = document.getElementById('titleInput').value || 'Title'; // Using user input for title
+  const titleString = TitleText;
   const titleSvg = createCenteredSvgText(ElementColor, FontSize, titleString, titleY, CoverWidth);
   FrontCoverSvg.appendChild(titleSvg);
 
   // Create centered author
   const authorY = rectangleHeight - BorderGap * 2;
-  const authorString = document.getElementById('authorInput').value || 'Author'; // Using user input for author
+  const authorString = AuthorText;
   const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
   FrontCoverSvg.appendChild(authorSvg);
 

@@ -3,52 +3,57 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Penguin Clothbound SVG</title>
+    <title>bookcover-js</title>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
     <header>
-      <h1>Penguin Clothbound</h1>
+      <h1>Penguin Clothbound Cover Generator</h1>
     </header>
-    <main class="space-out">
+    <main class="space-even">
       <div class="settings">
         <h2>Settings</h2>
 
         <div class="input-group">
-          <label for="titleInput">Title:</label>
-          <input type="text" id="titleInput" />
+          <label for="titleInput">Title</label>
+          <input type="text" id="titleInput" placeholder="Title"/>
         </div>
         <div class="input-group">
-          <label for="authorInput">Author:</label>
-          <input type="text" id="authorInput" />
+          <label for="authorInput">Author</label>
+          <input type="text" id="authorInput" placeholder="Author"/>
         </div>
-        <div class="input-group color-input">
-          <label for="elementColorInput">Element Color:</label>
-          <input type="color" id="elementColorInput" value="#292a5a" />
+        <div class="space-out">
+          <div class="input-group color-input">
+            <label for="elementColorInput">Element Color</label>
+            <input type="color" id="elementColorInput" value="#292a5a" />
+          </div>
+          <div class="input-group color-input">
+            <label for="backgroundColorInput">Background Color</label>
+            <input type="color" id="backgroundColorInput" value="#aeb2b1" />
+          </div>
         </div>
-        <div class="input-group color-input">
-          <label for="backgroundColorInput">Background Color:</label>
-          <input type="color" id="backgroundColorInput" value="#aeb2b1" />
-          <div class="input-group">
-            <label for="mirrorCheckbox">Mirror:</label>
-            <input type="checkbox" id="mirrorCheckbox" />
+        <div class="space-out">
+        <div class="input-group">
+          <label for="rotateInput">Rotate</label>
+          <input type="number" id="rotateInput" min="0" max="360" step="5" value="180" />
+        </div>
+        <div class="input-group">
+            <label for="imageScale">Image Scale</label>
+            <input type="number" id="imageScale" min="1" max="4" step="0.05" value="1.5" />
           </div>
-          <div class="input-group">
-            <label for="rotateInput">Rotate:</label>
-            <input type="number" id="rotateInput" min="0" max="360" value="0" />
-          </div>
-          <div class="input-group">
-            <label for="coverProportionsInput">Cover Proportions:</label>
-            <input type="number" id="coverProportionsInput" min="1" max="2" step="0.1" value="1.5" />
-          </div>
-          <div class="input-group">
-            <label for="fontSizeInput">Font Size:</label>
-            <input type="number" id="fontSizeInput" min="10" max="30" value="18" />
-          </div>
-          <div class="input-group">
-            <label for="imageScale">Image Scale:</label>
-            <input type="number" id="imageScale" min="1" max="4" step="0.1" value="1" />
-          </div>
+        </div>
+        <div class="input-group">
+          <label for="coverProportionsInput">Cover Proportions</label>
+          <input type="number" id="coverProportionsInput" min="1" max="2" step="0.01" value="1.5" />
+        </div>
+        <div class="input-group">
+          <label for="fontSizeInput">Font Size</label>
+          <input type="number" id="fontSizeInput" min="10" max="30" value="18" />
+        </div>
+        
+        <div class="input-group">
+          <label for="mirrorCheckbox">Mirror</label>
+          <input type="checkbox" id="mirrorCheckbox" value="false" />
         </div>
         <div class="space-out">
           <div class="upload-section">
@@ -62,7 +67,7 @@
         <div class="p-12">
           <div id="front-cover" class="cover"></div>
         </div>
-        <div class="p-12">
+        <div class="pt-12">
           <div id="spine-cover" class="cover"></div>
         </div>
         <div class="p-12">

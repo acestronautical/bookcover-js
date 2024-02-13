@@ -13,7 +13,6 @@ const BorderGap = CoverWidth / 16;
 let FontSize = 18;
 let ImageScale = 1;
 const NumColumns = 5;
-const MiddleColumnRepeats = 2;
 let Mirror = false;
 let RotateAngle = 0;
 // This is gross but it works for now
@@ -230,7 +229,7 @@ function cropRightUserSvg(svgElem) {
   svgElem.setAttribute('x', x - width / 2);
 }
 
-function tesselateUserSvg(parentElem, svgText) {
+function tesselateUserSvg(parentElem, svgText, middleColumnRepeats) {
   const parser = new DOMParser();
   const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
   const userSvgBBox = getBBoxAfterRender(parentElem, userSvg);
@@ -248,9 +247,11 @@ function tesselateUserSvg(parentElem, svgText) {
   const middleColumnIndex = Math.floor(NumColumns / 2);
 
   const columnRepeatCounts = [];
-  for (let i = 0; i < NumColumns; i++) {
-    const distanceFromMiddle = Math.abs(i - middleColumnIndex);
-    columnRepeatCounts[i] = MiddleColumnRepeats + distanceFromMiddle;
+  let repeats = middleColumnRepeats;
+  for (let i = 0; i <= middleColumnIndex; i++) {
+    columnRepeatCounts[middleColumnIndex + i] = repeats;
+    columnRepeatCounts[middleColumnIndex - i] = repeats;
+    repeats == 4 ? (repeats = 3) : (repeats = repeats + 1);
   }
 
   const maxRepeats = Math.max(...columnRepeatCounts);
@@ -403,7 +404,7 @@ function generateFrontCover() {
   const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
   FrontCoverSvg.appendChild(authorSvg);
 
-  tesselateUserSvg(FrontCoverSvg, SVGText);
+  tesselateUserSvg(FrontCoverSvg, SVGText, 2);
 }
 
 function generateBackCover() {
@@ -435,5 +436,5 @@ function generateBackCover() {
   coverRectangle.setAttribute('stroke-width', rectangleStroke);
   BackCoverSvg.appendChild(coverRectangle);
 
-  tesselateUserSvg(BackCoverSvg, SVGText);
+  tesselateUserSvg(BackCoverSvg, SVGText, 4);
 }

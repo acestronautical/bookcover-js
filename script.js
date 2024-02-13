@@ -1,9 +1,14 @@
 let FrontCoverSvg;
+let BackCoverSvg;
+let SpineCoverSvg;
 let ElementColor = '#292a5a';
 let BackgroundColor = '#aeb2b1';
 let CoverProportions = 1.5;
-let CoverWidth = 300;
+let CoverWidth = 360;
 let CoverHeight = CoverWidth * CoverProportions;
+let SpineProportions = 8;
+let SpineHeight = CoverHeight;
+let SpineWidth = SpineHeight / SpineProportions;
 const BorderGap = CoverWidth / 16;
 let FontSize = 18;
 let ImageScale = 1;
@@ -13,94 +18,84 @@ let Mirror = false;
 let RotateAngle = 0;
 let SVGText = `<svg xmlns="http://www.w3.org/2000/svg"> <circle r="20" cx="25" cy="25" /></svg>`;
 
-document.getElementById('elementColorInput').addEventListener('change', handleElementColorChange);
-document.getElementById('backgroundColorInput').addEventListener('change', handleBackgroundColorChange);
-document.getElementById('saveFrontCover').addEventListener('click', saveSvg);
-document.getElementById('fileInput').addEventListener('change', handleFileChange);
-document.getElementById('mirrorCheckbox').addEventListener('change', handleMirrorChange);
-document.getElementById('rotateInput').addEventListener('input', handleRotateChange);
-document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
-document.getElementById('fontSizeInput').addEventListener('input', handleFontSizeChange);
-document.getElementById('imageScale').addEventListener('input', handleImageScaleChange);
-
 window.addEventListener('DOMContentLoaded', () => {
-  generateFrontCover();
+  generateCovers();
 });
 
-/**
- * Function to handle changes in the file input.
- * @param {Event} event - The event object representing the fole change.
- */
+document.getElementById('elementColorInput').addEventListener('change', handleElementColorChange);
+function handleElementColorChange(event) {
+  ElementColor = event.target.value;
+  generateCovers();
+}
+
+document.getElementById('backgroundColorInput').addEventListener('change', handleBackgroundColorChange);
+function handleBackgroundColorChange(event) {
+  BackgroundColor = event.target.value;
+  generateCovers();
+}
+
+document.getElementById('fileInput').addEventListener('change', handleFileChange);
 function handleFileChange(event) {
   // Load user uploaded SVG to tile
   const file = event.target.files[0];
   const reader = new FileReader();
   reader.onload = function () {
     SVGText = reader.result;
-    generateFrontCover();
+    generateCovers();
   };
   reader.readAsText(file);
 }
 
-/**
- * Function to handle changes in the element color input.
- * @param {Event} event - The event object representing the color change.
- */
-function handleElementColorChange(event) {
-  ElementColor = event.target.value;
-  generateFrontCover();
-}
-
-/**
- * Function to handle changes in the background color input.
- * @param {Event} event - The event object representing the color change.
- */
-function handleBackgroundColorChange(event) {
-  BackgroundColor = event.target.value;
-  generateFrontCover();
-}
-
-// Functions to handle changes in mirror, rotate, CoverProportions, and fontsize controls
+document.getElementById('mirrorCheckbox').addEventListener('change', handleMirrorChange);
 function handleMirrorChange(event) {
   Mirror = event.target.checked;
-  generateFrontCover();
+  generateCovers();
 }
 
+document.getElementById('rotateInput').addEventListener('input', handleRotateChange);
 function handleRotateChange(event) {
   RotateAngle = parseInt(event.target.value);
-  generateFrontCover();
+  generateCovers();
 }
 
+document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
 function handleCoverProportionsChange(event) {
   CoverProportions = parseFloat(event.target.value);
   CoverHeight = CoverWidth * CoverProportions;
-  generateFrontCover();
+  SpineHeight = CoverHeight;
+  generateCovers();
 }
 
+document.getElementById('fontSizeInput').addEventListener('input', handleFontSizeChange);
 function handleFontSizeChange(event) {
   FontSize = parseInt(event.target.value);
-  generateFrontCover();
+  generateCovers();
 }
 
+document.getElementById('imageScale').addEventListener('input', handleImageScaleChange);
 function handleImageScaleChange(event) {
   ImageScale = parseFloat(event.target.value);
-  generateFrontCover();
+  generateCovers();
 }
 
-/**
- * Function to save the SVG data as a downloadable file.
- */
-function saveSvg() {
-  if (FrontCoverSvg) {
+document.getElementById('save-cover').addEventListener('click', saveCovers);
+function saveCovers() {
+  covers = { 'front_cover.svg': FrontCoverSvg, 'back_cover.svg': BackCoverSvg, 'spine_cover.svg': SpineCoverSvg };
+  for (const [key, value] of Object.entries(covers)) {
+    saveSvg(key, value);
+  }
+}
+function saveSvg(fileName, svgElem) {
+  if (svgElem) {
     // Get the bounding box of the visible content
-    const bbox = FrontCoverSvg.getBBox();
+    const bbox = svgElem.getBBox();
 
     // Create a new SVG element with the same viewBox as the visible content
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
 
-    // Clone and append only the visible elements to the new SVG
-    Array.from(FrontCoverSvg.childNodes).forEach((node) => {
+    // Clone and svgElem only the visible elements to the new SVG
+    Array.from(svgElem.childNodes).forEach((node) => {
       const clonedNode = node.cloneNode(true);
       svg.appendChild(clonedNode);
     });
@@ -111,7 +106,7 @@ function saveSvg() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'front_cover.svg';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -188,9 +183,143 @@ function mirrorUserSvg(svgElem) {
   childElement.setAttribute('transform', `${prevTransform} ${mirrorTransform}`);
 }
 
-/**.
- * Updates the frontCover image
- */
+function colorUserSvg(svgElem, color) {
+  // Color at multiple levels in multiple ways
+  const newStyle = `fill:${color} stroke:${color}`;
+  let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+  let prevStyle = childElement.getAttribute('style') || '';
+  childElement.setAttribute('fill', color);
+  childElement.setAttribute('stroke', `${prevStyle} ${newStyle}`);
+  childElement.setAttribute('style', color);
+  childElement = svgElem.querySelector('path') || svgElem.querySelector('g') || svgElem;
+  childElement.setAttribute('fill', color);
+  childElement.setAttribute('stroke', color);
+  childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
+}
+
+function tesselateUserSvg(parentElem, svgText) {
+  const parser = new DOMParser();
+  const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
+  const userSvgBBox = getBBoxAfterRender(parentElem, userSvg);
+  const scaledWidth = (ImageScale * CoverWidth) / NumColumns;
+  const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
+  userSvg.setAttribute('width', scaledWidth);
+  userSvg.setAttribute('height', scaledHeight);
+  colorUserSvg(userSvg, ElementColor);
+
+  let columnXCoords = [];
+  for (let i = 0; i < NumColumns; i++) {
+    columnXCoords[i] = i * (CoverWidth / (NumColumns - 1));
+  }
+
+  const middleColumnIndex = Math.floor(NumColumns / 2);
+
+  const columnRepeatCounts = [];
+  for (let i = 0; i < NumColumns; i++) {
+    const distanceFromMiddle = Math.abs(i - middleColumnIndex);
+    columnRepeatCounts[i] = MiddleColumnRepeats + distanceFromMiddle;
+  }
+
+  const maxRepeats = Math.max(...columnRepeatCounts);
+  const tileHeight = CoverHeight / maxRepeats;
+  const halfHeight = scaledHeight / 2;
+  const halfWidth = scaledWidth / 2;
+  let mirrorState = true;
+
+  for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
+    const repeatsInColumn = columnRepeatCounts[columnIndex];
+    const oddRepeats = repeatsInColumn % 2 === 1;
+    const halfRepeatsInColumn = Math.ceil(repeatsInColumn / 2);
+    if (columnIndex == middleColumnIndex + 1) mirrorState = !mirrorState;
+    mirrorState = !mirrorState;
+    for (let i = 0; i < halfRepeatsInColumn; i++) {
+      mirrorState = !mirrorState;
+      const centerMost = oddRepeats && i === 0;
+      const cloneUp = userSvg.cloneNode(true);
+      const cloneDown = userSvg.cloneNode(true);
+      parentElem.appendChild(cloneUp);
+      parentElem.appendChild(cloneDown);
+
+      let yUp, yDown, xBoth;
+      xBoth = columnXCoords[columnIndex] - halfWidth;
+      if (oddRepeats) {
+        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - halfHeight;
+        yDown = (Math.floor(maxRepeats / 2) + i) * tileHeight - halfHeight;
+      } else {
+        const centerOffset = tileHeight / 2;
+        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - centerOffset - halfHeight;
+        yDown = (Math.floor(maxRepeats / 2) + i + 1) * tileHeight - centerOffset - halfHeight;
+      }
+
+      // position is measured from top left corner, we want midpoints
+      cloneUp.setAttribute('y', yUp);
+      cloneUp.setAttribute('x', xBoth);
+      cloneDown.setAttribute('y', yDown);
+      cloneDown.setAttribute('x', xBoth);
+
+      if (mirrorState) {
+        Mirror && mirrorUserSvg(cloneUp);
+        rotateUserSvg(cloneUp, -RotateAngle);
+      } else {
+        rotateUserSvg(cloneUp, RotateAngle);
+      }
+      oddRepeats ? null : (mirrorState = !mirrorState);
+      if (mirrorState && !(oddRepeats && i == 0)) {
+        Mirror && mirrorUserSvg(cloneDown);
+        rotateUserSvg(cloneDown, -RotateAngle);
+      } else {
+        rotateUserSvg(cloneDown, RotateAngle);
+      }
+      mirrorState = !mirrorState;
+
+      parentElem.appendChild(cloneUp);
+      parentElem.appendChild(cloneDown);
+
+      // Remove the cloneDown if it's the first iteration in an odd-repeats column
+      if (oddRepeats && i === 0) {
+        parentElem.removeChild(cloneDown);
+        mirrorState = !mirrorState;
+      }
+    }
+  }
+}
+
+function generateCovers() {
+  generateFrontCover();
+  generateBackCover();
+  generateSpineCover();
+}
+
+function generateSpineCover() {
+  // Create cover Svg
+  SpineCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  SpineCoverSvg.setAttribute('width', SpineWidth);
+  SpineCoverSvg.setAttribute('height', SpineHeight);
+  SpineCoverSvg.style.backgroundColor = BackgroundColor;
+
+  // Create div which shows background color margin for cover SVG
+  const spineCoverDiv = document.getElementById('spine-cover');
+  spineCoverDiv.innerHTML = '';
+  spineCoverDiv.appendChild(SpineCoverSvg);
+  spineCoverDiv.style.backgroundColor = BackgroundColor;
+  spineCoverDiv.style.width = SpineWidth + BorderGap / 2 + 'px';
+  spineCoverDiv.style.height = SpineHeight + BorderGap * 2 + 'px';
+
+  // Create rectangle border slightly inset from cover SVG as per penguin style
+  const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  const rectangleStroke = 2;
+  const rectangleWidth = SpineWidth - rectangleStroke;
+  const rectangleHeight = SpineHeight - rectangleStroke;
+  coverRectangle.setAttribute('x', rectangleStroke / 2); // X-coordinate of the top-left corner
+  coverRectangle.setAttribute('y', rectangleStroke / 2); // Y-coordinate of the top-left corner
+  coverRectangle.setAttribute('width', rectangleWidth); // Width of the rectangle
+  coverRectangle.setAttribute('height', rectangleHeight); // Height of the rectangle
+  coverRectangle.setAttribute('fill', 'none');
+  coverRectangle.setAttribute('stroke', ElementColor);
+  coverRectangle.setAttribute('stroke-width', rectangleStroke);
+  SpineCoverSvg.appendChild(coverRectangle);
+}
+
 function generateFrontCover() {
   // Create cover Svg
   FrontCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -232,90 +361,37 @@ function generateFrontCover() {
   const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
   FrontCoverSvg.appendChild(authorSvg);
 
-  if (SVGText === null) return;
+  tesselateUserSvg(FrontCoverSvg, SVGText);
+}
 
-  const parser = new DOMParser();
-  const userSvg = parser.parseFromString(SVGText, 'image/svg+xml').documentElement;
-  const userSvgBBox = getBBoxAfterRender(FrontCoverSvg, userSvg);
-  const scaledWidth = ImageScale * CoverWidth / NumColumns;
-  const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
-  userSvg.setAttribute('width', scaledWidth);
-  userSvg.setAttribute('height', scaledHeight);
-  userSvg.setAttribute('stroke', ElementColor);
+function generateBackCover() {
+  // Create cover Svg
+  BackCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  BackCoverSvg.setAttribute('width', CoverWidth);
+  BackCoverSvg.setAttribute('height', CoverHeight);
+  BackCoverSvg.style.backgroundColor = BackgroundColor;
 
-  let columnXCoords = [];
-  for (let i = 0; i < NumColumns; i++) {
-    columnXCoords[i] = i * (CoverWidth / (NumColumns - 1));
-  }
+  // Create div which shows background color margin for cover SVG
+  const backCoverDiv = document.getElementById('back-cover');
+  backCoverDiv.innerHTML = '';
+  backCoverDiv.appendChild(BackCoverSvg);
+  backCoverDiv.style.backgroundColor = BackgroundColor;
+  backCoverDiv.style.width = CoverWidth + BorderGap * 2 + 'px';
+  backCoverDiv.style.height = CoverHeight + BorderGap * 2 + 'px';
 
-  const middleColumnIndex = Math.floor(NumColumns / 2);
+  // Create rectangle border slightly inset from cover SVG as per penguin style
+  const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  const rectangleStroke = 2;
+  const rectangleWidth = CoverWidth - rectangleStroke;
+  const rectangleHeight = CoverHeight - rectangleStroke;
+  coverRectangle.setAttribute('x', rectangleStroke / 2); // X-coordinate of the top-left corner
+  coverRectangle.setAttribute('y', rectangleStroke / 2); // Y-coordinate of the top-left corner
+  coverRectangle.setAttribute('width', rectangleWidth); // Width of the rectangle
+  coverRectangle.setAttribute('height', rectangleHeight); // Height of the rectangle
+  coverRectangle.setAttribute('fill', 'none');
+  coverRectangle.setAttribute('stroke', ElementColor);
+  coverRectangle.setAttribute('stroke-width', rectangleStroke);
+  BackCoverSvg.appendChild(coverRectangle);
 
-  const columnRepeatCounts = [];
-  for (let i = 0; i < NumColumns; i++) {
-    const distanceFromMiddle = Math.abs(i - middleColumnIndex);
-    columnRepeatCounts[i] = MiddleColumnRepeats + distanceFromMiddle;
-  }
-
-  const maxRepeats = Math.max(...columnRepeatCounts);
-  const tileHeight = CoverHeight / maxRepeats;
-  const halfHeight = scaledHeight / 2;
-  const halfWidth = scaledWidth / 2;
-  let mirrorState = true;
-
-  for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
-    const repeatsInColumn = columnRepeatCounts[columnIndex];
-    const oddRepeats = repeatsInColumn % 2 === 1;
-    const halfRepeatsInColumn = Math.ceil(repeatsInColumn / 2);
-    if (columnIndex == middleColumnIndex + 1) mirrorState = !mirrorState;
-    mirrorState = !mirrorState;
-    for (let i = 0; i < halfRepeatsInColumn; i++) {
-      mirrorState = !mirrorState;
-      const centerMost = oddRepeats && i === 0;
-      const cloneUp = userSvg.cloneNode(true);
-      const cloneDown = userSvg.cloneNode(true);
-      FrontCoverSvg.appendChild(cloneUp);
-      FrontCoverSvg.appendChild(cloneDown);
-
-      let yUp, yDown, xBoth;
-      xBoth = columnXCoords[columnIndex] - halfWidth;
-      if (oddRepeats) {
-        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - halfHeight;
-        yDown = (Math.floor(maxRepeats / 2) + i) * tileHeight - halfHeight;
-      } else {
-        const centerOffset = tileHeight / 2;
-        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - centerOffset - halfHeight;
-        yDown = (Math.floor(maxRepeats / 2) + i + 1) * tileHeight - centerOffset - halfHeight;
-      }
-
-      // position is measured from top left corner, we want midpoints
-      cloneUp.setAttribute('y', yUp);
-      cloneUp.setAttribute('x', xBoth);
-      cloneDown.setAttribute('y', yDown);
-      cloneDown.setAttribute('x', xBoth);
-
-      if (mirrorState) {
-        Mirror && mirrorUserSvg(cloneUp);
-        rotateUserSvg(cloneUp, -RotateAngle);
-      } else {
-        rotateUserSvg(cloneUp, RotateAngle);
-      }
-      oddRepeats ? null : mirrorState = !mirrorState;
-      if (mirrorState && !(oddRepeats && i == 0)) {
-        Mirror && mirrorUserSvg(cloneDown);
-        rotateUserSvg(cloneDown, -RotateAngle);
-      } else {
-        rotateUserSvg(cloneDown, RotateAngle);
-      }
-      mirrorState = !mirrorState;
-
-      FrontCoverSvg.appendChild(cloneUp);
-      FrontCoverSvg.appendChild(cloneDown);
-
-      // Remove the cloneDown if it's the first iteration in an odd-repeats column
-      if (oddRepeats && i === 0) {
-        FrontCoverSvg.removeChild(cloneDown);
-        mirrorState = !mirrorState;
-      }
-    }
-  }
+  tesselateUserSvg(BackCoverSvg, SVGText);
 }

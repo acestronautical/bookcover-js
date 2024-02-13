@@ -17,11 +17,24 @@ h1 {
     font-size: 24px;
 }
 
+main {
+    padding: 20px;
+}
+
 .space-out {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 20px;
+}
+
+.space-even {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+.p-10 {
+    padding: 10px;
 }
 
 .upload-section {
@@ -90,7 +103,7 @@ button:hover {
     background-color: #45a049;
 }
 
-#front-cover {
+.cover {
     display: flex;
     justify-content: center;
     align-items: center;

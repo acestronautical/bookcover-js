@@ -17,6 +17,11 @@ let Mirror = false;
 let RotateAngle = 180;
 let TitleText = 'Tales of the Feline';
 let AuthorText = 'Felix Pawsley';
+let MaxPerColumn = 4;
+let IncreasePerColumn = 1;
+let BackCoverInitialCopies = 4;
+let FrontCoverInitialCopies = 2;
+
 // This is gross but it works for now
 let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns1="http://sozi.baierouge.fr" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" id="svg3228" xml:space="preserve" viewBox="0 0 700 700">
                 <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
@@ -26,33 +31,73 @@ let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
                 </g>
               </svg>`;
 
+
+// A bunch of repetitive event handlers
 window.addEventListener('DOMContentLoaded', () => {
   generateCovers();
 });
 
-document.getElementById('titleInput').addEventListener('change', handleTitleInputChange);
-function handleTitleInputChange(event) {
+document.getElementById('titleInput').addEventListener('change', (event) => {
   TitleText = event.target.value;
   generateCovers();
-}
+});
 
-document.getElementById('authorInput').addEventListener('change', handleAuthorInputChange);
-function handleAuthorInputChange(event) {
+document.getElementById('authorInput').addEventListener('change', (event) => {
   AuthorText = event.target.value;
   generateCovers();
-}
+});
 
-document.getElementById('elementColorInput').addEventListener('change', handleElementColorChange);
-function handleElementColorChange(event) {
+document.getElementById('elementColorInput').addEventListener('change', (event) => {
   ElementColor = event.target.value;
   generateCovers();
-}
+});
 
-document.getElementById('backgroundColorInput').addEventListener('change', handleBackgroundColorChange);
-function handleBackgroundColorChange(event) {
+document.getElementById('backgroundColorInput').addEventListener('change', (event) => {
   BackgroundColor = event.target.value;
   generateCovers();
-}
+});
+
+document.getElementById('mirrorCheckbox').addEventListener('change', (event) => {
+  Mirror = event.target.checked;
+  generateCovers();
+});
+
+document.getElementById('rotateInput').addEventListener('input', (event) => {
+  RotateAngle = parseInt(event.target.value);
+  generateCovers();
+});
+
+document.getElementById('fontSizeInput').addEventListener('input', (event) => {
+  FontSize = parseInt(event.target.value);
+  generateCovers();
+});
+
+document.getElementById('imageScale').addEventListener('input', (event) => {
+  ImageScale = parseFloat(event.target.value);
+  generateCovers();
+});
+
+document.getElementById('maxPerColumnInput').addEventListener('input', (event) => {
+  MaxPerColumn = parseInt(event.target.value);
+  generateCovers();
+});
+
+document.getElementById('increasePerColumnInput').addEventListener('input', (event) => {
+  IncreasePerColumn = parseInt(event.target.value);
+  generateCovers();
+});
+
+document.getElementById('backCoverInitialCopiesInput').addEventListener('input', (event) => {
+  BackCoverInitialCopies = parseInt(event.target.value);
+  generateCovers();
+});
+
+document.getElementById('frontCoverInitialCopiesInput').addEventListener('input', (event) => {
+  FrontCoverInitialCopies = parseInt(event.target.value);
+  generateCovers();
+});
+
+
 
 document.getElementById('fileInput').addEventListener('change', handleFileChange);
 function handleFileChange(event) {
@@ -66,18 +111,6 @@ function handleFileChange(event) {
   reader.readAsText(file);
 }
 
-document.getElementById('mirrorCheckbox').addEventListener('change', handleMirrorChange);
-function handleMirrorChange(event) {
-  Mirror = event.target.checked;
-  generateCovers();
-}
-
-document.getElementById('rotateInput').addEventListener('input', handleRotateChange);
-function handleRotateChange(event) {
-  RotateAngle = parseInt(event.target.value);
-  generateCovers();
-}
-
 document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
 function handleCoverProportionsChange(event) {
   CoverProportions = parseFloat(event.target.value);
@@ -86,16 +119,10 @@ function handleCoverProportionsChange(event) {
   generateCovers();
 }
 
-document.getElementById('fontSizeInput').addEventListener('input', handleFontSizeChange);
-function handleFontSizeChange(event) {
-  FontSize = parseInt(event.target.value);
-  generateCovers();
-}
-
-document.getElementById('imageScale').addEventListener('input', handleImageScaleChange);
-function handleImageScaleChange(event) {
-  ImageScale = parseFloat(event.target.value);
-  generateCovers();
+function generateCovers() {
+  generateFrontCover();
+  generateBackCover();
+  generateSpineCover();
 }
 
 document.getElementById('save-cover').addEventListener('click', saveCovers);
@@ -243,110 +270,6 @@ function cropRightUserSvg(svgElem) {
   svgElem.setAttribute('x', x - width / 2);
 }
 
-function tesselateUserSvg(parentElem, svgText, middleColumnRepeats) {
-  const parser = new DOMParser();
-  const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
-  const userSvgBBox = getBBoxAfterRender(parentElem, userSvg);
-  const scaledWidth = (ImageScale * CoverWidth) / NumColumns;
-  const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
-  userSvg.setAttribute('width', scaledWidth);
-  userSvg.setAttribute('height', scaledHeight);
-  colorUserSvg(userSvg, ElementColor);
-
-  let columnXCoords = [];
-  for (let i = 0; i < NumColumns; i++) {
-    columnXCoords[i] = i * (CoverWidth / (NumColumns - 1));
-  }
-
-  const middleColumnIndex = Math.floor(NumColumns / 2);
-
-  const columnRepeatCounts = [];
-  let repeats = middleColumnRepeats;
-  for (let i = 0; i <= middleColumnIndex; i++) {
-    columnRepeatCounts[middleColumnIndex + i] = repeats;
-    columnRepeatCounts[middleColumnIndex - i] = repeats;
-    repeats == MaxRepeats ? (repeats = MaxRepeats - 1) : (repeats = repeats + 1);
-  }
-
-  const maxRepeats = Math.max(...columnRepeatCounts);
-  const tileHeight = CoverHeight / maxRepeats;
-  const halfHeight = scaledHeight / 2;
-  const halfWidth = scaledWidth / 2;
-  let mirrorState = true;
-
-  for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
-    const repeatsInColumn = columnRepeatCounts[columnIndex];
-    const oddRepeats = repeatsInColumn % 2 === 1;
-    const halfRepeatsInColumn = Math.ceil(repeatsInColumn / 2);
-    if (columnIndex == middleColumnIndex + 1) mirrorState = !mirrorState;
-    mirrorState = !mirrorState;
-    for (let i = 0; i < halfRepeatsInColumn; i++) {
-      mirrorState = !mirrorState;
-      const centerMost = oddRepeats && i === 0;
-      const cloneUp = userSvg.cloneNode(true);
-      const cloneDown = userSvg.cloneNode(true);
-      parentElem.appendChild(cloneUp);
-      parentElem.appendChild(cloneDown);
-
-      let yUp, yDown, xBoth;
-      xBoth = columnXCoords[columnIndex] - halfWidth;
-      if (oddRepeats) {
-        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - halfHeight;
-        yDown = (Math.floor(maxRepeats / 2) + i) * tileHeight - halfHeight;
-      } else {
-        const centerOffset = tileHeight / 2;
-        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - centerOffset - halfHeight;
-        yDown = (Math.floor(maxRepeats / 2) + i + 1) * tileHeight - centerOffset - halfHeight;
-      }
-
-      // position is measured from top left corner, we want midpoints
-      cloneUp.setAttribute('y', yUp);
-      cloneUp.setAttribute('x', xBoth);
-      cloneDown.setAttribute('y', yDown);
-      cloneDown.setAttribute('x', xBoth);
-
-      if (mirrorState) {
-        Mirror && mirrorUserSvg(cloneUp);
-        Mirror ? rotateUserSvg(cloneUp, RotateAngle) : rotateUserSvg(cloneUp, -RotateAngle);
-      } else {
-        rotateUserSvg(cloneUp, RotateAngle % 180);
-      }
-      oddRepeats ? null : (mirrorState = !mirrorState);
-      if (mirrorState && !(oddRepeats && i == 0)) {
-        Mirror && mirrorUserSvg(cloneDown);
-        Mirror ? rotateUserSvg(cloneDown, RotateAngle) : rotateUserSvg(cloneDown, -RotateAngle);
-      } else {
-        rotateUserSvg(cloneDown, RotateAngle % 180);
-      }
-      mirrorState = !mirrorState;
-
-      // Trim Svg's on border edges
-      if (columnIndex === 0) {
-        cropLeftUserSvg(cloneUp);
-        cropLeftUserSvg(cloneDown);
-      } else if (columnIndex === NumColumns - 1) {
-        cropRightUserSvg(cloneUp);
-        cropRightUserSvg(cloneDown);
-      }
-
-      parentElem.appendChild(cloneUp);
-      parentElem.appendChild(cloneDown);
-
-      // Remove the cloneDown if it's the first iteration in an odd-repeats column
-      if (oddRepeats && i === 0) {
-        parentElem.removeChild(cloneDown);
-        mirrorState = !mirrorState;
-      }
-    }
-  }
-}
-
-function generateCovers() {
-  generateFrontCover();
-  generateBackCover();
-  generateSpineCover();
-}
-
 function generateSpineCover() {
   // Create cover Svg
   SpineCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -418,7 +341,7 @@ function generateFrontCover() {
   const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
   FrontCoverSvg.appendChild(authorSvg);
 
-  tesselateUserSvg(FrontCoverSvg, SVGText, 2);
+  tesselateUserSvg(FrontCoverSvg, SVGText, FrontCoverInitialCopies);
 }
 
 function generateBackCover() {
@@ -450,5 +373,104 @@ function generateBackCover() {
   coverRectangle.setAttribute('stroke-width', rectangleStroke);
   BackCoverSvg.appendChild(coverRectangle);
 
-  tesselateUserSvg(BackCoverSvg, SVGText, 4);
+  tesselateUserSvg(BackCoverSvg, SVGText, BackCoverInitialCopies);
+}
+
+function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
+  const parser = new DOMParser();
+  const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
+  const userSvgBBox = getBBoxAfterRender(parentElem, userSvg);
+  const scaledWidth = (ImageScale * CoverWidth) / NumColumns;
+  const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
+  userSvg.setAttribute('width', scaledWidth);
+  userSvg.setAttribute('height', scaledHeight);
+  colorUserSvg(userSvg, ElementColor);
+
+  let columnXCoords = [];
+  for (let i = 0; i < NumColumns; i++) {
+    columnXCoords[i] = i * (CoverWidth / (NumColumns - 1));
+  }
+
+  const middleColumnIndex = Math.floor(NumColumns / 2);
+
+  const columnCopyCounts = [];
+  let copies = middleColumnCopies;
+  for (let i = 0; i <= middleColumnIndex; i++) {
+    columnCopyCounts[middleColumnIndex + i] = copies;
+    columnCopyCounts[middleColumnIndex - i] = copies;
+    copies = copies + IncreasePerColumn;
+    if (copies > MaxPerColumn)
+      if (copies - IncreasePerColumn == MaxPerColumn) copies = MaxPerColumn - 1;
+      else copies = MaxPerColumn;
+  }
+
+  const tileHeight = CoverHeight / MaxPerColumn;
+  const halfHeight = scaledHeight / 2;
+  const halfWidth = scaledWidth / 2;
+
+  let transformState = true;
+  for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
+    const repeatsInColumn = columnCopyCounts[columnIndex];
+    const oddRepeats = repeatsInColumn % 2 === 1;
+    const halfRepeatsInColumn = Math.ceil(repeatsInColumn / 2);
+    if (columnIndex == middleColumnIndex + 1) transformState = !transformState;
+    transformState = !transformState;
+    for (let i = 0; i < halfRepeatsInColumn; i++) {
+      transformState = !transformState;
+      const centerMost = oddRepeats && i === 0;
+      const cloneUp = userSvg.cloneNode(true);
+      const cloneDown = userSvg.cloneNode(true);
+      parentElem.appendChild(cloneUp);
+      parentElem.appendChild(cloneDown);
+
+      let yUp, yDown, xBoth;
+      xBoth = columnXCoords[columnIndex] - halfWidth;
+      if (oddRepeats) {
+        yUp = (MaxPerColumn / 2 - i) * tileHeight - halfHeight;
+        yDown = (MaxPerColumn / 2 + i) * tileHeight - halfHeight;
+      } else {
+        const centerOffset = tileHeight / 2;
+        yUp = (MaxPerColumn / 2 - i) * tileHeight - centerOffset - halfHeight;
+        yDown = (MaxPerColumn / 2 + i + 1) * tileHeight - centerOffset - halfHeight;
+      }
+
+      cloneUp.setAttribute('y', yUp);
+      cloneUp.setAttribute('x', xBoth);
+      cloneDown.setAttribute('y', yDown);
+      cloneDown.setAttribute('x', xBoth);
+
+      if (transformState) {
+        Mirror && mirrorUserSvg(cloneUp);
+        Mirror ? rotateUserSvg(cloneUp, RotateAngle) : rotateUserSvg(cloneUp, -RotateAngle);
+      } else {
+        rotateUserSvg(cloneUp, RotateAngle % 180);
+      }
+      oddRepeats ? null : (transformState = !transformState);
+      if (transformState && !(oddRepeats && i == 0)) {
+        Mirror && mirrorUserSvg(cloneDown);
+        Mirror ? rotateUserSvg(cloneDown, RotateAngle) : rotateUserSvg(cloneDown, -RotateAngle);
+      } else {
+        rotateUserSvg(cloneDown, RotateAngle % 180);
+      }
+      transformState = !transformState;
+
+      // Trim Svg's on border edges
+      if (columnIndex === 0) {
+        cropLeftUserSvg(cloneUp);
+        cropLeftUserSvg(cloneDown);
+      } else if (columnIndex === NumColumns - 1) {
+        cropRightUserSvg(cloneUp);
+        cropRightUserSvg(cloneDown);
+      }
+
+      parentElem.appendChild(cloneUp);
+      parentElem.appendChild(cloneDown);
+
+      // Remove the cloneDown if it's the first iteration in an odd-repeats column
+      if (oddRepeats && i === 0) {
+        parentElem.removeChild(cloneDown);
+        transformState = !transformState;
+      }
+    }
+  }
 }

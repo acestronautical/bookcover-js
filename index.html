@@ -16,16 +16,20 @@
 
         <div class="input-group">
           <label for="titleInput">Title</label>
-          <input type="text" id="titleInput" placeholder="Title"/>
+          <input type="text" id="titleInput" placeholder="Title" />
         </div>
         <div class="input-group">
           <label for="authorInput">Author</label>
-          <input type="text" id="authorInput" placeholder="Author"/>
+          <input type="text" id="authorInput" placeholder="Author" />
         </div>
         <div class="space-out">
           <div class="input-group color-input">
             <label for="elementColorInput">Element Color</label>
             <input type="color" id="elementColorInput" value="#292a5a" />
+          </div>
+          <div class="input-group">
+            <label for="mirrorCheckbox">Mirror</label>
+            <input type="checkbox" id="mirrorCheckbox" value="false" />
           </div>
           <div class="input-group color-input">
             <label for="backgroundColorInput">Background Color</label>
@@ -33,11 +37,11 @@
           </div>
         </div>
         <div class="space-out">
-        <div class="input-group">
-          <label for="rotateInput">Rotate</label>
-          <input type="number" id="rotateInput" min="0" max="360" step="5" value="180" />
-        </div>
-        <div class="input-group">
+          <div class="input-group">
+            <label for="rotateInput">Rotate</label>
+            <input type="number" id="rotateInput" min="0" max="360" step="5" value="180" />
+          </div>
+          <div class="input-group">
             <label for="imageScale">Image Scale</label>
             <input type="number" id="imageScale" min="1" max="4" step="0.05" value="1.5" />
           </div>
@@ -50,10 +54,26 @@
           <label for="fontSizeInput">Font Size</label>
           <input type="number" id="fontSizeInput" min="10" max="30" value="18" />
         </div>
-        
-        <div class="input-group">
-          <label for="mirrorCheckbox">Mirror</label>
-          <input type="checkbox" id="mirrorCheckbox" value="false" />
+        <div class="space-out">
+          <div class="input-group">
+            <label for="maxPerColumnInput">Max Per Column</label>
+            <input type="number" id="maxPerColumnInput" min="1" max="7" value="4" />
+          </div>
+          <div class="input-group">
+            <label for="increasePerColumnInput">Increase Per Column</label>
+            <input type="number" id="increasePerColumnInput" min="0" max="7" value="1" />
+          </div>
+        </div>
+        <div class="space-out">
+          <div class="input-group">
+            <label for="backCoverInitialCopiesInput">Back Cover Middle</label>
+            <input type="number" id="backCoverInitialCopiesInput" min="0" max="7" value="4" />
+          </div>
+
+          <div class="input-group">
+            <label for="frontCoverInitialCopiesInput">Front Cover Middle</label>
+            <input type="number" id="frontCoverInitialCopiesInput" min="0" max="7" value="2" />
+          </div>
         </div>
         <div class="space-out">
           <div class="upload-section">

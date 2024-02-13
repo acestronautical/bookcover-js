@@ -189,8 +189,8 @@ function colorUserSvg(svgElem, color) {
   let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
   let prevStyle = childElement.getAttribute('style') || '';
   childElement.setAttribute('fill', color);
-  childElement.setAttribute('stroke', `${prevStyle} ${newStyle}`);
-  childElement.setAttribute('style', color);
+  childElement.setAttribute('stroke', color);
+  childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
   childElement = svgElem.querySelector('path') || svgElem.querySelector('g') || svgElem;
   childElement.setAttribute('fill', color);
   childElement.setAttribute('stroke', color);

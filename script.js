@@ -293,14 +293,14 @@ function tesselateUserSvg(parentElem, svgText, middleColumnRepeats) {
 
       if (mirrorState) {
         Mirror && mirrorUserSvg(cloneUp);
-        rotateUserSvg(cloneUp, -RotateAngle);
+        Mirror ? rotateUserSvg(cloneUp, RotateAngle) : rotateUserSvg(cloneUp, -RotateAngle);
       } else {
         rotateUserSvg(cloneUp, RotateAngle);
       }
       oddRepeats ? null : (mirrorState = !mirrorState);
       if (mirrorState && !(oddRepeats && i == 0)) {
         Mirror && mirrorUserSvg(cloneDown);
-        rotateUserSvg(cloneDown, -RotateAngle);
+        Mirror ? rotateUserSvg(cloneDown, RotateAngle): rotateUserSvg(cloneDown, -RotateAngle);
       } else {
         rotateUserSvg(cloneDown, RotateAngle);
       }

@@ -8,11 +8,38 @@ const BorderGap = CoverWidth / 16;
 let FontSize = 16;
 const NumColumns = 5;
 const MiddleColumnRepeats = 2;
+let Mirror = true;
+let Rotate = 10;
+let SVGText =  `<svg xmlns="http://www.w3.org/2000/svg"> <circle r="20" cx="25" cy="25" /></svg>`
 
 document.getElementById('elementColorInput').addEventListener('change', handleElementColorChange);
 document.getElementById('backgroundColorInput').addEventListener('change', handleBackgroundColorChange);
 document.getElementById('saveFrontCover').addEventListener('click', saveSvg);
 document.getElementById('fileInput').addEventListener('change', handleFileChange);
+document.getElementById('mirrorCheckbox').addEventListener('change', handleMirrorChange);
+document.getElementById('rotateInput').addEventListener('input', handleRotateChange);
+document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
+document.getElementById('fontSizeInput').addEventListener('input', handleFontSizeChange);
+
+window.addEventListener('DOMContentLoaded', () => { 
+  generateFrontCover();
+});
+
+/**
+ * Function to handle changes in the file input.
+ * @param {Event} event - The event object representing the fole change.
+ */
+function handleFileChange(event) {
+    // Load user uploaded SVG to tile
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function () {
+      SVGText = reader.result;
+      generateFrontCover();
+    }
+    reader.readAsText(file);
+}
+
 
 /**
  * Function to handle changes in the element color input.
@@ -20,6 +47,7 @@ document.getElementById('fileInput').addEventListener('change', handleFileChange
  */
 function handleElementColorChange(event) {
   ElementColor = event.target.value;
+  generateFrontCover();
 }
 
 /**
@@ -28,6 +56,29 @@ function handleElementColorChange(event) {
  */
 function handleBackgroundColorChange(event) {
   BackgroundColor = event.target.value;
+  generateFrontCover();
+}
+
+// Functions to handle changes in mirror, rotate, CoverProportions, and fontsize controls
+function handleMirrorChange(event) {
+  Mirror = event.target.checked;
+  generateFrontCover();
+}
+
+function handleRotateChange(event) {
+  Rotate = parseInt(event.target.value);
+  generateFrontCover();
+}
+
+function handleCoverProportionsChange(event) {
+  CoverProportions = parseFloat(event.target.value);
+  CoverHeight = CoverWidth * CoverProportions;
+  generateFrontCover();
+}
+
+function handleFontSizeChange(event) {
+  FontSize = parseInt(event.target.value);
+  generateFrontCover();
 }
 
 /**
@@ -104,14 +155,39 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   return text;
 }
 
+function rotateUserSvg(svgElem, angle) {
+  // For user uploaded SVGs the transformations often won't apply at the top level
+  let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+  // This should be changed to getBBoxAfterRender
+  const bbox = childElement.getBBox();
+  const cx = bbox.x + bbox.width / 2;
+  const cy = bbox.y + bbox.height / 2;
+
+  const rotateTransform = `rotate(${angle} ${cx} ${cy})`;
+  const prevTransform = childElement.getAttribute('transform') || '';
+  childElement.setAttribute('transform', `${prevTransform} ${rotateTransform}`);
+}
+
+function mirrorUserSvg(svgElem) {
+  // For user uploaded SVGs the transformations often won't apply at the top level
+  let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+  // This should be changed to getBBoxAfterRender
+  const bbox = childElement.getBBox();
+  const cx = bbox.x + bbox.width / 2;
+  const cy = bbox.y + bbox.height / 2;
+
+  // You don't want to know
+  const mirrorTransform = `translate( ${cx} ${cy}) scale(-1 1) translate( ${-cx} ${-cy})`;
+  const prevTransform = childElement.getAttribute('transform') || '';
+  childElement.setAttribute('transform', `${prevTransform} ${mirrorTransform}`);
+}
+
 /**
  * Function to handle changes in the file input.
  * This is the main logic at the moment but should be pulled out at some point
  * @param {Event} event - The event object representing the file change.
  */
-function handleFileChange(event) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
+function generateFrontCover(event) {
 
   // Create cover Svg
   FrontCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -153,21 +229,16 @@ function handleFileChange(event) {
   const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
   FrontCoverSvg.appendChild(authorSvg);
 
-  // Load user uploaded SVG to tile
-  reader.onload = function () {
-    const svgText = reader.result;
+  if (SVGText === null) return;
+
     const parser = new DOMParser();
-    const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
+    const userSvg = parser.parseFromString(SVGText, 'image/svg+xml').documentElement;
     const userSvgBBox = getBBoxAfterRender(FrontCoverSvg, userSvg);
     const scaledWidth = CoverWidth / NumColumns;
     const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
     userSvg.setAttribute('width', scaledWidth);
     userSvg.setAttribute('height', scaledHeight);
     userSvg.setAttribute('stroke', ElementColor);
-
-    const inputDiv = document.getElementById('input');
-    inputDiv.innerHTML = '';
-    inputDiv.appendChild(userSvg);
 
     let columnXCoords = [];
     for (let i = 0; i < NumColumns; i++) {
@@ -215,10 +286,19 @@ function handleFileChange(event) {
         cloneDown.setAttribute('y', yDown);
         cloneDown.setAttribute('x', xBoth);
 
-        if (i % 2 === 0) {
-          rotateUserSvg(cloneUp, 180);
-        } else {
-          rotateUserSvg(cloneDown, 180);
+        if (Mirror) {
+          if (i % 2 === 0) {
+            mirrorUserSvg(cloneUp);
+          } else {
+            mirrorUserSvg(cloneDown);
+          }
+        }
+        if (Rotate !== 0) {
+          if (i % 2 === 0) {
+            rotateUserSvg(cloneUp, 180);
+          } else {
+            rotateUserSvg(cloneDown, 180);
+          }
         }
         FrontCoverSvg.appendChild(cloneUp);
         FrontCoverSvg.appendChild(cloneDown);
@@ -229,19 +309,6 @@ function handleFileChange(event) {
         }
       }
     }
-  };
 
-  reader.readAsText(file);
-}
 
-function rotateUserSvg(svgElem, angle) {
-  // For user uploaded SVGs the transformations often won't apply at the top level
-  let childElement = svgElem.querySelector('g') || svgElem.querySelector('path');
-  const bbox = childElement.getBBox();
-  const cx = bbox.x + bbox.width / 2;
-  const cy = bbox.y + bbox.height / 2;
-
-  const rotation = `rotate(${angle} ${cx} ${cy})`;
-  const transform = childElement.getAttribute('transform') || '';
-  childElement.setAttribute('transform', `${transform} ${rotation}`);
 }

@@ -5,11 +5,12 @@ let CoverProportions = 1.5;
 let CoverWidth = 300;
 let CoverHeight = CoverWidth * CoverProportions;
 const BorderGap = CoverWidth / 16;
-let FontSize = 16;
+let FontSize = 18;
+let ImageScale = 1;
 const NumColumns = 5;
 const MiddleColumnRepeats = 2;
 let Mirror = false;
-let RotateAngle = 10;
+let RotateAngle = 0;
 let SVGText = `<svg xmlns="http://www.w3.org/2000/svg"> <circle r="20" cx="25" cy="25" /></svg>`;
 
 document.getElementById('elementColorInput').addEventListener('change', handleElementColorChange);
@@ -20,6 +21,7 @@ document.getElementById('mirrorCheckbox').addEventListener('change', handleMirro
 document.getElementById('rotateInput').addEventListener('input', handleRotateChange);
 document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
 document.getElementById('fontSizeInput').addEventListener('input', handleFontSizeChange);
+document.getElementById('imageScale').addEventListener('input', handleImageScaleChange);
 
 window.addEventListener('DOMContentLoaded', () => {
   generateFrontCover();
@@ -77,6 +79,11 @@ function handleCoverProportionsChange(event) {
 
 function handleFontSizeChange(event) {
   FontSize = parseInt(event.target.value);
+  generateFrontCover();
+}
+
+function handleImageScaleChange(event) {
+  ImageScale = parseFloat(event.target.value);
   generateFrontCover();
 }
 
@@ -230,7 +237,7 @@ function generateFrontCover() {
   const parser = new DOMParser();
   const userSvg = parser.parseFromString(SVGText, 'image/svg+xml').documentElement;
   const userSvgBBox = getBBoxAfterRender(FrontCoverSvg, userSvg);
-  const scaledWidth = CoverWidth / NumColumns;
+  const scaledWidth = ImageScale * CoverWidth / NumColumns;
   const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
   userSvg.setAttribute('width', scaledWidth);
   userSvg.setAttribute('height', scaledHeight);

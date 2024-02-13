@@ -1,6 +1,6 @@
 let FrontCoverSvg;
-let ElementColor = '#FF5733';
-let BackgroundColor = '#33FFBD';
+let ElementColor = '#292a5a';
+let BackgroundColor = '#aeb2b1';
 let CoverProportions = 1.5;
 let CoverWidth = 300;
 let CoverHeight = CoverWidth * CoverProportions;
@@ -8,9 +8,9 @@ const BorderGap = CoverWidth / 16;
 let FontSize = 16;
 const NumColumns = 5;
 const MiddleColumnRepeats = 2;
-let Mirror = true;
-let Rotate = 10;
-let SVGText =  `<svg xmlns="http://www.w3.org/2000/svg"> <circle r="20" cx="25" cy="25" /></svg>`
+let Mirror = false;
+let RotateAngle = 10;
+let SVGText = `<svg xmlns="http://www.w3.org/2000/svg"> <circle r="20" cx="25" cy="25" /></svg>`;
 
 document.getElementById('elementColorInput').addEventListener('change', handleElementColorChange);
 document.getElementById('backgroundColorInput').addEventListener('change', handleBackgroundColorChange);
@@ -21,7 +21,7 @@ document.getElementById('rotateInput').addEventListener('input', handleRotateCha
 document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
 document.getElementById('fontSizeInput').addEventListener('input', handleFontSizeChange);
 
-window.addEventListener('DOMContentLoaded', () => { 
+window.addEventListener('DOMContentLoaded', () => {
   generateFrontCover();
 });
 
@@ -30,16 +30,15 @@ window.addEventListener('DOMContentLoaded', () => {
  * @param {Event} event - The event object representing the fole change.
  */
 function handleFileChange(event) {
-    // Load user uploaded SVG to tile
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function () {
-      SVGText = reader.result;
-      generateFrontCover();
-    }
-    reader.readAsText(file);
+  // Load user uploaded SVG to tile
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function () {
+    SVGText = reader.result;
+    generateFrontCover();
+  };
+  reader.readAsText(file);
 }
-
 
 /**
  * Function to handle changes in the element color input.
@@ -66,7 +65,7 @@ function handleMirrorChange(event) {
 }
 
 function handleRotateChange(event) {
-  Rotate = parseInt(event.target.value);
+  RotateAngle = parseInt(event.target.value);
   generateFrontCover();
 }
 
@@ -182,13 +181,10 @@ function mirrorUserSvg(svgElem) {
   childElement.setAttribute('transform', `${prevTransform} ${mirrorTransform}`);
 }
 
-/**
- * Function to handle changes in the file input.
- * This is the main logic at the moment but should be pulled out at some point
- * @param {Event} event - The event object representing the file change.
+/**.
+ * Updates the frontCover image
  */
-function generateFrontCover(event) {
-
+function generateFrontCover() {
   // Create cover Svg
   FrontCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   FrontCoverSvg.setAttribute('width', CoverWidth);
@@ -231,84 +227,88 @@ function generateFrontCover(event) {
 
   if (SVGText === null) return;
 
-    const parser = new DOMParser();
-    const userSvg = parser.parseFromString(SVGText, 'image/svg+xml').documentElement;
-    const userSvgBBox = getBBoxAfterRender(FrontCoverSvg, userSvg);
-    const scaledWidth = CoverWidth / NumColumns;
-    const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
-    userSvg.setAttribute('width', scaledWidth);
-    userSvg.setAttribute('height', scaledHeight);
-    userSvg.setAttribute('stroke', ElementColor);
+  const parser = new DOMParser();
+  const userSvg = parser.parseFromString(SVGText, 'image/svg+xml').documentElement;
+  const userSvgBBox = getBBoxAfterRender(FrontCoverSvg, userSvg);
+  const scaledWidth = CoverWidth / NumColumns;
+  const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
+  userSvg.setAttribute('width', scaledWidth);
+  userSvg.setAttribute('height', scaledHeight);
+  userSvg.setAttribute('stroke', ElementColor);
 
-    let columnXCoords = [];
-    for (let i = 0; i < NumColumns; i++) {
-      columnXCoords[i] = i * (CoverWidth / (NumColumns - 1));
-    }
+  let columnXCoords = [];
+  for (let i = 0; i < NumColumns; i++) {
+    columnXCoords[i] = i * (CoverWidth / (NumColumns - 1));
+  }
 
-    const middleColumnIndex = Math.floor(NumColumns / 2);
+  const middleColumnIndex = Math.floor(NumColumns / 2);
 
-    const columnRepeatCounts = [];
-    for (let i = 0; i < NumColumns; i++) {
-      const distanceFromMiddle = Math.abs(i - middleColumnIndex);
-      columnRepeatCounts[i] = MiddleColumnRepeats + distanceFromMiddle;
-    }
+  const columnRepeatCounts = [];
+  for (let i = 0; i < NumColumns; i++) {
+    const distanceFromMiddle = Math.abs(i - middleColumnIndex);
+    columnRepeatCounts[i] = MiddleColumnRepeats + distanceFromMiddle;
+  }
 
-    const maxRepeats = Math.max(...columnRepeatCounts);
-    const tileHeight = CoverHeight / maxRepeats;
-    const halfHeight = scaledHeight / 2;
-    const halfWidth = scaledWidth / 2;
+  const maxRepeats = Math.max(...columnRepeatCounts);
+  const tileHeight = CoverHeight / maxRepeats;
+  const halfHeight = scaledHeight / 2;
+  const halfWidth = scaledWidth / 2;
+  let mirrorState = true;
 
-    for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
-      const repeatsInColumn = columnRepeatCounts[columnIndex];
-      const evenRepeats = repeatsInColumn % 2 === 0;
-      const halfRepeatsInColumn = Math.ceil(repeatsInColumn / 2);
+  for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
+    const repeatsInColumn = columnRepeatCounts[columnIndex];
+    const oddRepeats = repeatsInColumn % 2 === 1;
+    const halfRepeatsInColumn = Math.ceil(repeatsInColumn / 2);
+    if (columnIndex == middleColumnIndex + 1) mirrorState = !mirrorState;
+    mirrorState = !mirrorState;
+    for (let i = 0; i < halfRepeatsInColumn; i++) {
+      mirrorState = !mirrorState;
+      const centerMost = oddRepeats && i === 0;
+      const cloneUp = userSvg.cloneNode(true);
+      const cloneDown = userSvg.cloneNode(true);
+      FrontCoverSvg.appendChild(cloneUp);
+      FrontCoverSvg.appendChild(cloneDown);
 
-      for (let i = 0; i < halfRepeatsInColumn; i++) {
-        const cloneUp = userSvg.cloneNode(true);
-        const cloneDown = userSvg.cloneNode(true);
-        FrontCoverSvg.appendChild(cloneUp);
-        FrontCoverSvg.appendChild(cloneDown);
+      let yUp, yDown, xBoth;
+      xBoth = columnXCoords[columnIndex] - halfWidth;
+      if (oddRepeats) {
+        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - halfHeight;
+        yDown = (Math.floor(maxRepeats / 2) + i) * tileHeight - halfHeight;
+      } else {
+        const centerOffset = tileHeight / 2;
+        yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - centerOffset - halfHeight;
+        yDown = (Math.floor(maxRepeats / 2) + i + 1) * tileHeight - centerOffset - halfHeight;
+      }
 
-        let yUp, yDown, xBoth;
-        xBoth = columnXCoords[columnIndex] - halfWidth;
-        if (evenRepeats) {
-          const centerOffset = tileHeight / 2;
-          yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - centerOffset - halfHeight;
-          yDown = (Math.floor(maxRepeats / 2) + i + 1) * tileHeight - centerOffset - halfHeight;
-        } else {
-          yUp = (Math.floor(maxRepeats / 2) - i) * tileHeight - halfHeight;
-          yDown = (Math.floor(maxRepeats / 2) + i) * tileHeight - halfHeight;
-        }
+      // position is measured from top left corner, we want midpoints
+      cloneUp.setAttribute('y', yUp);
+      cloneUp.setAttribute('x', xBoth);
+      cloneDown.setAttribute('y', yDown);
+      cloneDown.setAttribute('x', xBoth);
 
-        // position is measured from top left corner, we want midpoints
-        cloneUp.setAttribute('y', yUp);
-        cloneUp.setAttribute('x', xBoth);
-        cloneDown.setAttribute('y', yDown);
-        cloneDown.setAttribute('x', xBoth);
+      if (mirrorState) {
+        Mirror && mirrorUserSvg(cloneUp);
+        rotateUserSvg(cloneUp, -RotateAngle);
+      } else {
+        rotateUserSvg(cloneUp, RotateAngle);
+      }
+      oddRepeats ? null : mirrorState = !mirrorState;
+      if (mirrorState && !(oddRepeats && i == 0)) {
+        Mirror && mirrorUserSvg(cloneDown);
+        rotateUserSvg(cloneDown, -RotateAngle);
+      } else {
+        rotateUserSvg(cloneDown, RotateAngle);
+      }
+      mirrorState = !mirrorState;
 
-        if (Mirror) {
-          if (i % 2 === 0) {
-            mirrorUserSvg(cloneUp);
-          } else {
-            mirrorUserSvg(cloneDown);
-          }
-        }
-        if (Rotate !== 0) {
-          if (i % 2 === 0) {
-            rotateUserSvg(cloneUp, 180);
-          } else {
-            rotateUserSvg(cloneDown, 180);
-          }
-        }
-        FrontCoverSvg.appendChild(cloneUp);
-        FrontCoverSvg.appendChild(cloneDown);
+      FrontCoverSvg.appendChild(cloneUp);
+      FrontCoverSvg.appendChild(cloneDown);
 
-        // Remove the cloneDown if it's the first iteration in an odd-repeats column
-        if (!evenRepeats && i === 0) {
-          FrontCoverSvg.removeChild(cloneDown);
-        }
+      // Remove the cloneDown if it's the first iteration in an odd-repeats column
+      if (oddRepeats && i === 0) {
+        FrontCoverSvg.removeChild(cloneDown);
+        mirrorState = !mirrorState;
       }
     }
-
-
+  }
 }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penguin Clothbound SVG</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Penguin Clothbound</h1>
+    </header>
+    <main class="space-out">
+        <div id="input"></div>
+        <div class="settings">
+            <h2>Settings</h2>
+            <div class="input-group">
+                <label for="titleInput">Title:</label>
+                <input type="text" id="titleInput">
+            </div>
+            <div class="input-group">
+                <label for="authorInput">Author:</label>
+                <input type="text" id="authorInput">
+            </div>
+            <div class="input-group color-input">
+                <label for="elementColorInput">Element Color:</label>
+                <input type="color" id="elementColorInput" value="#FF5733">
+            </div>
+            <div class="input-group color-input">
+                <label for="backgroundColorInput">Background Color:</label>
+                <input type="color" id="backgroundColorInput" value="#33FFBD">
+            </div>
+            <div class="space-out">
+            <div class="upload-section">
+                <label for="fileInput" class="file-label">Upload SVG</label>
+                <input type="file" id="fileInput" accept=".svg">
+            </div>
+            <button id="saveFrontCover">Save Front Cover</button>
+          </div>
+
+        </div>
+
+        <div id="front-cover"></div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

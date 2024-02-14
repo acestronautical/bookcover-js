@@ -389,23 +389,24 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
   const parser = new DOMParser();
   const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
   const userSvgBBox = getBBoxAfterRender(parentElem, userSvg);
-  const scaledWidth = (ImageScale * CoverWidth) / NumColumns;
-  const scaledHeight = scaledWidth * (userSvgBBox.height / userSvgBBox.width);
-  userSvg.setAttribute('width', scaledWidth);
-  userSvg.setAttribute('height', scaledHeight);
+  const scaledSvgWidth = (ImageScale * CoverWidth) / NumColumns;
+  const scaledSvgHeight = scaledSvgWidth * (userSvgBBox.height / userSvgBBox.width);
+  userSvg.setAttribute('width', scaledSvgWidth);
+  userSvg.setAttribute('height', scaledSvgHeight);
   colorUserSvg(userSvg, ElementColor);
 
+  // Calculate X coordinates of each column
   let xTileCount = XOverhang ? NumColumns - 1 : NumColumns;
   let xOffset = XOverhang ? 0 : 0.5;
   const xTileWidth = CoverWidth / xTileCount;
-  const halfWidth = scaledWidth / 2;
+  const halfSvgWidth = scaledSvgWidth / 2;
   let columnXCoords = [];
   for (let i = 0; i < NumColumns; i++) {
-    columnXCoords[i] = (i + xOffset) * xTileWidth - halfWidth;
+    columnXCoords[i] = (i + xOffset) * xTileWidth - halfSvgWidth;
   }
 
+  // Populate number of copies per column
   const middleColumnIndex = Math.floor(NumColumns / 2);
-
   const columnCopyCounts = [];
   let copies = middleColumnCopies;
   for (let i = 0; i <= middleColumnIndex; i++) {
@@ -416,11 +417,11 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
       if (copies - IncreasePerColumn == MaxPerColumn) copies = MaxPerColumn - 1;
       else copies = MaxPerColumn;
   }
+  const maxCopies = Math.max(...columnCopyCounts);
 
-  let yTileCount = YOverhang ? MaxPerColumn - 1 : MaxPerColumn;
-
+  let yTileCount = YOverhang ? maxCopies - 1 : maxCopies;
   const yTileHeight = CoverHeight / yTileCount;
-  const halfHeight = scaledHeight / 2;
+  const halfSvgHeight = scaledSvgHeight / 2;
 
   let transformState = true;
   for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
@@ -439,12 +440,12 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
 
       let yUp, yDown;
       if (oddRepeats) {
-        yUp = (yTileCount / 2 - i) * yTileHeight - halfHeight;
-        yDown = (yTileCount / 2 + i) * yTileHeight - halfHeight;
+        yUp = (yTileCount / 2 - i) * yTileHeight - halfSvgHeight;
+        yDown = (yTileCount / 2 + i) * yTileHeight - halfSvgHeight;
       } else {
         const centerOffset = yTileHeight / 2;
-        yUp = (yTileCount / 2 - i) * yTileHeight - centerOffset - halfHeight;
-        yDown = (yTileCount / 2 + i + 1) * yTileHeight - centerOffset - halfHeight;
+        yUp = (yTileCount / 2 - i) * yTileHeight - centerOffset - halfSvgHeight;
+        yDown = (yTileCount / 2 + i + 1) * yTileHeight - centerOffset - halfSvgHeight;
       }
 
       cloneUp.setAttribute('y', yUp);

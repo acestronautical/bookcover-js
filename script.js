@@ -14,9 +14,10 @@ let FontSize = 18;
 let ImageScale = 1;
 const NumColumns = 5;
 let Mirror = false;
+let Flip = false;
 let YOverhang = false;
 let XOverhang = true;
-let RotateAngle = 540;
+let RotateAngle = 0;
 let TitleText = 'Cats Cradle\nChronicles';
 let AuthorText = 'Felix\nPawsley';
 let MaxPerColumn = 4;
@@ -40,7 +41,8 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('elementColorInput').value = ElementColor;
   document.getElementById('backgroundColorInput').value = BackgroundColor;
   document.getElementById('mirrorCheckbox').checked = Mirror;
-  document.getElementById('yOverhangCheckbox').checked = YOverhang
+  document.getElementById('flipCheckbox').checked = Flip;
+  document.getElementById('yOverhangCheckbox').checked = YOverhang;
   document.getElementById('xOverhangCheckbox').checked = XOverhang;
   document.getElementById('rotateInput').value = RotateAngle;
   document.getElementById('fontSizeInput').value = FontSize;
@@ -76,6 +78,11 @@ document.getElementById('backgroundColorInput').addEventListener('input', (event
 
 document.getElementById('mirrorCheckbox').addEventListener('change', (event) => {
   Mirror = event.target.checked;
+  generateCovers();
+});
+
+document.getElementById('flipCheckbox').addEventListener('change', (event) => {
+  Flip = event.target.checked;
   generateCovers();
 });
 
@@ -478,14 +485,14 @@ function tesselateCover(parentElem, svgText, middleColumnCopies) {
         Mirror && mirrorUserSvg(cloneUp);
         Mirror ? rotateUserSvg(cloneUp, RotateAngle) : rotateUserSvg(cloneUp, -RotateAngle);
       } else {
-        rotateUserSvg(cloneUp, RotateAngle % 540);
+        rotateUserSvg(cloneUp, RotateAngle + (Flip ? 180 : 0));
       }
       oddRepeats ? null : (transformState = !transformState);
       if (transformState && !(oddRepeats && i == 0)) {
         Mirror && mirrorUserSvg(cloneDown);
         Mirror ? rotateUserSvg(cloneDown, RotateAngle) : rotateUserSvg(cloneDown, -RotateAngle);
       } else {
-        rotateUserSvg(cloneDown, RotateAngle % 540);
+        rotateUserSvg(cloneDown, RotateAngle + (Flip ? 180 : 0));
       }
       transformState = !transformState;
 

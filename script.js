@@ -1,3 +1,11 @@
+let catSvg = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns1="http://sozi.baierouge.fr" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" id="svg3228" xml:space="preserve" viewBox="0 0 700 700">
+                <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
+                  <g id="g3246" transform="matrix(.88815 0 0 .88815 456.78 214.39)" >
+                    <path id="path3248" d="m0 0c-4.942 32.123-20.005 60.481-24.658 69.321-4.652 8.84-10.7 26.519-9.002 51.363 1.699 24.843-9.608 96.585-67.298 142.64-57.69 46.059-111 60.386-118.17 65.134-7.773 5.143-39.08 19.54-46.471 22.983-7.391 3.444-37.273 7.258-50.677 8.968s-27.537-3.105-32.96-3.148c-5.423-0.042-35.984 9.347-40.636 9.347s-1.861-4.652-1.396-7.444c0.466-2.791 10.277-21.046 10.277-21.046s-10.742 0.11-11.207-2.216 12.769-12.274 12.769-12.274-6.256-20.293-6.581-24.874c-0.326-4.582 5.908-20.077 6.839-24.264 0.93-4.187 0-13.958 0-13.958l4.622-4.716s7.939-5.519 9.8-6.449c1.861-0.931 8.132 0.126 8.132 0.126 4.875-1.734 20.713 6.853 29.088 11.97 8.374 5.118 20.005 6.513 23.361 6.539 3.355 0.024 6.414-10.727 6.274-14.241-0.141-3.516 2.932-16.491 3.862-20.678 0.931-4.187-4.332-12.528-4.332-12.528-4.798 2.359-11.486 4.619-15.673 6.015-4.188 1.396-17.214 10.7-20.936 11.631s-6.979 1.396-13.585 3.216c-6.606 1.821-28.287 6.554-32.942 5.95-4.654-0.603-16.746-7.306-18.451-14.149-1.704-6.845 7.753-13.627 11.475-15.023 3.722-1.395 15.353 1.396 19.447 0.973 4.095-0.423 6.71-3.791 6.71-3.791 14.526-0.491 21.298-9.278 29.672-16.722s47.92-29.31 53.503-30.241 20.933 2.981 20.933 2.981 4.655-18.799 6.516-29.964c1.861-11.166-6.048-47.456-6.978-54.434-0.931-6.979-1.163-15.818-2.908-18.145-1.423-1.898-2.908-1.512-10.628-2.678-9.245-1.396-19.409-15.013-19.031-21.049 0.465-7.444 8.536-9.667 12.137-9.667h12.753c5.583 0 21.401 2.223 21.401 2.223l25.124-2.223h151.72c15.146 0 30.171-30.879 32.748-54.071 2.791-25.123-14.669-90.658-25.589-113.99-10.235-21.866-32.824-46.467-54.433-51.176-36.289-7.909-60.947 15.818-79.092 12.562-16.51-2.964-13.027-21.401-5.583-28.846 6.869-6.869 66.112-27.327 105.14-14.887 42.337 13.492 67.63 62.931 81.418 102.82 13.047 37.712 19.095 75.861 13.512 112.15m-198.83 69.434c-8.839-3.256-16.283-8.374-21.866-6.979-5.583 1.396-7.909-2.791-12.562-1.395 0 0 4.653 13.957 9.297 21.925 4.643 7.969 10.918 33.922 10.918 33.922 1.606-9.753 10.957-25.141 17.935-34.446 6.979-9.305 5.118-9.771-3.722-13.027"/>
+                  </g>
+                </g>
+              </svg>`;
+
 let FrontCoverSvg;
 let BackCoverSvg;
 let SpineCoverSvg;
@@ -24,15 +32,11 @@ let MaxPerColumn = 4;
 let IncreasePerColumn = 1;
 let BackCoverInitialCopies = 4;
 let FrontCoverInitialCopies = 2;
-
-// This is gross but it works for now
-let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns1="http://sozi.baierouge.fr" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" id="svg3228" xml:space="preserve" viewBox="0 0 700 700">
-                <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
-                  <g id="g3246" transform="matrix(.88815 0 0 .88815 456.78 214.39)" >
-                    <path id="path3248" d="m0 0c-4.942 32.123-20.005 60.481-24.658 69.321-4.652 8.84-10.7 26.519-9.002 51.363 1.699 24.843-9.608 96.585-67.298 142.64-57.69 46.059-111 60.386-118.17 65.134-7.773 5.143-39.08 19.54-46.471 22.983-7.391 3.444-37.273 7.258-50.677 8.968s-27.537-3.105-32.96-3.148c-5.423-0.042-35.984 9.347-40.636 9.347s-1.861-4.652-1.396-7.444c0.466-2.791 10.277-21.046 10.277-21.046s-10.742 0.11-11.207-2.216 12.769-12.274 12.769-12.274-6.256-20.293-6.581-24.874c-0.326-4.582 5.908-20.077 6.839-24.264 0.93-4.187 0-13.958 0-13.958l4.622-4.716s7.939-5.519 9.8-6.449c1.861-0.931 8.132 0.126 8.132 0.126 4.875-1.734 20.713 6.853 29.088 11.97 8.374 5.118 20.005 6.513 23.361 6.539 3.355 0.024 6.414-10.727 6.274-14.241-0.141-3.516 2.932-16.491 3.862-20.678 0.931-4.187-4.332-12.528-4.332-12.528-4.798 2.359-11.486 4.619-15.673 6.015-4.188 1.396-17.214 10.7-20.936 11.631s-6.979 1.396-13.585 3.216c-6.606 1.821-28.287 6.554-32.942 5.95-4.654-0.603-16.746-7.306-18.451-14.149-1.704-6.845 7.753-13.627 11.475-15.023 3.722-1.395 15.353 1.396 19.447 0.973 4.095-0.423 6.71-3.791 6.71-3.791 14.526-0.491 21.298-9.278 29.672-16.722s47.92-29.31 53.503-30.241 20.933 2.981 20.933 2.981 4.655-18.799 6.516-29.964c1.861-11.166-6.048-47.456-6.978-54.434-0.931-6.979-1.163-15.818-2.908-18.145-1.423-1.898-2.908-1.512-10.628-2.678-9.245-1.396-19.409-15.013-19.031-21.049 0.465-7.444 8.536-9.667 12.137-9.667h12.753c5.583 0 21.401 2.223 21.401 2.223l25.124-2.223h151.72c15.146 0 30.171-30.879 32.748-54.071 2.791-25.123-14.669-90.658-25.589-113.99-10.235-21.866-32.824-46.467-54.433-51.176-36.289-7.909-60.947 15.818-79.092 12.562-16.51-2.964-13.027-21.401-5.583-28.846 6.869-6.869 66.112-27.327 105.14-14.887 42.337 13.492 67.63 62.931 81.418 102.82 13.047 37.712 19.095 75.861 13.512 112.15m-198.83 69.434c-8.839-3.256-16.283-8.374-21.866-6.979-5.583 1.396-7.909-2.791-12.562-1.395 0 0 4.653 13.957 9.297 21.925 4.643 7.969 10.918 33.922 10.918 33.922 1.606-9.753 10.957-25.141 17.935-34.446 6.979-9.305 5.118-9.771-3.722-13.027"/>
-                  </g>
-                </g>
-              </svg>`;
+const Parser = new DOMParser();
+let ArtSvg = Parser.parseFromString(catSvg, 'image/svg+xml').documentElement;
+const FrontCoverDiv = document.getElementById('front-cover');
+const BackCoverDiv = document.getElementById('back-cover');
+const SpineCoverDiv = document.getElementById('spine-cover');
 
 document.addEventListener('DOMContentLoaded', function () {
   function initialize() {
@@ -61,8 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const target = event.target;
     if (target.matches('#titleInput')) {
       TitleText = target.value;
+      generateFrontCoverFrame();
     } else if (target.matches('#authorInput')) {
       AuthorText = target.value;
+      generateFrontCoverFrame();
     } else if (target.matches('#rotateInput')) {
       RotateAngle = parseInt(target.value);
     } else if (target.matches('#imageScale')) {
@@ -71,11 +77,14 @@ document.addEventListener('DOMContentLoaded', function () {
       CoverProportions = parseFloat(target.value);
       CoverHeight = CoverWidth * CoverProportions;
       SpineHeight = CoverHeight;
+      generateBackCoverFrame();
+      generateFrontCoverFrame();
     } else if (target.matches('#spineProportionsInput')) {
       SpineProportions = parseFloat(target.value);
       SpineWidth = SpineHeight / SpineProportions;
     } else if (target.matches('#fontSizeInput')) {
       FontSize = parseInt(target.value);
+      generateFrontCoverFrame();
     } else if (target.matches('#maxPerColumnInput')) {
       MaxPerColumn = parseInt(target.value);
     } else if (target.matches('#increasePerColumnInput')) {
@@ -85,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (target.matches('#frontCoverInitialCopiesInput')) {
       FrontCoverInitialCopies = parseInt(target.value);
     }
-    generateCovers();
+    updateCovers();
   });
 
   document.getElementById('settings').addEventListener('input', function (event) {
@@ -94,13 +103,6 @@ document.addEventListener('DOMContentLoaded', function () {
       ElementColor = target.value;
     } else if (target.matches('#backgroundColorInput')) {
       BackgroundColor = target.value;
-    } else if (target.matches('#fileInput')) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function () {
-        SVGText = reader.result;
-      };
-      reader.readAsText(file);
     }
     generateCovers();
   });
@@ -116,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (target.matches('#xOverhangCheckbox')) {
       XOverhang = target.checked;
     }
-    generateCovers();
+    updateCovers();
   });
 
   document.getElementById('save-cover').addEventListener('click', saveCovers);
@@ -126,7 +128,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = function () {
-      SVGText = reader.result;
+      svgText = reader.result;
+      ArtSvg = Parser.parseFromString(svgText, 'image/svg+xml').documentElement;
       generateCovers();
     };
     reader.readAsText(file);
@@ -140,6 +143,12 @@ document.addEventListener('DOMContentLoaded', function () {
 function generateCovers() {
   generateFrontCover();
   generateBackCover();
+  generateSpineCover();
+}
+
+function updateCovers() {
+  tesselateCover(BackCoverSvg, BackCoverInitialCopies);
+  tesselateCover(FrontCoverSvg, FrontCoverInitialCopies);
   generateSpineCover();
 }
 
@@ -238,7 +247,7 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   return group;
 }
 
-function rotateUserSvg(svgElem, angle) {
+function rotateArtSvg(svgElem, angle) {
   // For user uploaded SVGs the transformations often won't apply at the top level
   let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
   // This should be changed to getBBoxAfterRender
@@ -251,7 +260,7 @@ function rotateUserSvg(svgElem, angle) {
   childElement.setAttribute('transform', `${prevTransform} ${rotateTransform}`);
 }
 
-function mirrorUserSvg(svgElem) {
+function mirrorArtSvg(svgElem) {
   // For user uploaded SVGs the transformations often won't apply at the top level
   let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
   // This should be changed to getBBoxAfterRender
@@ -265,7 +274,7 @@ function mirrorUserSvg(svgElem) {
   childElement.setAttribute('transform', `${prevTransform} ${mirrorTransform}`);
 }
 
-function colorUserSvg(svgElem, color) {
+function colorArtSvg(svgElem, color) {
   // Color at multiple levels in multiple ways
   const newStyle = `fill:${color} stroke:${color}`;
   let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
@@ -284,15 +293,15 @@ function generateSpineCover() {
   SpineCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   SpineCoverSvg.setAttribute('width', SpineWidth);
   SpineCoverSvg.setAttribute('height', SpineHeight);
+  SpineCoverSvg.setAttribute('overflow', `hidden`);
   SpineCoverSvg.style.backgroundColor = BackgroundColor;
 
   // Create div which shows background color margin for cover SVG
-  const spineCoverDiv = document.getElementById('spine-cover');
-  spineCoverDiv.innerHTML = '';
-  spineCoverDiv.appendChild(SpineCoverSvg);
-  spineCoverDiv.style.backgroundColor = BackgroundColor;
-  spineCoverDiv.style.width = SpineWidth + BorderGap / 2 + 'px';
-  spineCoverDiv.style.height = SpineHeight + BorderGap * 2 + 'px';
+  SpineCoverDiv.innerHTML = '';
+  SpineCoverDiv.appendChild(SpineCoverSvg);
+  SpineCoverDiv.style.backgroundColor = BackgroundColor;
+  SpineCoverDiv.style.width = SpineWidth + BorderGap / 2 + 'px';
+  SpineCoverDiv.style.height = SpineHeight + BorderGap * 2 + 'px';
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
   const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -318,19 +327,24 @@ function generateSpineCover() {
 }
 
 function generateFrontCover() {
+  generateFrontCoverFrame();
+  tesselateCover(FrontCoverSvg, FrontCoverInitialCopies);
+}
+
+function generateFrontCoverFrame() {
   // Create cover Svg
   FrontCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   FrontCoverSvg.setAttribute('width', CoverWidth);
   FrontCoverSvg.setAttribute('height', CoverHeight);
+  FrontCoverSvg.setAttribute('overflow', `hidden`);
   FrontCoverSvg.style.backgroundColor = BackgroundColor;
 
   // Create div which shows background color margin for cover SVG
-  const frontCoverDiv = document.getElementById('front-cover');
-  frontCoverDiv.innerHTML = '';
-  frontCoverDiv.appendChild(FrontCoverSvg);
-  frontCoverDiv.style.backgroundColor = BackgroundColor;
-  frontCoverDiv.style.width = CoverWidth + BorderGap * 2 + 'px';
-  frontCoverDiv.style.height = CoverHeight + BorderGap * 2 + 'px';
+  FrontCoverDiv.innerHTML = '';
+  FrontCoverDiv.appendChild(FrontCoverSvg);
+  FrontCoverDiv.style.backgroundColor = BackgroundColor;
+  FrontCoverDiv.style.width = CoverWidth + BorderGap * 2 + 'px';
+  FrontCoverDiv.style.height = CoverHeight + BorderGap * 2 + 'px';
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
   const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -358,23 +372,28 @@ function generateFrontCover() {
   const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
   FrontCoverSvg.appendChild(authorSvg);
 
-  tesselateCover(FrontCoverSvg, SVGText, FrontCoverInitialCopies);
+  return FrontCoverSvg;
 }
 
 function generateBackCover() {
+  generateBackCoverFrame();
+  tesselateCover(BackCoverSvg, BackCoverInitialCopies);
+}
+
+function generateBackCoverFrame() {
   // Create cover Svg
   BackCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   BackCoverSvg.setAttribute('width', CoverWidth);
   BackCoverSvg.setAttribute('height', CoverHeight);
+  BackCoverSvg.setAttribute('overflow', `hidden`);
   BackCoverSvg.style.backgroundColor = BackgroundColor;
 
   // Create div which shows background color margin for cover SVG
-  const backCoverDiv = document.getElementById('back-cover');
-  backCoverDiv.innerHTML = '';
-  backCoverDiv.appendChild(BackCoverSvg);
-  backCoverDiv.style.backgroundColor = BackgroundColor;
-  backCoverDiv.style.width = CoverWidth + BorderGap * 2 + 'px';
-  backCoverDiv.style.height = CoverHeight + BorderGap * 2 + 'px';
+  BackCoverDiv.innerHTML = '';
+  BackCoverDiv.appendChild(BackCoverSvg);
+  BackCoverDiv.style.backgroundColor = BackgroundColor;
+  BackCoverDiv.style.width = CoverWidth + BorderGap * 2 + 'px';
+  BackCoverDiv.style.height = CoverHeight + BorderGap * 2 + 'px';
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
   const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -390,19 +409,23 @@ function generateBackCover() {
   coverRectangle.setAttribute('stroke-width', rectangleStroke);
   BackCoverSvg.appendChild(coverRectangle);
 
-  tesselateCover(BackCoverSvg, SVGText, BackCoverInitialCopies);
+  return BackCoverSvg;
 }
 
-function tesselateCover(parentElem, svgText, middleColumnCopies) {
-  const parser = new DOMParser();
-  const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
-  const userSvgBBox = getBBoxAfterRender(parentElem, userSvg);
+function tesselateCover(parentElem, middleColumnCopies) {
+  const childrenToRemove = parentElem.querySelectorAll('.artSVG');
+  childrenToRemove.forEach((child) => {
+    child.remove();
+  });
+
+  const artSvgBBox = getBBoxAfterRender(parentElem, ArtSvg);
   const scaledSvgWidth = (ImageScale * CoverWidth) / NumColumns;
-  const scaledSvgHeight = scaledSvgWidth * (userSvgBBox.height / userSvgBBox.width);
-  userSvg.setAttribute('width', scaledSvgWidth);
-  userSvg.setAttribute('height', scaledSvgHeight);
-  userSvg.setAttribute('overflow', `visible`);
-  colorUserSvg(userSvg, ElementColor);
+  const scaledSvgHeight = scaledSvgWidth * (artSvgBBox.height / artSvgBBox.width);
+  ArtSvg.setAttribute('width', scaledSvgWidth);
+  ArtSvg.setAttribute('height', scaledSvgHeight);
+  ArtSvg.setAttribute('overflow', `visible`);
+  ArtSvg.setAttribute('class', 'artSVG');
+  colorArtSvg(ArtSvg, ElementColor);
 
   // Calculate X coordinates of each column
   let xTileCount = XOverhang ? NumColumns - 1 : NumColumns;
@@ -442,10 +465,12 @@ function tesselateCover(parentElem, svgText, middleColumnCopies) {
     for (let i = 0; i < halfRepeatsInColumn; i++) {
       transformState = !transformState;
       const centerMost = oddRepeats && i === 0;
-      const cloneUp = userSvg.cloneNode(true);
-      const cloneDown = userSvg.cloneNode(true);
-      parentElem.appendChild(cloneUp);
-      parentElem.appendChild(cloneDown);
+      const cloneUp = ArtSvg.cloneNode(true);
+      const cloneDown = ArtSvg.cloneNode(true);
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(cloneUp);
+      fragment.appendChild(cloneDown);
+      parentElem.appendChild(fragment);
 
       let yUp, yDown;
       if (oddRepeats) {
@@ -463,17 +488,17 @@ function tesselateCover(parentElem, svgText, middleColumnCopies) {
       cloneDown.setAttribute('x', columnXCoords[columnIndex]);
 
       if (transformState) {
-        Mirror && mirrorUserSvg(cloneUp);
-        Mirror ? rotateUserSvg(cloneUp, RotateAngle) : rotateUserSvg(cloneUp, -RotateAngle);
+        Mirror && mirrorArtSvg(cloneUp);
+        Mirror ? rotateArtSvg(cloneUp, RotateAngle) : rotateArtSvg(cloneUp, -RotateAngle);
       } else {
-        rotateUserSvg(cloneUp, RotateAngle + (Flip ? 180 : 0));
+        rotateArtSvg(cloneUp, RotateAngle + (Flip ? 180 : 0));
       }
       oddRepeats ? null : (transformState = !transformState);
       if (transformState && !(oddRepeats && i == 0)) {
-        Mirror && mirrorUserSvg(cloneDown);
-        Mirror ? rotateUserSvg(cloneDown, RotateAngle) : rotateUserSvg(cloneDown, -RotateAngle);
+        Mirror && mirrorArtSvg(cloneDown);
+        Mirror ? rotateArtSvg(cloneDown, RotateAngle) : rotateArtSvg(cloneDown, -RotateAngle);
       } else {
-        rotateUserSvg(cloneDown, RotateAngle + (Flip ? 180 : 0));
+        rotateArtSvg(cloneDown, RotateAngle + (Flip ? 180 : 0));
       }
       transformState = !transformState;
 

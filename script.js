@@ -48,12 +48,12 @@ document.getElementById('authorInput').addEventListener('change', (event) => {
   generateCovers();
 });
 
-document.getElementById('elementColorInput').addEventListener('change', (event) => {
+document.getElementById('elementColorInput').addEventListener('input', (event) => {
   ElementColor = event.target.value;
   generateCovers();
 });
 
-document.getElementById('backgroundColorInput').addEventListener('change', (event) => {
+document.getElementById('backgroundColorInput').addEventListener('input', (event) => {
   BackgroundColor = event.target.value;
   generateCovers();
 });

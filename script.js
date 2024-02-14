@@ -16,7 +16,7 @@ const NumColumns = 5;
 let Mirror = false;
 let YOverhang = false;
 let XOverhang = true;
-let RotateAngle = 180;
+let RotateAngle = 540;
 let TitleText = 'Tales of the Feline';
 let AuthorText = 'Felix Pawsley';
 let MaxPerColumn = 4;
@@ -457,14 +457,14 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
         Mirror && mirrorUserSvg(cloneUp);
         Mirror ? rotateUserSvg(cloneUp, RotateAngle) : rotateUserSvg(cloneUp, -RotateAngle);
       } else {
-        rotateUserSvg(cloneUp, RotateAngle % 180);
+        rotateUserSvg(cloneUp, RotateAngle % 540);
       }
       oddRepeats ? null : (transformState = !transformState);
       if (transformState && !(oddRepeats && i == 0)) {
         Mirror && mirrorUserSvg(cloneDown);
         Mirror ? rotateUserSvg(cloneDown, RotateAngle) : rotateUserSvg(cloneDown, -RotateAngle);
       } else {
-        rotateUserSvg(cloneDown, RotateAngle % 180);
+        rotateUserSvg(cloneDown, RotateAngle % 540);
       }
       transformState = !transformState;
 

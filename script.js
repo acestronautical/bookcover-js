@@ -14,6 +14,8 @@ let FontSize = 18;
 let ImageScale = 1.5;
 const NumColumns = 5;
 let Mirror = false;
+let YOverhang = false;
+let XOverhang = true;
 let RotateAngle = 180;
 let TitleText = 'Tales of the Feline';
 let AuthorText = 'Felix Pawsley';
@@ -30,7 +32,6 @@ let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
                   </g>
                 </g>
               </svg>`;
-
 
 // A bunch of repetitive event handlers
 window.addEventListener('DOMContentLoaded', () => {
@@ -59,6 +60,16 @@ document.getElementById('backgroundColorInput').addEventListener('change', (even
 
 document.getElementById('mirrorCheckbox').addEventListener('change', (event) => {
   Mirror = event.target.checked;
+  generateCovers();
+});
+
+document.getElementById('yOverhangCheckbox').addEventListener('change', (event) => {
+  YOverhang = event.target.checked;
+  generateCovers();
+});
+
+document.getElementById('xOverhangCheckbox').addEventListener('change', (event) => {
+  XOverhang = event.target.checked;
   generateCovers();
 });
 
@@ -96,8 +107,6 @@ document.getElementById('frontCoverInitialCopiesInput').addEventListener('input'
   FrontCoverInitialCopies = parseInt(event.target.value);
   generateCovers();
 });
-
-
 
 document.getElementById('fileInput').addEventListener('change', handleFileChange);
 function handleFileChange(event) {
@@ -244,31 +253,31 @@ function colorUserSvg(svgElem, color) {
   childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
 }
 
-function cropLeftUserSvg(svgElem) {
-  // set the viewbox x-min to half the viewbox width and then set the x to be the previous x plus half the svg width
-  const viewBox = svgElem.getAttribute('viewBox') || '0 0 700 700';
-  const viewBoxArray = viewBox.split(' ');
-  const viewBoxY = parseFloat(viewBoxArray[1]);
-  const viewBoxWidth = parseFloat(viewBoxArray[2]);
-  const viewBoxHeight = parseFloat(viewBoxArray[3]);
-  svgElem.setAttribute('viewBox', `${viewBoxWidth / 2} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
-  const x = parseFloat(svgElem.getAttribute('x'));
-  const width = parseFloat(svgElem.getAttribute('width'));
-  svgElem.setAttribute('x', x + width / 2);
-}
+// function cropLeftUserSvg(svgElem) {
+//   // set the viewbox x-min to half the viewbox width and then set the x to be the previous x plus half the svg width
+//   const viewBox = svgElem.getAttribute('viewBox') || '0 0 700 700';
+//   const viewBoxArray = viewBox.split(' ');
+//   const viewBoxY = parseFloat(viewBoxArray[1]);
+//   const viewBoxWidth = parseFloat(viewBoxArray[2]);
+//   const viewBoxHeight = parseFloat(viewBoxArray[3]);
+//   svgElem.setAttribute('viewBox', `${viewBoxWidth / 2} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
+//   const x = parseFloat(svgElem.getAttribute('x'));
+//   const width = parseFloat(svgElem.getAttribute('width'));
+//   svgElem.setAttribute('x', x + width / 2);
+// }
 
-function cropRightUserSvg(svgElem) {
-  // set the viewbox x-min to half the viewbox width and then set the x to be the previous x plus half the svg width
-  const viewBox = svgElem.getAttribute('viewBox') || '0 0 700 700';
-  const viewBoxArray = viewBox.split(' ');
-  const viewBoxY = parseFloat(viewBoxArray[1]);
-  const viewBoxWidth = parseFloat(viewBoxArray[2]);
-  const viewBoxHeight = parseFloat(viewBoxArray[3]);
-  svgElem.setAttribute('viewBox', `${-(viewBoxWidth / 2)} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
-  const x = parseFloat(svgElem.getAttribute('x'));
-  const width = parseFloat(svgElem.getAttribute('width'));
-  svgElem.setAttribute('x', x - width / 2);
-}
+// function cropRightUserSvg(svgElem) {
+//   // set the viewbox x-min to half the viewbox width and then set the x to be the previous x plus half the svg width
+//   const viewBox = svgElem.getAttribute('viewBox') || '0 0 700 700';
+//   const viewBoxArray = viewBox.split(' ');
+//   const viewBoxY = parseFloat(viewBoxArray[1]);
+//   const viewBoxWidth = parseFloat(viewBoxArray[2]);
+//   const viewBoxHeight = parseFloat(viewBoxArray[3]);
+//   svgElem.setAttribute('viewBox', `${-(viewBoxWidth / 2)} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
+//   const x = parseFloat(svgElem.getAttribute('x'));
+//   const width = parseFloat(svgElem.getAttribute('width'));
+//   svgElem.setAttribute('x', x - width / 2);
+// }
 
 function generateSpineCover() {
   // Create cover Svg
@@ -386,9 +395,13 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
   userSvg.setAttribute('height', scaledHeight);
   colorUserSvg(userSvg, ElementColor);
 
+  let xTileCount = XOverhang ? NumColumns - 1 : NumColumns;
+  let xOffset = XOverhang ? 0 : 0.5;
+  const xTileWidth = CoverWidth / xTileCount;
+  const halfWidth = scaledWidth / 2;
   let columnXCoords = [];
   for (let i = 0; i < NumColumns; i++) {
-    columnXCoords[i] = i * (CoverWidth / (NumColumns - 1));
+    columnXCoords[i] = (i + xOffset) * xTileWidth - halfWidth;
   }
 
   const middleColumnIndex = Math.floor(NumColumns / 2);
@@ -404,9 +417,10 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
       else copies = MaxPerColumn;
   }
 
-  const tileHeight = CoverHeight / MaxPerColumn;
+  let yTileCount = YOverhang ? MaxPerColumn - 1 : MaxPerColumn;
+
+  const yTileHeight = CoverHeight / yTileCount;
   const halfHeight = scaledHeight / 2;
-  const halfWidth = scaledWidth / 2;
 
   let transformState = true;
   for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
@@ -423,21 +437,20 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
       parentElem.appendChild(cloneUp);
       parentElem.appendChild(cloneDown);
 
-      let yUp, yDown, xBoth;
-      xBoth = columnXCoords[columnIndex] - halfWidth;
+      let yUp, yDown;
       if (oddRepeats) {
-        yUp = (MaxPerColumn / 2 - i) * tileHeight - halfHeight;
-        yDown = (MaxPerColumn / 2 + i) * tileHeight - halfHeight;
+        yUp = (yTileCount / 2 - i) * yTileHeight - halfHeight;
+        yDown = (yTileCount / 2 + i) * yTileHeight - halfHeight;
       } else {
-        const centerOffset = tileHeight / 2;
-        yUp = (MaxPerColumn / 2 - i) * tileHeight - centerOffset - halfHeight;
-        yDown = (MaxPerColumn / 2 + i + 1) * tileHeight - centerOffset - halfHeight;
+        const centerOffset = yTileHeight / 2;
+        yUp = (yTileCount / 2 - i) * yTileHeight - centerOffset - halfHeight;
+        yDown = (yTileCount / 2 + i + 1) * yTileHeight - centerOffset - halfHeight;
       }
 
       cloneUp.setAttribute('y', yUp);
-      cloneUp.setAttribute('x', xBoth);
+      cloneUp.setAttribute('x', columnXCoords[columnIndex]);
       cloneDown.setAttribute('y', yDown);
-      cloneDown.setAttribute('x', xBoth);
+      cloneDown.setAttribute('x', columnXCoords[columnIndex]);
 
       if (transformState) {
         Mirror && mirrorUserSvg(cloneUp);
@@ -454,14 +467,14 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
       }
       transformState = !transformState;
 
-      // Trim Svg's on border edges
-      if (columnIndex === 0) {
-        cropLeftUserSvg(cloneUp);
-        cropLeftUserSvg(cloneDown);
-      } else if (columnIndex === NumColumns - 1) {
-        cropRightUserSvg(cloneUp);
-        cropRightUserSvg(cloneDown);
-      }
+      // // Trim Svg's on border edges
+      // if (columnIndex === 0) {
+      //   cropLeftUserSvg(cloneUp);
+      //   cropLeftUserSvg(cloneDown);
+      // } else if (columnIndex === NumColumns - 1) {
+      //   cropRightUserSvg(cloneUp);
+      //   cropRightUserSvg(cloneDown);
+      // }
 
       parentElem.appendChild(cloneUp);
       parentElem.appendChild(cloneDown);

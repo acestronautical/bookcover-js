@@ -17,8 +17,8 @@ let Mirror = false;
 let YOverhang = false;
 let XOverhang = true;
 let RotateAngle = 540;
-let TitleText = 'Tales of the Feline';
-let AuthorText = 'Felix Pawsley';
+let TitleText = 'Cats Cradle\nChronicles';
+let AuthorText = 'Felix\nPawsley';
 let MaxPerColumn = 4;
 let IncreasePerColumn = 1;
 let BackCoverInitialCopies = 4;
@@ -197,19 +197,29 @@ function getBBoxAfterRender(parent, child) {
  * @returns {SVGTextElement} The created SVG text element.
  */
 function createCenteredSvgText(elementColor, fontSize, textString, textY, parentWidth) {
-  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  text.setAttribute('fill', elementColor);
-  text.setAttribute('font-size', fontSize);
-  text.setAttribute('font-family', 'Garamond');
-  text.textContent = textString;
-  const textBBox = getBBoxAfterRender(FrontCoverSvg, text);
-  const textWidth = textBBox.width;
-  // Calculate the x-coordinate to center the text horizontally
-  const textX = (parentWidth - textWidth) / 2;
-  // Set attributes for the text
-  text.setAttribute('x', textX);
-  text.setAttribute('y', textY);
-  return text;
+  const lines = textString.split('\n'); // Split textString by line breaks
+  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
+
+  lines.forEach((line, index) => {
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('fill', elementColor);
+    text.setAttribute('font-size', fontSize);
+    text.setAttribute('font-family', 'Garamond');
+    text.textContent = line;
+
+    const textBBox = getBBoxAfterRender(FrontCoverSvg, text);
+    const textWidth = textBBox.width;
+
+    const textX = (parentWidth - textWidth) / 2;
+    const textYPosition = textY + (index * (fontSize + padding));
+    text.setAttribute('x', textX);
+    text.setAttribute('y', textYPosition);
+
+    group.appendChild(text);
+  });
+
+  return group;
 }
 
 function rotateUserSvg(svgElem, angle) {

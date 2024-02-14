@@ -21,6 +21,10 @@ main {
     padding: 20px;
 }
 
+textarea {
+    resize: none;
+}
+
 .space-out {
     display: flex;
     justify-content: space-between;
@@ -84,6 +88,7 @@ main {
 
 .input-group input[type="text"],
 .input-group input[type="number"],
+.input-group textarea,
 .input-group input[type="color"] {
     width: calc(100% - 12px);
     padding: 2px;

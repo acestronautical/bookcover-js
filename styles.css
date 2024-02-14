@@ -8,25 +8,22 @@ body {
 header {
     background-color: #454244;
     color: #cad7dd;
-    padding: 20px;
+    padding: 14px;
     text-align: center;
 }
 
-footer {
-    background-color: #454244;
-    color: #a2adb3;
-    padding: 2px;
-    text-align: center;
+.darker {
+    color: #646c70;
+    line-height: 1.8;
 }
 
-footer a {
-    color: #333;
+header a {
+    color: #5b5a5a;
     text-decoration: none;
 }
 
-footer a:hover {
+header a:hover {
     color: #555;
-    /* Link color on hover */
 }
 
 h1 {

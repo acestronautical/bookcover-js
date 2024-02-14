@@ -35,6 +35,22 @@ let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
 
 // A bunch of repetitive event handlers
 window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('titleInput').value = TitleText;
+  document.getElementById('authorInput').value = AuthorText;
+  document.getElementById('elementColorInput').value = ElementColor;
+  document.getElementById('backgroundColorInput').value = BackgroundColor;
+  document.getElementById('mirrorCheckbox').checked = Mirror;
+  document.getElementById('yOverhangCheckbox').checked = YOverhang
+  document.getElementById('xOverhangCheckbox').checked = XOverhang;
+  document.getElementById('rotateInput').value = RotateAngle;
+  document.getElementById('fontSizeInput').value = FontSize;
+  document.getElementById('imageScale').value = ImageScale;
+  document.getElementById('maxPerColumnInput').value = MaxPerColumn;
+  document.getElementById('increasePerColumnInput').value = IncreasePerColumn;
+  document.getElementById('backCoverInitialCopiesInput').value = BackCoverInitialCopies;
+  document.getElementById('frontCoverInitialCopiesInput').value = FrontCoverInitialCopies;
+  document.getElementById('spineProportionsInput').value = SpineProportions;
+  document.getElementById('coverProportionsInput').value = CoverProportions;
   generateCovers();
 });
 

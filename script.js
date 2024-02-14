@@ -34,128 +34,108 @@ let SVGText = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
                 </g>
               </svg>`;
 
-// A bunch of repetitive event handlers
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('titleInput').value = TitleText;
-  document.getElementById('authorInput').value = AuthorText;
-  document.getElementById('elementColorInput').value = ElementColor;
-  document.getElementById('backgroundColorInput').value = BackgroundColor;
-  document.getElementById('mirrorCheckbox').checked = Mirror;
-  document.getElementById('flipCheckbox').checked = Flip;
-  document.getElementById('yOverhangCheckbox').checked = YOverhang;
-  document.getElementById('xOverhangCheckbox').checked = XOverhang;
-  document.getElementById('rotateInput').value = RotateAngle;
-  document.getElementById('fontSizeInput').value = FontSize;
-  document.getElementById('imageScale').value = ImageScale;
-  document.getElementById('maxPerColumnInput').value = MaxPerColumn;
-  document.getElementById('increasePerColumnInput').value = IncreasePerColumn;
-  document.getElementById('backCoverInitialCopiesInput').value = BackCoverInitialCopies;
-  document.getElementById('frontCoverInitialCopiesInput').value = FrontCoverInitialCopies;
-  document.getElementById('spineProportionsInput').value = SpineProportions;
-  document.getElementById('coverProportionsInput').value = CoverProportions;
-  generateCovers();
-});
-
-document.getElementById('titleInput').addEventListener('change', (event) => {
-  TitleText = event.target.value;
-  generateCovers();
-});
-
-document.getElementById('authorInput').addEventListener('change', (event) => {
-  AuthorText = event.target.value;
-  generateCovers();
-});
-
-document.getElementById('elementColorInput').addEventListener('input', (event) => {
-  ElementColor = event.target.value;
-  generateCovers();
-});
-
-document.getElementById('backgroundColorInput').addEventListener('input', (event) => {
-  BackgroundColor = event.target.value;
-  generateCovers();
-});
-
-document.getElementById('mirrorCheckbox').addEventListener('change', (event) => {
-  Mirror = event.target.checked;
-  generateCovers();
-});
-
-document.getElementById('flipCheckbox').addEventListener('change', (event) => {
-  Flip = event.target.checked;
-  generateCovers();
-});
-
-document.getElementById('yOverhangCheckbox').addEventListener('change', (event) => {
-  YOverhang = event.target.checked;
-  generateCovers();
-});
-
-document.getElementById('xOverhangCheckbox').addEventListener('change', (event) => {
-  XOverhang = event.target.checked;
-  generateCovers();
-});
-
-document.getElementById('rotateInput').addEventListener('input', (event) => {
-  RotateAngle = parseInt(event.target.value);
-  generateCovers();
-});
-
-document.getElementById('fontSizeInput').addEventListener('input', (event) => {
-  FontSize = parseInt(event.target.value);
-  generateCovers();
-});
-
-document.getElementById('imageScale').addEventListener('input', (event) => {
-  ImageScale = parseFloat(event.target.value);
-  generateCovers();
-});
-
-document.getElementById('maxPerColumnInput').addEventListener('input', (event) => {
-  MaxPerColumn = parseInt(event.target.value);
-  generateCovers();
-});
-
-document.getElementById('increasePerColumnInput').addEventListener('input', (event) => {
-  IncreasePerColumn = parseInt(event.target.value);
-  generateCovers();
-});
-
-document.getElementById('backCoverInitialCopiesInput').addEventListener('input', (event) => {
-  BackCoverInitialCopies = parseInt(event.target.value);
-  generateCovers();
-});
-
-document.getElementById('frontCoverInitialCopiesInput').addEventListener('input', (event) => {
-  FrontCoverInitialCopies = parseInt(event.target.value);
-  generateCovers();
-});
-
-document.getElementById('spineProportionsInput').addEventListener('input', (event) => {
-  SpineProportions = parseFloat(event.target.value);
-  SpineWidth = SpineHeight / SpineProportions;
-  generateCovers();
-});
-
-document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
-function handleCoverProportionsChange(event) {
-  CoverProportions = parseFloat(event.target.value);
-  CoverHeight = CoverWidth * CoverProportions;
-  SpineHeight = CoverHeight;
-  generateCovers();
-}
-
-document.getElementById('fileInput').addEventListener('change', handleFileChange);
-function handleFileChange(event) {
-  // Load user uploaded SVG to tile
-  const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = function () {
-    SVGText = reader.result;
+document.addEventListener('DOMContentLoaded', function () {
+  function initialize() {
+    document.getElementById('titleInput').value = TitleText;
+    document.getElementById('authorInput').value = AuthorText;
+    document.getElementById('elementColorInput').value = ElementColor;
+    document.getElementById('backgroundColorInput').value = BackgroundColor;
+    document.getElementById('mirrorCheckbox').checked = Mirror;
+    document.getElementById('flipCheckbox').checked = Flip;
+    document.getElementById('yOverhangCheckbox').checked = YOverhang;
+    document.getElementById('xOverhangCheckbox').checked = XOverhang;
+    document.getElementById('rotateInput').value = RotateAngle;
+    document.getElementById('fontSizeInput').value = FontSize;
+    document.getElementById('imageScale').value = ImageScale;
+    document.getElementById('maxPerColumnInput').value = MaxPerColumn;
+    document.getElementById('increasePerColumnInput').value = IncreasePerColumn;
+    document.getElementById('backCoverInitialCopiesInput').value = BackCoverInitialCopies;
+    document.getElementById('frontCoverInitialCopiesInput').value = FrontCoverInitialCopies;
+    document.getElementById('spineProportionsInput').value = SpineProportions;
+    document.getElementById('coverProportionsInput').value = CoverProportions;
     generateCovers();
-  };
-  reader.readAsText(file);
-}
+  }
+  initialize();
+
+  document.getElementById('settings').addEventListener('change', function (event) {
+    const target = event.target;
+    if (target.matches('#titleInput')) {
+      TitleText = target.value;
+    } else if (target.matches('#authorInput')) {
+      AuthorText = target.value;
+    } else if (target.matches('#rotateInput')) {
+      RotateAngle = parseInt(target.value);
+    } else if (target.matches('#imageScale')) {
+      ImageScale = parseFloat(target.value);
+    } else if (target.matches('#coverProportionsInput')) {
+      CoverProportions = parseFloat(target.value);
+      CoverHeight = CoverWidth * CoverProportions;
+      SpineHeight = CoverHeight;
+    } else if (target.matches('#spineProportionsInput')) {
+      SpineProportions = parseFloat(target.value);
+      SpineWidth = SpineHeight / SpineProportions;
+    } else if (target.matches('#fontSizeInput')) {
+      FontSize = parseInt(target.value);
+    } else if (target.matches('#maxPerColumnInput')) {
+      MaxPerColumn = parseInt(target.value);
+    } else if (target.matches('#increasePerColumnInput')) {
+      IncreasePerColumn = parseInt(target.value);
+    } else if (target.matches('#backCoverInitialCopiesInput')) {
+      BackCoverInitialCopies = parseInt(target.value);
+    } else if (target.matches('#frontCoverInitialCopiesInput')) {
+      FrontCoverInitialCopies = parseInt(target.value);
+    }
+    generateCovers();
+  });
+
+  document.getElementById('settings').addEventListener('input', function (event) {
+    const target = event.target;
+    if (target.matches('#elementColorInput')) {
+      ElementColor = target.value;
+    } else if (target.matches('#backgroundColorInput')) {
+      BackgroundColor = target.value;
+    } else if (target.matches('#fileInput')) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function () {
+        SVGText = reader.result;
+      };
+      reader.readAsText(file);
+    }
+    generateCovers();
+  });
+
+  document.getElementById('settings').addEventListener('change', function (event) {
+    const target = event.target;
+    if (target.matches('#mirrorCheckbox')) {
+      Mirror = target.checked;
+    } else if (target.matches('#flipCheckbox')) {
+      Flip = target.checked;
+    } else if (target.matches('#yOverhangCheckbox')) {
+      YOverhang = target.checked;
+    } else if (target.matches('#xOverhangCheckbox')) {
+      XOverhang = target.checked;
+    }
+    generateCovers();
+  });
+
+  document.getElementById('save-cover').addEventListener('click', saveCovers);
+
+  document.getElementById('fileInput').addEventListener('change', function (event) {
+    // Load user uploaded SVG to tile
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function () {
+      SVGText = reader.result;
+      generateCovers();
+    };
+    reader.readAsText(file);
+  });
+
+  document.querySelector('main').addEventListener('dragover', function (event) {
+    event.preventDefault();
+  });
+});
 
 function generateCovers() {
   generateFrontCover();
@@ -163,13 +143,13 @@ function generateCovers() {
   generateSpineCover();
 }
 
-document.getElementById('save-cover').addEventListener('click', saveCovers);
 function saveCovers() {
-  covers = { 'front_cover.svg': FrontCoverSvg, 'back_cover.svg': BackCoverSvg, 'spine_cover.svg': SpineCoverSvg };
+  const covers = { 'front_cover.svg': FrontCoverSvg, 'back_cover.svg': BackCoverSvg, 'spine_cover.svg': SpineCoverSvg };
   for (const [key, value] of Object.entries(covers)) {
     saveSvg(key, value);
   }
 }
+
 function saveSvg(fileName, svgElem) {
   if (svgElem) {
     // Get the bounding box of the visible content

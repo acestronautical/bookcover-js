@@ -11,7 +11,7 @@ let SpineHeight = CoverHeight;
 let SpineWidth = SpineHeight / SpineProportions;
 const BorderGap = CoverWidth / 16;
 let FontSize = 18;
-let ImageScale = 1.5;
+let ImageScale = 1;
 const NumColumns = 5;
 let Mirror = false;
 let YOverhang = false;
@@ -108,6 +108,20 @@ document.getElementById('frontCoverInitialCopiesInput').addEventListener('input'
   generateCovers();
 });
 
+document.getElementById('spineProportionsInput').addEventListener('input', (event) => {
+  SpineProportions = parseFloat(event.target.value);
+  SpineWidth = SpineHeight / SpineProportions;
+  generateCovers();
+});
+
+document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
+function handleCoverProportionsChange(event) {
+  CoverProportions = parseFloat(event.target.value);
+  CoverHeight = CoverWidth * CoverProportions;
+  SpineHeight = CoverHeight;
+  generateCovers();
+}
+
 document.getElementById('fileInput').addEventListener('change', handleFileChange);
 function handleFileChange(event) {
   // Load user uploaded SVG to tile
@@ -118,14 +132,6 @@ function handleFileChange(event) {
     generateCovers();
   };
   reader.readAsText(file);
-}
-
-document.getElementById('coverProportionsInput').addEventListener('input', handleCoverProportionsChange);
-function handleCoverProportionsChange(event) {
-  CoverProportions = parseFloat(event.target.value);
-  CoverHeight = CoverWidth * CoverProportions;
-  SpineHeight = CoverHeight;
-  generateCovers();
 }
 
 function generateCovers() {

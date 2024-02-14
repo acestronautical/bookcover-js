@@ -214,7 +214,7 @@ function getBBoxAfterRender(parent, child) {
  * @param {number} parentWidth - The width of the parent container.
  * @returns {SVGTextElement} The created SVG text element.
  */
-function createCenteredSvgText(elementColor, fontSize, textString, textY, parentWidth) {
+function createCenteredSvgText(elementColor, fontSize, textString, textY, parentWidth, reposition) {
   const lines = textString.split('\n'); // Split textString by line breaks
   const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
@@ -240,10 +240,12 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   });
   const height = lineY - textY;
 
-  lineSvgArr.forEach((line, index) => {
-    y = parseFloat(line.getAttribute('y'));
-    line.setAttribute('y', y - height / 2);
-  });
+  if (reposition) {
+    lineSvgArr.forEach((line, index) => {
+      y = parseFloat(line.getAttribute('y'));
+      line.setAttribute('y', y - height / 2);
+    });
+  }
   return group;
 }
 
@@ -322,7 +324,7 @@ function generateSpineCover() {
   let text = TitleText.split(/[ \n]+/).join('\n');
   text += '\n\n';
   text += AuthorText.split(/[ \n]+/).join('\n');
-  const textSvg = createCenteredSvgText(ElementColor, SpineWidth / 5, text, textY, SpineWidth);
+  const textSvg = createCenteredSvgText(ElementColor, SpineWidth / 5, text, textY, SpineWidth, true);
   SpineCoverSvg.appendChild(textSvg);
 }
 
@@ -363,13 +365,13 @@ function generateFrontCoverFrame() {
   // Create centered title
   const titleY = BorderGap * 2;
   const titleString = TitleText;
-  const titleSvg = createCenteredSvgText(ElementColor, FontSize, titleString, titleY, CoverWidth);
+  const titleSvg = createCenteredSvgText(ElementColor, FontSize, titleString, titleY, CoverWidth, false);
   FrontCoverSvg.appendChild(titleSvg);
 
   // Create centered author
   const authorY = rectangleHeight - BorderGap * 2;
   const authorString = AuthorText;
-  const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
+  const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth, true);
   FrontCoverSvg.appendChild(authorSvg);
 
   return FrontCoverSvg;

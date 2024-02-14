@@ -421,6 +421,7 @@ function tesselateCover(parentElem, svgText, middleColumnCopies) {
   const scaledSvgHeight = scaledSvgWidth * (userSvgBBox.height / userSvgBBox.width);
   userSvg.setAttribute('width', scaledSvgWidth);
   userSvg.setAttribute('height', scaledSvgHeight);
+  userSvg.setAttribute('overflow', `visible`);
   colorUserSvg(userSvg, ElementColor);
 
   // Calculate X coordinates of each column

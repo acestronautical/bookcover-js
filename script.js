@@ -148,7 +148,7 @@ function saveSvg(fileName, svgElem) {
 
     // Create a new SVG element with the same viewBox as the visible content
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
+    svg.setAttribute('viewBox', `${bbox.x} ${bbox.y - 5} ${bbox.width + 10} ${bbox.height + 10}`);
 
     // Clone and svgElem only the visible elements to the new SVG
     Array.from(svgElem.childNodes).forEach((node) => {
@@ -200,9 +200,11 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   const lines = textString.split('\n'); // Split textString by line breaks
   const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
-
+  let lineSvgArr = [];
+  let lineY;
   lines.forEach((line, index) => {
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    lineSvgArr[index] = text;
     text.setAttribute('fill', elementColor);
     text.setAttribute('font-size', fontSize);
     text.setAttribute('font-family', 'Garamond');
@@ -211,14 +213,19 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
     const textBBox = getBBoxAfterRender(FrontCoverSvg, text);
     const textWidth = textBBox.width;
 
-    const textX = (parentWidth - textWidth) / 2;
-    const textYPosition = textY + (index * (fontSize + padding));
-    text.setAttribute('x', textX);
-    text.setAttribute('y', textYPosition);
+    const lineX = (parentWidth - textWidth) / 2;
+    lineY = textY + index * (fontSize + padding);
+    text.setAttribute('x', lineX);
+    text.setAttribute('y', lineY);
 
     group.appendChild(text);
   });
+  const height = lineY - textY;
 
+  lineSvgArr.forEach((line, index) => {
+    y = parseFloat(line.getAttribute('y'));
+    line.setAttribute('y', y - height / 2);
+  });
   return group;
 }
 
@@ -263,32 +270,6 @@ function colorUserSvg(svgElem, color) {
   childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
 }
 
-// function cropLeftUserSvg(svgElem) {
-//   // set the viewbox x-min to half the viewbox width and then set the x to be the previous x plus half the svg width
-//   const viewBox = svgElem.getAttribute('viewBox') || '0 0 700 700';
-//   const viewBoxArray = viewBox.split(' ');
-//   const viewBoxY = parseFloat(viewBoxArray[1]);
-//   const viewBoxWidth = parseFloat(viewBoxArray[2]);
-//   const viewBoxHeight = parseFloat(viewBoxArray[3]);
-//   svgElem.setAttribute('viewBox', `${viewBoxWidth / 2} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
-//   const x = parseFloat(svgElem.getAttribute('x'));
-//   const width = parseFloat(svgElem.getAttribute('width'));
-//   svgElem.setAttribute('x', x + width / 2);
-// }
-
-// function cropRightUserSvg(svgElem) {
-//   // set the viewbox x-min to half the viewbox width and then set the x to be the previous x plus half the svg width
-//   const viewBox = svgElem.getAttribute('viewBox') || '0 0 700 700';
-//   const viewBoxArray = viewBox.split(' ');
-//   const viewBoxY = parseFloat(viewBoxArray[1]);
-//   const viewBoxWidth = parseFloat(viewBoxArray[2]);
-//   const viewBoxHeight = parseFloat(viewBoxArray[3]);
-//   svgElem.setAttribute('viewBox', `${-(viewBoxWidth / 2)} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
-//   const x = parseFloat(svgElem.getAttribute('x'));
-//   const width = parseFloat(svgElem.getAttribute('width'));
-//   svgElem.setAttribute('x', x - width / 2);
-// }
-
 function generateSpineCover() {
   // Create cover Svg
   SpineCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -317,6 +298,14 @@ function generateSpineCover() {
   coverRectangle.setAttribute('stroke', ElementColor);
   coverRectangle.setAttribute('stroke-width', rectangleStroke);
   SpineCoverSvg.appendChild(coverRectangle);
+
+  // Create centered title and author
+  const textY = SpineHeight / 2;
+  let text = TitleText.split(/[ \n]+/).join('\n');
+  text += '\n\n';
+  text += AuthorText.split(/[ \n]+/).join('\n');
+  const textSvg = createCenteredSvgText(ElementColor, SpineWidth / 5, text, textY, SpineWidth);
+  SpineCoverSvg.appendChild(textSvg);
 }
 
 function generateFrontCover() {
@@ -360,7 +349,7 @@ function generateFrontCover() {
   const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth);
   FrontCoverSvg.appendChild(authorSvg);
 
-  tesselateUserSvg(FrontCoverSvg, SVGText, FrontCoverInitialCopies);
+  tesselateCover(FrontCoverSvg, SVGText, FrontCoverInitialCopies);
 }
 
 function generateBackCover() {
@@ -392,10 +381,10 @@ function generateBackCover() {
   coverRectangle.setAttribute('stroke-width', rectangleStroke);
   BackCoverSvg.appendChild(coverRectangle);
 
-  tesselateUserSvg(BackCoverSvg, SVGText, BackCoverInitialCopies);
+  tesselateCover(BackCoverSvg, SVGText, BackCoverInitialCopies);
 }
 
-function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
+function tesselateCover(parentElem, svgText, middleColumnCopies) {
   const parser = new DOMParser();
   const userSvg = parser.parseFromString(svgText, 'image/svg+xml').documentElement;
   const userSvgBBox = getBBoxAfterRender(parentElem, userSvg);
@@ -477,15 +466,6 @@ function tesselateUserSvg(parentElem, svgText, middleColumnCopies) {
         rotateUserSvg(cloneDown, RotateAngle % 540);
       }
       transformState = !transformState;
-
-      // // Trim Svg's on border edges
-      // if (columnIndex === 0) {
-      //   cropLeftUserSvg(cloneUp);
-      //   cropLeftUserSvg(cloneDown);
-      // } else if (columnIndex === NumColumns - 1) {
-      //   cropRightUserSvg(cloneUp);
-      //   cropRightUserSvg(cloneDown);
-      // }
 
       parentElem.appendChild(cloneUp);
       parentElem.appendChild(cloneDown);

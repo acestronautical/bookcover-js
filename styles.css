@@ -90,7 +90,7 @@ textarea {
 .input-group input[type="number"],
 .input-group textarea,
 .input-group input[type="color"] {
-    width: calc(100% - 12px);
+    width: calc(100% - 10px);
     padding: 2px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -119,6 +119,7 @@ button:hover {
     justify-content: center;
     align-items: center;
     border-radius: 3px;
+    transform-origin: 0 0;
 }
 
 #output svg {

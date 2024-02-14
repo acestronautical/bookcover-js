@@ -220,12 +220,14 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
   let lineSvgArr = [];
   let lineY;
+  const fontFamilies =
+    "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
   lines.forEach((line, index) => {
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     lineSvgArr[index] = text;
     text.setAttribute('fill', elementColor);
     text.setAttribute('font-size', fontSize);
-    text.setAttribute('font-family', 'Garamond');
+    text.setAttribute('font-family', fontFamilies);
     text.textContent = line;
 
     const textBBox = getBBoxAfterRender(FrontCoverSvg, text);

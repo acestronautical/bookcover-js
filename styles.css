@@ -12,6 +12,23 @@ header {
     text-align: center;
 }
 
+footer {
+    background-color: #454244;
+    color: #a2adb3;
+    padding: 2px;
+    text-align: center;
+}
+
+footer a {
+    color: #333;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #555;
+    /* Link color on hover */
+}
+
 h1 {
     margin: 0;
     font-size: 24px;

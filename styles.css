@@ -19,6 +19,7 @@ h1 {
 
 main {
     padding: 20px;
+    align-items: center;
 }
 
 textarea {
@@ -28,13 +29,13 @@ textarea {
 .space-out {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .space-even {
     display: flex;
     justify-content: space-evenly;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .p-12 {

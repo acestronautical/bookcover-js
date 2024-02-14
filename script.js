@@ -170,7 +170,7 @@ function saveSvg(fileName, svgElem) {
 
     // Create a new SVG element with the same viewBox as the visible content
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', `${bbox.x} ${bbox.y - 5} ${bbox.width + 10} ${bbox.height + 10}`);
+    svg.setAttribute('viewBox', `${bbox.x - 5} ${bbox.y - 5} ${bbox.width + 10} ${bbox.height + 10}`);
 
     // Clone and svgElem only the visible elements to the new SVG
     Array.from(svgElem.childNodes).forEach((node) => {

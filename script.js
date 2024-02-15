@@ -421,6 +421,75 @@ function everyOtherOtherDiagonal(x, y) {
   return (x + y) % 4 === 1 || (x + y) % 4 === 2;
 }
 
+function createPlacementGrid(middleColumnCopies, increasePerColumn, numColumns, artWidth, artHeight) {
+  // Calculate columns and row counts and middle indexs
+  const middleColumnIndex = Math.floor(numColumns / 2);
+  let max = middleColumnCopies + increasePerColumn * middleColumnIndex;
+  if (max > MaxPerColumn) max = MaxPerColumn;
+  const maxColumnCopyCount = Math.max(max, middleColumnCopies);
+  const numRows = maxColumnCopyCount * 2 - 1;
+  const middleRowIndex = Math.floor(numRows / 2);
+
+  // Calculate X coordinates of each column
+  const xTileCount = XOverhang ? numColumns - 1 : numColumns;
+  const xOffset = XOverhang ? 0 : 0.5;
+  const xTileWidth = CoverWidth / xTileCount;
+  const halfArtWidth = artWidth / 2;
+
+  // Calculate Y units
+  const yTileCount = YOverhang ? numRows - 1 : numRows;
+  const yOffset = YOverhang ? 0 : 0.5;
+  const yTileHeight = CoverHeight / yTileCount;
+  const halfArtHeight = artHeight / 2;
+
+  let placementGrid = {};
+  placementGrid.grid = [];
+  let copies = middleColumnCopies;
+  // Iterate through columns starting in the middle and working outwards
+  for (let i = 0; i <= middleColumnIndex; i++) {
+    let rightIndex = middleColumnIndex + i;
+    let leftIndex = middleColumnIndex - i;
+    placementGrid.grid[rightIndex] = [];
+    placementGrid.grid[leftIndex] = [];
+    // If odd we start in the middle, if even on either side of middle
+    let jStart = copies % 2 == 0 ? 1 : 0;
+    // iterate over rows in both columns starting from middle and working outwards
+    for (let j = jStart; j < copies; j += 2) {
+      let upIndex = middleRowIndex + j;
+      let downIndex = middleRowIndex - j;
+      placementGrid.grid[rightIndex][upIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(rightIndex, upIndex),
+        x: (rightIndex + xOffset) * xTileWidth - halfArtWidth,
+        y: (upIndex + yOffset) * yTileHeight - halfArtHeight,
+      };
+      placementGrid.grid[leftIndex][upIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(leftIndex, upIndex),
+        x: (leftIndex + xOffset) * xTileWidth - halfArtWidth,
+        y: (upIndex + yOffset) * yTileHeight - halfArtHeight,
+      };
+      placementGrid.grid[rightIndex][downIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(rightIndex, downIndex),
+        x: (rightIndex + xOffset) * xTileWidth - halfArtWidth,
+        y: (downIndex + yOffset) * yTileHeight - halfArtHeight,
+      };
+      placementGrid.grid[leftIndex][downIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(leftIndex, downIndex),
+        x: (leftIndex + xOffset) * xTileWidth - halfArtWidth,
+        y: (downIndex + yOffset) * yTileHeight - halfArtHeight,
+      };
+    }
+    copies = copies + increasePerColumn;
+    if (copies > MaxPerColumn)
+      if (copies - increasePerColumn == MaxPerColumn) copies = MaxPerColumn - 1;
+      else copies = MaxPerColumn;
+  }
+
+  placementGrid.rows = numRows;
+  placementGrid.cols = numColumns;
+
+  return placementGrid;
+}
+
 function tesselateCover(parentElem, middleColumnCopies) {
   const childrenToRemove = parentElem.querySelectorAll('.artSVG');
   childrenToRemove.forEach((child) => {
@@ -428,83 +497,24 @@ function tesselateCover(parentElem, middleColumnCopies) {
   });
 
   const artSvgBBox = getBBoxAfterRender(parentElem, ArtSvg);
-  const scaledSvgWidth = (ImageScale * CoverWidth) / NumColumns;
-  const scaledSvgHeight = scaledSvgWidth * (artSvgBBox.height / artSvgBBox.width);
-  ArtSvg.setAttribute('width', scaledSvgWidth);
-  ArtSvg.setAttribute('height', scaledSvgHeight);
+  const artWidth = (ImageScale * CoverWidth) / NumColumns;
+  const artHeight = artWidth * (artSvgBBox.height / artSvgBBox.width);
+  ArtSvg.setAttribute('width', artWidth);
+  ArtSvg.setAttribute('height', artHeight);
   ArtSvg.setAttribute('overflow', `visible`);
   ArtSvg.setAttribute('class', 'artSVG');
   colorArtSvg(ArtSvg, ElementColor);
 
-  // Calculate columns and row counts and middle indexs
-  const middleColumnIndex = Math.floor(NumColumns / 2);
-  let max = middleColumnCopies + IncreasePerColumn * middleColumnIndex;
-  if (max > MaxPerColumn) max = MaxPerColumn;
-  const maxColumnCopyCount = Math.max(max, middleColumnCopies);
-  const numRows = maxColumnCopyCount * 2 - 1;
-  const middleRowIndex = Math.floor(numRows / 2);
+  const placementGrid = createPlacementGrid(middleColumnCopies, IncreasePerColumn, NumColumns, artWidth, artHeight);
 
-  // Calculate X coordinates of each column
-  const xTileCount = XOverhang ? NumColumns - 1 : NumColumns;
-  const xOffset = XOverhang ? 0 : 0.5;
-  const xTileWidth = CoverWidth / xTileCount;
-  const halfSvgWidth = scaledSvgWidth / 2;
-
-  // Calculate Y units
-  const yTileCount = YOverhang ? numRows - 1 : numRows;
-  const yOffset = YOverhang ? 0 : 0.5;
-  const yTileHeight = CoverHeight / yTileCount;
-  const halfSvgHeight = scaledSvgHeight / 2;
-
-  let placementGrid = [];
-  let copies = middleColumnCopies;
-  // Iterate through columns starting in the middle and working outwards
-  for (let i = 0; i <= middleColumnIndex; i++) {
-    let rightIndex = middleColumnIndex + i;
-    let leftIndex = middleColumnIndex - i;
-    placementGrid[rightIndex] = [];
-    placementGrid[leftIndex] = [];
-    // If odd we start in the middle, if even on either side of middle
-    let jStart = copies % 2 == 0 ? 1 : 0;
-    // iterate over rows in both columns starting from middle and working outwards
-    for (let j = jStart; j < copies; j += 2) {
-      let upIndex = middleRowIndex + j;
-      let downIndex = middleRowIndex - j;
-      placementGrid[rightIndex][upIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(rightIndex, upIndex),
-        x: (rightIndex + xOffset) * xTileWidth - halfSvgWidth,
-        y: (upIndex + yOffset) * yTileHeight - halfSvgHeight,
-      };
-      placementGrid[leftIndex][upIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(leftIndex, upIndex),
-        x: (leftIndex + xOffset) * xTileWidth - halfSvgWidth,
-        y: (upIndex + yOffset) * yTileHeight - halfSvgHeight,
-      };
-      placementGrid[rightIndex][downIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(rightIndex, downIndex),
-        x: (rightIndex + xOffset) * xTileWidth - halfSvgWidth,
-        y: (downIndex + yOffset) * yTileHeight - halfSvgHeight,
-      };
-      placementGrid[leftIndex][downIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(leftIndex, downIndex),
-        x: (leftIndex + xOffset) * xTileWidth - halfSvgWidth,
-        y: (downIndex + yOffset) * yTileHeight - halfSvgHeight,
-      };
-    }
-    copies = copies + IncreasePerColumn;
-    if (copies > MaxPerColumn)
-      if (copies - IncreasePerColumn == MaxPerColumn) copies = MaxPerColumn - 1;
-      else copies = MaxPerColumn;
-  }
-
-  for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
-    for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
-      const placement = placementGrid[columnIndex][rowIndex];
+  for (let columnIndex = 0; columnIndex < placementGrid.cols; columnIndex++) {
+    for (let rowIndex = 0; rowIndex < placementGrid.rows; rowIndex++) {
+      const placement = placementGrid.grid[columnIndex][rowIndex];
       if (!placement) continue;
       const clone = ArtSvg.cloneNode(true);
-      parentElem.appendChild(clone);
       clone.setAttribute('y', placement.y);
       clone.setAttribute('x', placement.x);
+      parentElem.appendChild(clone);
       if (placement.evenDiagonal) {
         Mirror && mirrorArtSvg(clone);
         rotateArtSvg(clone, Flip ? RotateAngle + 180 : RotateAngle);

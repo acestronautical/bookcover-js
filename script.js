@@ -328,6 +328,40 @@ function generateSpineCover() {
   text += AuthorText.split(/[ \n]+/).join('\n');
   const textSvg = createCenteredSvgText(ElementColor, SpineWidth / 5, text, textY, SpineWidth, true);
   SpineCoverSvg.appendChild(textSvg);
+
+  // Add a couple graphics
+  const artSvgBBox = getBBoxAfterRender(SpineCoverSvg, ArtSvg);
+  const artWidth = SpineWidth - 10;
+  const artHeight = artWidth * (artSvgBBox.height / artSvgBBox.width);
+  const halfArtHeight = artHeight / 2;
+  const halfArtWidth = artWidth / 2;
+  const yTileCount = 12;
+  const yTileHeight = SpineHeight / yTileCount;
+  const xCenter = SpineWidth / 2 - halfArtWidth;
+  ArtSvg.setAttribute('width', artWidth);
+  ArtSvg.setAttribute('height', artHeight);
+  ArtSvg.setAttribute('class', 'artSVG');
+  colorArtSvg(ArtSvg, ElementColor);
+  // Add art to top spine
+  let clone = ArtSvg.cloneNode(true);
+  clone.setAttribute('y', yTileHeight * 1 - halfArtHeight);
+  clone.setAttribute('x', xCenter);
+  SpineCoverSvg.appendChild(clone);
+  clone = ArtSvg.cloneNode(true);
+  clone.setAttribute('y', yTileHeight * 3 - halfArtHeight);
+  clone.setAttribute('x', xCenter);
+  SpineCoverSvg.appendChild(clone);
+  mirrorArtSvg(clone)
+  // Add art to bottom spine
+  clone = ArtSvg.cloneNode(true);
+  clone.setAttribute('y', yTileHeight * (yTileCount - 3) - halfArtHeight);
+  clone.setAttribute('x', xCenter);
+  SpineCoverSvg.appendChild(clone);
+  clone = ArtSvg.cloneNode(true);
+  clone.setAttribute('y', yTileHeight * (yTileCount - 1) - halfArtHeight);
+  clone.setAttribute('x', xCenter);
+  SpineCoverSvg.appendChild(clone);
+  mirrorArtSvg(clone)
 }
 
 function generateFrontCover() {

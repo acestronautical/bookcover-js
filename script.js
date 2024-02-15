@@ -1,62 +1,90 @@
-let catSvg = `<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns1="http://sozi.baierouge.fr" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" id="svg3228" xml:space="preserve" viewBox="0 0 700 700">
+let catSvg = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="preserve" viewBox="0 0 700 700">
                 <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
                   <g id="g3246" transform="matrix(.88815 0 0 .88815 456.78 214.39)" >
                     <path id="path3248" d="m0 0c-4.942 32.123-20.005 60.481-24.658 69.321-4.652 8.84-10.7 26.519-9.002 51.363 1.699 24.843-9.608 96.585-67.298 142.64-57.69 46.059-111 60.386-118.17 65.134-7.773 5.143-39.08 19.54-46.471 22.983-7.391 3.444-37.273 7.258-50.677 8.968s-27.537-3.105-32.96-3.148c-5.423-0.042-35.984 9.347-40.636 9.347s-1.861-4.652-1.396-7.444c0.466-2.791 10.277-21.046 10.277-21.046s-10.742 0.11-11.207-2.216 12.769-12.274 12.769-12.274-6.256-20.293-6.581-24.874c-0.326-4.582 5.908-20.077 6.839-24.264 0.93-4.187 0-13.958 0-13.958l4.622-4.716s7.939-5.519 9.8-6.449c1.861-0.931 8.132 0.126 8.132 0.126 4.875-1.734 20.713 6.853 29.088 11.97 8.374 5.118 20.005 6.513 23.361 6.539 3.355 0.024 6.414-10.727 6.274-14.241-0.141-3.516 2.932-16.491 3.862-20.678 0.931-4.187-4.332-12.528-4.332-12.528-4.798 2.359-11.486 4.619-15.673 6.015-4.188 1.396-17.214 10.7-20.936 11.631s-6.979 1.396-13.585 3.216c-6.606 1.821-28.287 6.554-32.942 5.95-4.654-0.603-16.746-7.306-18.451-14.149-1.704-6.845 7.753-13.627 11.475-15.023 3.722-1.395 15.353 1.396 19.447 0.973 4.095-0.423 6.71-3.791 6.71-3.791 14.526-0.491 21.298-9.278 29.672-16.722s47.92-29.31 53.503-30.241 20.933 2.981 20.933 2.981 4.655-18.799 6.516-29.964c1.861-11.166-6.048-47.456-6.978-54.434-0.931-6.979-1.163-15.818-2.908-18.145-1.423-1.898-2.908-1.512-10.628-2.678-9.245-1.396-19.409-15.013-19.031-21.049 0.465-7.444 8.536-9.667 12.137-9.667h12.753c5.583 0 21.401 2.223 21.401 2.223l25.124-2.223h151.72c15.146 0 30.171-30.879 32.748-54.071 2.791-25.123-14.669-90.658-25.589-113.99-10.235-21.866-32.824-46.467-54.433-51.176-36.289-7.909-60.947 15.818-79.092 12.562-16.51-2.964-13.027-21.401-5.583-28.846 6.869-6.869 66.112-27.327 105.14-14.887 42.337 13.492 67.63 62.931 81.418 102.82 13.047 37.712 19.095 75.861 13.512 112.15m-198.83 69.434c-8.839-3.256-16.283-8.374-21.866-6.979-5.583 1.396-7.909-2.791-12.562-1.395 0 0 4.653 13.957 9.297 21.925 4.643 7.969 10.918 33.922 10.918 33.922 1.606-9.753 10.957-25.141 17.935-34.446 6.979-9.305 5.118-9.771-3.722-13.027"/>
                   </g>
                 </g>
               </svg>`;
-
-let FrontCoverSvg;
-let BackCoverSvg;
-let SpineCoverSvg;
-let ElementColor = '#292a5a';
-let BackgroundColor = '#aeb2b1';
-let CoverProportions = 1.5;
-let CoverWidth = 360;
-let CoverHeight = CoverWidth * CoverProportions;
-let SpineProportions = 8;
-let SpineHeight = CoverHeight;
-let SpineWidth = SpineHeight / SpineProportions;
-const BorderGap = CoverWidth / 16;
-let FontSize = 18;
-let ImageScale = 1;
-const NumColumns = 5;
-let Mirror = false;
-let Flip = false;
-let YOverhang = false;
-let XOverhang = true;
-let RotateAngle = 0;
-let TitleText = 'Cats Cradle\nChronicles';
-let AuthorText = 'Felix\nPawsley';
-let MaxPerColumn = 4;
-let IncreasePerColumn = 1;
-let BackCoverInitialCopies = 4;
-let FrontCoverInitialCopies = 2;
 const Parser = new DOMParser();
-let ArtSvg = Parser.parseFromString(catSvg, 'image/svg+xml').documentElement;
-const FrontCoverDiv = document.getElementById('front-cover');
-const BackCoverDiv = document.getElementById('back-cover');
-const SpineCoverDiv = document.getElementById('spine-cover');
+const CatSvg = Parser.parseFromString(catSvg, 'image/svg+xml').documentElement;
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+const DefaultCoverWidth = 360;
+const DefaultCoverProportions = 1.5;
+const DefaultSpineProportions = 8;
+const DefaultCoverHeight = DefaultCoverWidth * DefaultCoverProportions;
+
+const DefaultCover = {
+  // front, back, and spine shared properties
+  backgroundColor: '#aeb2b1',
+  elementColor: '#292a5a',
+  width: DefaultCoverWidth,
+  borderGap: DefaultCoverWidth / 16,
+  height: DefaultCoverWidth * DefaultCoverProportions,
+  proportions: DefaultCoverProportions,
+  // tesselation settings and art svg image
+  pattern: {
+    flip: false,
+    imageScale: 1,
+    increasePerColumn: 1,
+    maxPerColumn: 4,
+    mirror: true,
+    numColumns: 5,
+    rotateAngle: 0,
+    svg: CatSvg,
+    xOverhang: true,
+    yOverhang: false,
+  },
+  // front cover specific properties
+  front: {
+    author: 'Felix\nPawsley',
+    fontSize: 18,
+    htmlElem: document.getElementById('front-cover'),
+    initialCopies: 2,
+    svgElem: null,
+    title: 'Cats Cradle\nChronicles',
+  },
+  // back cover specific properties
+  back: {
+    htmlElem: document.getElementById('back-cover'),
+    initialCopies: 4,
+    svgElem: null,
+  },
+  // spine cover specific properties
+  spine: {
+    htmlElem: document.getElementById('spine-cover'),
+    proportions: DefaultSpineProportions,
+    svgElem: null,
+    // note that Cover.width is for front and back, spine has it's own width
+    width: DefaultCoverHeight / DefaultSpineProportions,
+  },
+};
+
+let Cover = { ...DefaultCover };
 
 document.addEventListener('DOMContentLoaded', function () {
   function initialize() {
-    document.getElementById('titleInput').value = TitleText;
-    document.getElementById('authorInput').value = AuthorText;
-    document.getElementById('elementColorInput').value = ElementColor;
-    document.getElementById('backgroundColorInput').value = BackgroundColor;
-    document.getElementById('mirrorCheckbox').checked = Mirror;
-    document.getElementById('flipCheckbox').checked = Flip;
-    document.getElementById('yOverhangCheckbox').checked = YOverhang;
-    document.getElementById('xOverhangCheckbox').checked = XOverhang;
-    document.getElementById('rotateInput').value = RotateAngle;
-    document.getElementById('fontSizeInput').value = FontSize;
-    document.getElementById('imageScale').value = ImageScale;
-    document.getElementById('maxPerColumnInput').value = MaxPerColumn;
-    document.getElementById('increasePerColumnInput').value = IncreasePerColumn;
-    document.getElementById('backCoverInitialCopiesInput').value = BackCoverInitialCopies;
-    document.getElementById('frontCoverInitialCopiesInput').value = FrontCoverInitialCopies;
-    document.getElementById('spineProportionsInput').value = SpineProportions;
-    document.getElementById('coverProportionsInput').value = CoverProportions;
+    document.getElementById('backgroundColorInput').value = Cover.backgroundColor;
+    document.getElementById('coverProportionsInput').value = Cover.proportions;
+    document.getElementById('elementColorInput').value = Cover.elementColor;
+    // front cover
+    document.getElementById('authorInput').value = Cover.front.author;
+    document.getElementById('fontSizeInput').value = Cover.front.fontSize;
+    document.getElementById('frontCoverInitialCopiesInput').value = Cover.front.initialCopies;
+    document.getElementById('titleInput').value = Cover.front.title;
+    // back cover
+    document.getElementById('backCoverInitialCopiesInput').value = Cover.back.initialCopies;
+    // spine cover
+    document.getElementById('spineProportionsInput').value = Cover.spine.proportions;
+    // pattern
+    document.getElementById('flipCheckbox').checked = Cover.pattern.flip;
+    document.getElementById('imageScale').value = Cover.pattern.imageScale;
+    document.getElementById('increasePerColumnInput').value = Cover.pattern.increasePerColumn;
+    document.getElementById('maxPerColumnInput').value = Cover.pattern.maxPerColumn;
+    document.getElementById('mirrorCheckbox').checked = Cover.pattern.mirror;
+    document.getElementById('rotateInput').value = Cover.pattern.rotateAngle;
+    document.getElementById('xOverhangCheckbox').checked = Cover.pattern.xOverhang;
+    document.getElementById('yOverhangCheckbox').checked = Cover.pattern.yOverhang;
     generateCovers();
   }
   initialize();
@@ -64,35 +92,34 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('settings').addEventListener('change', function (event) {
     const target = event.target;
     if (target.matches('#titleInput')) {
-      TitleText = target.value;
-      generateFrontCoverFrame();
+      Cover.front.title = target.value;
+      generateCoverFrame(Cover, 'front');
     } else if (target.matches('#authorInput')) {
-      AuthorText = target.value;
-      generateFrontCoverFrame();
+      Cover.front.author = target.value;
+      generateCoverFrame(Cover, 'front');
     } else if (target.matches('#rotateInput')) {
-      RotateAngle = parseInt(target.value);
+      Cover.pattern.rotateAngle = parseInt(target.value);
     } else if (target.matches('#imageScale')) {
-      ImageScale = parseFloat(target.value);
+      Cover.pattern.imageScale = parseFloat(target.value);
     } else if (target.matches('#coverProportionsInput')) {
-      CoverProportions = parseFloat(target.value);
-      CoverHeight = CoverWidth * CoverProportions;
-      SpineHeight = CoverHeight;
-      generateBackCoverFrame();
-      generateFrontCoverFrame();
+      Cover.proportions = parseFloat(target.value);
+      Cover.height = Cover.width * Cover.proportions;
+      generateCoverFrame(Cover, 'back');
+      generateCoverFrame(Cover, 'front');
     } else if (target.matches('#spineProportionsInput')) {
-      SpineProportions = parseFloat(target.value);
-      SpineWidth = SpineHeight / SpineProportions;
+      Cover.spine.proportions = parseFloat(target.value);
+      Cover.spine.width = Cover.height / Cover.spine.proportions;
     } else if (target.matches('#fontSizeInput')) {
-      FontSize = parseInt(target.value);
-      generateFrontCoverFrame();
+      Cover.front.fontSize = parseInt(target.value);
+      generateCoverFrame(Cover, 'front');
     } else if (target.matches('#maxPerColumnInput')) {
-      MaxPerColumn = parseInt(target.value);
+      Cover.pattern.maxPerColumn = parseInt(target.value);
     } else if (target.matches('#increasePerColumnInput')) {
-      IncreasePerColumn = parseInt(target.value);
+      Cover.pattern.increasePerColumn = parseInt(target.value);
     } else if (target.matches('#backCoverInitialCopiesInput')) {
-      BackCoverInitialCopies = parseInt(target.value);
+      Cover.back.initialCopies = parseInt(target.value);
     } else if (target.matches('#frontCoverInitialCopiesInput')) {
-      FrontCoverInitialCopies = parseInt(target.value);
+      Cover.front.initialCopies = parseInt(target.value);
     }
     updateCovers();
   });
@@ -100,9 +127,9 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('settings').addEventListener('input', function (event) {
     const target = event.target;
     if (target.matches('#elementColorInput')) {
-      ElementColor = target.value;
+      Cover.elementColor = target.value;
     } else if (target.matches('#backgroundColorInput')) {
-      BackgroundColor = target.value;
+      Cover.backgroundColor = target.value;
     }
     generateCovers();
   });
@@ -110,13 +137,13 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('settings').addEventListener('change', function (event) {
     const target = event.target;
     if (target.matches('#mirrorCheckbox')) {
-      Mirror = target.checked;
+      Cover.pattern.mirror = target.checked;
     } else if (target.matches('#flipCheckbox')) {
-      Flip = target.checked;
+      Cover.pattern.flip = target.checked;
     } else if (target.matches('#yOverhangCheckbox')) {
-      YOverhang = target.checked;
+      Cover.pattern.yOverhang = target.checked;
     } else if (target.matches('#xOverhangCheckbox')) {
-      XOverhang = target.checked;
+      Cover.pattern.xOverhang = target.checked;
     }
     updateCovers();
   });
@@ -129,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const reader = new FileReader();
     reader.onload = function () {
       svgText = reader.result;
-      ArtSvg = Parser.parseFromString(svgText, 'image/svg+xml').documentElement;
+      Cover.pattern.svg = Parser.parseFromString(svgText, 'image/svg+xml').documentElement;
       generateCovers();
     };
     reader.readAsText(file);
@@ -147,13 +174,27 @@ function generateCovers() {
 }
 
 function updateCovers() {
-  tesselateCover(BackCoverSvg, BackCoverInitialCopies);
-  tesselateCover(FrontCoverSvg, FrontCoverInitialCopies);
+  tesselateCover('back');
+  tesselateCover('front');
   generateSpineCover();
 }
 
+function generateFrontCover() {
+  generateCoverFrame('front');
+  tesselateCover('front');
+}
+
+function generateBackCover() {
+  generateCoverFrame('back');
+  tesselateCover('back');
+}
+
 function saveCovers() {
-  const covers = { 'front_cover.svg': FrontCoverSvg, 'back_cover.svg': BackCoverSvg, 'spine_cover.svg': SpineCoverSvg };
+  const covers = {
+    'front_cover.svg': Cover.front.svgElem,
+    'back_cover.svg': Cover.back.svgElem,
+    'spine_cover.svg': Cover.spine.svgElem,
+  };
   for (const [key, value] of Object.entries(covers)) {
     saveSvg(key, value);
   }
@@ -165,7 +206,7 @@ function saveSvg(fileName, svgElem) {
     const bbox = svgElem.getBBox();
 
     // Create a new SVG element with the same viewBox as the visible content
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const svg = document.createElementNS(SVG_NS, 'svg');
     svg.setAttribute('viewBox', `${bbox.x - 5} ${bbox.y - 5} ${bbox.width + 10} ${bbox.height + 10}`);
 
     // Clone and svgElem only the visible elements to the new SVG
@@ -216,21 +257,21 @@ function getBBoxAfterRender(parent, child) {
  */
 function createCenteredSvgText(elementColor, fontSize, textString, textY, parentWidth, reposition) {
   const lines = textString.split('\n'); // Split textString by line breaks
-  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  const group = document.createElementNS(SVG_NS, 'g');
   const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
   let lineSvgArr = [];
   let lineY;
   const fontFamilies =
     "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
   lines.forEach((line, index) => {
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    const text = document.createElementNS(SVG_NS, 'text');
     lineSvgArr[index] = text;
     text.setAttribute('fill', elementColor);
     text.setAttribute('font-size', fontSize);
     text.setAttribute('font-family', fontFamilies);
     text.textContent = line;
 
-    const textBBox = getBBoxAfterRender(FrontCoverSvg, text);
+    const textBBox = getBBoxAfterRender(Cover.front.svgElem, text);
     const textWidth = textBBox.width;
 
     const lineX = (parentWidth - textWidth) / 2;
@@ -294,160 +335,150 @@ function colorArtSvg(svgElem, color) {
 
 function generateSpineCover() {
   // Create cover Svg
-  SpineCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  SpineCoverSvg.setAttribute('width', SpineWidth);
-  SpineCoverSvg.setAttribute('height', SpineHeight);
-  SpineCoverSvg.setAttribute('overflow', `hidden`);
-  SpineCoverSvg.style.backgroundColor = BackgroundColor;
+  Cover.spine.svgElem = document.createElementNS(SVG_NS, 'svg');
+  Cover.spine.svgElem.setAttribute('width', Cover.spine.width);
+  Cover.spine.svgElem.setAttribute('height', Cover.height);
+  Cover.spine.svgElem.setAttribute('overflow', `hidden`);
+  Cover.spine.svgElem.style.backgroundColor = Cover.backgroundColor;
 
   // Create div which shows background color margin for cover SVG
-  SpineCoverDiv.innerHTML = '';
-  SpineCoverDiv.appendChild(SpineCoverSvg);
-  SpineCoverDiv.style.backgroundColor = BackgroundColor;
-  SpineCoverDiv.style.width = SpineWidth + BorderGap / 2 + 'px';
-  SpineCoverDiv.style.height = SpineHeight + BorderGap * 2 + 'px';
+  Cover.spine.htmlElem.innerHTML = '';
+  Cover.spine.htmlElem.appendChild(Cover.spine.svgElem);
+  Cover.spine.htmlElem.style.backgroundColor = Cover.backgroundColor;
+  Cover.spine.htmlElem.style.width = Cover.spine.width + Cover.borderGap / 2 + 'px';
+  Cover.spine.htmlElem.style.height = Cover.height + Cover.borderGap * 2 + 'px';
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
-  const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  const coverRectangle = document.createElementNS(SVG_NS, 'rect');
   const rectangleStroke = 2;
-  const rectangleWidth = SpineWidth - rectangleStroke;
-  const rectangleHeight = SpineHeight - rectangleStroke;
+  const rectangleWidth = Cover.spine.width - rectangleStroke;
+  const rectangleHeight = Cover.height - rectangleStroke;
   coverRectangle.setAttribute('x', rectangleStroke / 2); // X-coordinate of the top-left corner
   coverRectangle.setAttribute('y', rectangleStroke / 2); // Y-coordinate of the top-left corner
   coverRectangle.setAttribute('width', rectangleWidth); // Width of the rectangle
   coverRectangle.setAttribute('height', rectangleHeight); // Height of the rectangle
   coverRectangle.setAttribute('fill', 'none');
-  coverRectangle.setAttribute('stroke', ElementColor);
+  coverRectangle.setAttribute('stroke', Cover.elementColor);
   coverRectangle.setAttribute('stroke-width', rectangleStroke);
-  SpineCoverSvg.appendChild(coverRectangle);
+  Cover.spine.svgElem.appendChild(coverRectangle);
 
   // Create centered title and author
-  const textY = SpineHeight / 2;
-  let text = TitleText.split(/[ \n]+/).join('\n');
+  const textY = Cover.height / 2;
+  let text = Cover.front.title.split(/[ \n]+/).join('\n');
   text += '\n\n';
-  text += AuthorText.split(/[ \n]+/).join('\n');
-  const textSvg = createCenteredSvgText(ElementColor, SpineWidth / 5, text, textY, SpineWidth, true);
-  SpineCoverSvg.appendChild(textSvg);
+  text += Cover.front.author.split(/[ \n]+/).join('\n');
+  const textSvg = createCenteredSvgText(
+    Cover.elementColor,
+    Cover.spine.width / 5,
+    text,
+    textY,
+    Cover.spine.width,
+    true
+  );
+  Cover.spine.svgElem.appendChild(textSvg);
 
   // Add a couple graphics
-  const artSvgBBox = getBBoxAfterRender(SpineCoverSvg, ArtSvg);
-  const artWidth = SpineWidth - 10;
+  const artSvgBBox = getBBoxAfterRender(Cover.spine.svgElem, Cover.pattern.svg);
+  const artWidth = Cover.spine.width - 10;
   const artHeight = artWidth * (artSvgBBox.height / artSvgBBox.width);
   const halfArtHeight = artHeight / 2;
   const halfArtWidth = artWidth / 2;
   const yTileCount = 12;
-  const yTileHeight = SpineHeight / yTileCount;
-  const xCenter = SpineWidth / 2 - halfArtWidth;
-  ArtSvg.setAttribute('width', artWidth);
-  ArtSvg.setAttribute('height', artHeight);
-  ArtSvg.setAttribute('class', 'artSVG');
-  colorArtSvg(ArtSvg, ElementColor);
+  const yTileHeight = Cover.height / yTileCount;
+  const xCenter = Cover.spine.width / 2 - halfArtWidth;
+  Cover.pattern.svg.setAttribute('width', artWidth);
+  Cover.pattern.svg.setAttribute('height', artHeight);
+  Cover.pattern.svg.setAttribute('class', 'artSVG');
+  colorArtSvg(Cover.pattern.svg, Cover.elementColor);
   // Add art to top spine
-  let clone = ArtSvg.cloneNode(true);
+  let clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * 1 - halfArtHeight);
   clone.setAttribute('x', xCenter);
-  SpineCoverSvg.appendChild(clone);
-  clone = ArtSvg.cloneNode(true);
+  Cover.spine.svgElem.appendChild(clone);
+  clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * 3 - halfArtHeight);
   clone.setAttribute('x', xCenter);
-  SpineCoverSvg.appendChild(clone);
-  mirrorArtSvg(clone)
+  Cover.spine.svgElem.appendChild(clone);
+  mirrorArtSvg(clone);
   // Add art to bottom spine
-  clone = ArtSvg.cloneNode(true);
+  clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * (yTileCount - 3) - halfArtHeight);
   clone.setAttribute('x', xCenter);
-  SpineCoverSvg.appendChild(clone);
-  clone = ArtSvg.cloneNode(true);
+  Cover.spine.svgElem.appendChild(clone);
+  clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * (yTileCount - 1) - halfArtHeight);
   clone.setAttribute('x', xCenter);
-  SpineCoverSvg.appendChild(clone);
-  mirrorArtSvg(clone)
+  Cover.spine.svgElem.appendChild(clone);
+  mirrorArtSvg(clone);
 }
 
-function generateFrontCover() {
-  generateFrontCoverFrame();
-  tesselateCover(FrontCoverSvg, FrontCoverInitialCopies);
+function createSVGElement(tag, attributes) {
+  const element = document.createElementNS(SVG_NS, tag);
+  for (let attr in attributes) {
+    element.setAttribute(attr, attributes[attr]);
+  }
+  return element;
 }
 
-function generateFrontCoverFrame() {
+function generateCoverFrame(side) {
   // Create cover Svg
-  FrontCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  FrontCoverSvg.setAttribute('width', CoverWidth);
-  FrontCoverSvg.setAttribute('height', CoverHeight);
-  FrontCoverSvg.setAttribute('overflow', `hidden`);
-  FrontCoverSvg.style.backgroundColor = BackgroundColor;
+  Cover[side].svgElem = createSVGElement('svg', {
+    width: Cover.width,
+    height: Cover.height,
+    overflow: 'hidden',
+    style: `background-color: ${Cover.backgroundColor};`,
+  });
 
   // Create div which shows background color margin for cover SVG
-  FrontCoverDiv.innerHTML = '';
-  FrontCoverDiv.appendChild(FrontCoverSvg);
-  FrontCoverDiv.style.backgroundColor = BackgroundColor;
-  FrontCoverDiv.style.width = CoverWidth + BorderGap * 2 + 'px';
-  FrontCoverDiv.style.height = CoverHeight + BorderGap * 2 + 'px';
+  Cover[side].htmlElem.innerHTML = '';
+  Cover[side].htmlElem.appendChild(Cover[side].svgElem);
+  Cover[side].htmlElem.style.backgroundColor = Cover.backgroundColor;
+  Cover[side].htmlElem.style.width = Cover.width + Cover.borderGap * 2 + 'px';
+  Cover[side].htmlElem.style.height = Cover.height + Cover.borderGap * 2 + 'px';
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
-  const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
   const rectangleStroke = 2;
-  const rectangleWidth = CoverWidth - rectangleStroke;
-  const rectangleHeight = CoverHeight - rectangleStroke;
-  coverRectangle.setAttribute('x', rectangleStroke / 2); // X-coordinate of the top-left corner
-  coverRectangle.setAttribute('y', rectangleStroke / 2); // Y-coordinate of the top-left corner
-  coverRectangle.setAttribute('width', rectangleWidth); // Width of the rectangle
-  coverRectangle.setAttribute('height', rectangleHeight); // Height of the rectangle
-  coverRectangle.setAttribute('fill', 'none');
-  coverRectangle.setAttribute('stroke', ElementColor);
-  coverRectangle.setAttribute('stroke-width', rectangleStroke);
-  FrontCoverSvg.appendChild(coverRectangle);
+  const rectangleWidth = Cover.width - rectangleStroke;
+  const rectangleHeight = Cover.height - rectangleStroke;
+  const coverRectangle = createSVGElement('rect', {
+    x: rectangleStroke / 2,
+    y: rectangleStroke / 2,
+    width: rectangleWidth,
+    height: rectangleHeight,
+    fill: 'none',
+    stroke: Cover.elementColor,
+    'stroke-width': rectangleStroke,
+  });
+  Cover[side].svgElem.appendChild(coverRectangle);
 
-  // Create centered title
-  const titleY = BorderGap * 2;
-  const titleString = TitleText;
-  const titleSvg = createCenteredSvgText(ElementColor, FontSize, titleString, titleY, CoverWidth, false);
-  FrontCoverSvg.appendChild(titleSvg);
+  if (side == 'front') {
+    // Create centered title
+    const titleY = Cover.borderGap * 2;
+    const titleString = Cover[side].title;
+    const titleSvg = createCenteredSvgText(
+      Cover.elementColor,
+      Cover[side].fontSize,
+      titleString,
+      titleY,
+      Cover.width,
+      false
+    );
+    Cover[side].svgElem.appendChild(titleSvg);
 
-  // Create centered author
-  const authorY = rectangleHeight - BorderGap * 2;
-  const authorString = AuthorText;
-  const authorSvg = createCenteredSvgText(ElementColor, FontSize, authorString, authorY, CoverWidth, true);
-  FrontCoverSvg.appendChild(authorSvg);
-
-  return FrontCoverSvg;
-}
-
-function generateBackCover() {
-  generateBackCoverFrame();
-  tesselateCover(BackCoverSvg, BackCoverInitialCopies);
-}
-
-function generateBackCoverFrame() {
-  // Create cover Svg
-  BackCoverSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  BackCoverSvg.setAttribute('width', CoverWidth);
-  BackCoverSvg.setAttribute('height', CoverHeight);
-  BackCoverSvg.setAttribute('overflow', `hidden`);
-  BackCoverSvg.style.backgroundColor = BackgroundColor;
-
-  // Create div which shows background color margin for cover SVG
-  BackCoverDiv.innerHTML = '';
-  BackCoverDiv.appendChild(BackCoverSvg);
-  BackCoverDiv.style.backgroundColor = BackgroundColor;
-  BackCoverDiv.style.width = CoverWidth + BorderGap * 2 + 'px';
-  BackCoverDiv.style.height = CoverHeight + BorderGap * 2 + 'px';
-
-  // Create rectangle border slightly inset from cover SVG as per penguin style
-  const coverRectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  const rectangleStroke = 2;
-  const rectangleWidth = CoverWidth - rectangleStroke;
-  const rectangleHeight = CoverHeight - rectangleStroke;
-  coverRectangle.setAttribute('x', rectangleStroke / 2); // X-coordinate of the top-left corner
-  coverRectangle.setAttribute('y', rectangleStroke / 2); // Y-coordinate of the top-left corner
-  coverRectangle.setAttribute('width', rectangleWidth); // Width of the rectangle
-  coverRectangle.setAttribute('height', rectangleHeight); // Height of the rectangle
-  coverRectangle.setAttribute('fill', 'none');
-  coverRectangle.setAttribute('stroke', ElementColor);
-  coverRectangle.setAttribute('stroke-width', rectangleStroke);
-  BackCoverSvg.appendChild(coverRectangle);
-
-  return BackCoverSvg;
+    // Create centered author
+    const authorY = rectangleHeight - Cover.borderGap * 2;
+    const authorString = Cover[side].author;
+    const authorSvg = createCenteredSvgText(
+      Cover.elementColor,
+      Cover[side].fontSize,
+      authorString,
+      authorY,
+      Cover.width,
+      true
+    );
+    Cover[side].svgElem.appendChild(authorSvg);
+  }
+  return Cover[side].svgElem;
 }
 
 // Used to calculate how to apply transformation along diagonal
@@ -459,21 +490,21 @@ function createPlacementGrid(middleColumnCopies, increasePerColumn, numColumns, 
   // Calculate columns and row counts and middle indexs
   const middleColumnIndex = Math.floor(numColumns / 2);
   let max = middleColumnCopies + increasePerColumn * middleColumnIndex;
-  if (max > MaxPerColumn) max = MaxPerColumn;
+  if (max > Cover.pattern.maxPerColumn) max = Cover.pattern.maxPerColumn;
   const maxColumnCopyCount = Math.max(max, middleColumnCopies);
   const numRows = maxColumnCopyCount * 2 - 1;
   const middleRowIndex = Math.floor(numRows / 2);
 
   // Calculate X coordinates of each column
-  const xTileCount = XOverhang ? numColumns - 1 : numColumns;
-  const xOffset = XOverhang ? 0 : 0.5;
-  const xTileWidth = CoverWidth / xTileCount;
+  const xTileCount = Cover.pattern.xOverhang ? numColumns - 1 : numColumns;
+  const xOffset = Cover.pattern.xOverhang ? 0 : 0.5;
+  const xTileWidth = Cover.width / xTileCount;
   const halfArtWidth = artWidth / 2;
 
   // Calculate Y units
-  const yTileCount = YOverhang ? numRows - 1 : numRows;
-  const yOffset = YOverhang ? 0 : 0.5;
-  const yTileHeight = CoverHeight / yTileCount;
+  const yTileCount = Cover.pattern.yOverhang ? numRows - 1 : numRows;
+  const yOffset = Cover.pattern.yOverhang ? 0 : 0.5;
+  const yTileHeight = Cover.height / yTileCount;
   const halfArtHeight = artHeight / 2;
 
   let placementGrid = {};
@@ -513,9 +544,9 @@ function createPlacementGrid(middleColumnCopies, increasePerColumn, numColumns, 
       };
     }
     copies = copies + increasePerColumn;
-    if (copies > MaxPerColumn)
-      if (copies - increasePerColumn == MaxPerColumn) copies = MaxPerColumn - 1;
-      else copies = MaxPerColumn;
+    if (copies > Cover.pattern.maxPerColumn)
+      if (copies - increasePerColumn == Cover.pattern.maxPerColumn) copies = Cover.pattern.maxPerColumn - 1;
+      else copies = Cover.pattern.maxPerColumn;
   }
 
   placementGrid.rows = numRows;
@@ -524,38 +555,44 @@ function createPlacementGrid(middleColumnCopies, increasePerColumn, numColumns, 
   return placementGrid;
 }
 
-function tesselateCover(parentElem, middleColumnCopies) {
-  const childrenToRemove = parentElem.querySelectorAll('.artSVG');
+function tesselateCover(side) {
+  const childrenToRemove = Cover[side].svgElem.querySelectorAll('.artSVG');
   childrenToRemove.forEach((child) => {
     child.remove();
   });
 
-  const artSvgBBox = getBBoxAfterRender(parentElem, ArtSvg);
-  const artWidth = (ImageScale * CoverWidth) / NumColumns;
+  const artSvgBBox = getBBoxAfterRender(Cover[side].svgElem, Cover.pattern.svg);
+  const artWidth = (Cover.pattern.imageScale * Cover.width) / Cover.pattern.numColumns;
   const artHeight = artWidth * (artSvgBBox.height / artSvgBBox.width);
-  ArtSvg.setAttribute('width', artWidth);
-  ArtSvg.setAttribute('height', artHeight);
-  ArtSvg.setAttribute('overflow', `visible`);
-  ArtSvg.setAttribute('class', 'artSVG');
-  colorArtSvg(ArtSvg, ElementColor);
+  Cover.pattern.svg.setAttribute('width', artWidth);
+  Cover.pattern.svg.setAttribute('height', artHeight);
+  Cover.pattern.svg.setAttribute('overflow', `visible`);
+  Cover.pattern.svg.setAttribute('class', 'artSVG');
+  colorArtSvg(Cover.pattern.svg, Cover.elementColor);
 
-  const placementGrid = createPlacementGrid(middleColumnCopies, IncreasePerColumn, NumColumns, artWidth, artHeight);
+  const placementGrid = createPlacementGrid(
+    Cover[side].initialCopies,
+    Cover.pattern.increasePerColumn,
+    Cover.pattern.numColumns,
+    artWidth,
+    artHeight
+  );
 
   for (let columnIndex = 0; columnIndex < placementGrid.cols; columnIndex++) {
     for (let rowIndex = 0; rowIndex < placementGrid.rows; rowIndex++) {
       const placement = placementGrid.grid[columnIndex][rowIndex];
       if (!placement) continue;
-      const clone = ArtSvg.cloneNode(true);
+      const clone = Cover.pattern.svg.cloneNode(true);
       clone.setAttribute('y', placement.y);
       clone.setAttribute('x', placement.x);
-      parentElem.appendChild(clone);
+      Cover[side].svgElem.appendChild(clone);
       if (placement.evenDiagonal) {
-        Mirror && mirrorArtSvg(clone);
-        rotateArtSvg(clone, Flip ? RotateAngle + 180 : RotateAngle);
+        Cover.pattern.mirror && mirrorArtSvg(clone);
+        rotateArtSvg(clone, Cover.pattern.flip ? Cover.pattern.rotateAngle + 180 : Cover.pattern.rotateAngle);
       } else {
-        rotateArtSvg(clone, -RotateAngle);
+        rotateArtSvg(clone, -Cover.pattern.rotateAngle);
       }
-      parentElem.appendChild(clone);
+      Cover[side].svgElem.appendChild(clone);
     }
   }
 }

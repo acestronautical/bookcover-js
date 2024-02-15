@@ -416,6 +416,11 @@ function generateBackCoverFrame() {
   return BackCoverSvg;
 }
 
+// Used to calculate how to apply transformation along diagonal
+function everyOtherOtherDiagonal(x, y) {
+  return (x + y) % 4 === 1 || (x + y) % 4 === 2;
+}
+
 function tesselateCover(parentElem, middleColumnCopies) {
   const childrenToRemove = parentElem.querySelectorAll('.artSVG');
   childrenToRemove.forEach((child) => {
@@ -431,89 +436,82 @@ function tesselateCover(parentElem, middleColumnCopies) {
   ArtSvg.setAttribute('class', 'artSVG');
   colorArtSvg(ArtSvg, ElementColor);
 
+  // Calculate columns and row counts and middle indexs
+  const middleColumnIndex = Math.floor(NumColumns / 2);
+  let max = middleColumnCopies + IncreasePerColumn * middleColumnIndex;
+  if (max > MaxPerColumn) max = MaxPerColumn;
+  const maxColumnCopyCount = Math.max(max, middleColumnCopies);
+  const numRows = maxColumnCopyCount * 2 - 1;
+  const middleRowIndex = Math.floor(numRows / 2);
+
   // Calculate X coordinates of each column
-  let xTileCount = XOverhang ? NumColumns - 1 : NumColumns;
-  let xOffset = XOverhang ? 0 : 0.5;
+  const xTileCount = XOverhang ? NumColumns - 1 : NumColumns;
+  const xOffset = XOverhang ? 0 : 0.5;
   const xTileWidth = CoverWidth / xTileCount;
   const halfSvgWidth = scaledSvgWidth / 2;
-  let columnXCoords = [];
-  for (let i = 0; i < NumColumns; i++) {
-    columnXCoords[i] = (i + xOffset) * xTileWidth - halfSvgWidth;
-  }
 
-  // Populate number of copies per column
-  const middleColumnIndex = Math.floor(NumColumns / 2);
-  const columnCopyCounts = [];
+  // Calculate Y units
+  const yTileCount = YOverhang ? numRows - 1 : numRows;
+  const yOffset = YOverhang ? 0 : 0.5;
+  const yTileHeight = CoverHeight / yTileCount;
+  const halfSvgHeight = scaledSvgHeight / 2;
+
+  let placementGrid = [];
   let copies = middleColumnCopies;
+  // Iterate through columns starting in the middle and working outwards
   for (let i = 0; i <= middleColumnIndex; i++) {
-    columnCopyCounts[middleColumnIndex + i] = copies;
-    columnCopyCounts[middleColumnIndex - i] = copies;
+    let rightIndex = middleColumnIndex + i;
+    let leftIndex = middleColumnIndex - i;
+    placementGrid[rightIndex] = [];
+    placementGrid[leftIndex] = [];
+    // If odd we start in the middle, if even on either side of middle
+    let jStart = copies % 2 == 0 ? 1 : 0;
+    // iterate over rows in both columns starting from middle and working outwards
+    for (let j = jStart; j < copies; j += 2) {
+      let upIndex = middleRowIndex + j;
+      let downIndex = middleRowIndex - j;
+      placementGrid[rightIndex][upIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(rightIndex, upIndex),
+        x: (rightIndex + xOffset) * xTileWidth - halfSvgWidth,
+        y: (upIndex + yOffset) * yTileHeight - halfSvgHeight,
+      };
+      placementGrid[leftIndex][upIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(leftIndex, upIndex),
+        x: (leftIndex + xOffset) * xTileWidth - halfSvgWidth,
+        y: (upIndex + yOffset) * yTileHeight - halfSvgHeight,
+      };
+      placementGrid[rightIndex][downIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(rightIndex, downIndex),
+        x: (rightIndex + xOffset) * xTileWidth - halfSvgWidth,
+        y: (downIndex + yOffset) * yTileHeight - halfSvgHeight,
+      };
+      placementGrid[leftIndex][downIndex] = {
+        evenDiagonal: everyOtherOtherDiagonal(leftIndex, downIndex),
+        x: (leftIndex + xOffset) * xTileWidth - halfSvgWidth,
+        y: (downIndex + yOffset) * yTileHeight - halfSvgHeight,
+      };
+    }
     copies = copies + IncreasePerColumn;
     if (copies > MaxPerColumn)
       if (copies - IncreasePerColumn == MaxPerColumn) copies = MaxPerColumn - 1;
       else copies = MaxPerColumn;
   }
-  const maxCopies = Math.max(...columnCopyCounts);
 
-  let yTileCount = YOverhang ? maxCopies - 1 : maxCopies;
-  const yTileHeight = CoverHeight / yTileCount;
-  const halfSvgHeight = scaledSvgHeight / 2;
-
-  let transformState = true;
   for (let columnIndex = 0; columnIndex < NumColumns; columnIndex++) {
-    const repeatsInColumn = columnCopyCounts[columnIndex];
-    const oddRepeats = repeatsInColumn % 2 === 1;
-    const halfRepeatsInColumn = Math.ceil(repeatsInColumn / 2);
-    if (columnIndex == middleColumnIndex + 1) transformState = !transformState;
-    transformState = !transformState;
-    for (let i = 0; i < halfRepeatsInColumn; i++) {
-      transformState = !transformState;
-      const centerMost = oddRepeats && i === 0;
-      const cloneUp = ArtSvg.cloneNode(true);
-      const cloneDown = ArtSvg.cloneNode(true);
-      const fragment = document.createDocumentFragment();
-      fragment.appendChild(cloneUp);
-      fragment.appendChild(cloneDown);
-      parentElem.appendChild(fragment);
-
-      let yUp, yDown;
-      if (oddRepeats) {
-        yUp = (yTileCount / 2 - i) * yTileHeight - halfSvgHeight;
-        yDown = (yTileCount / 2 + i) * yTileHeight - halfSvgHeight;
+    for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+      const placement = placementGrid[columnIndex][rowIndex];
+      if (!placement) continue;
+      const clone = ArtSvg.cloneNode(true);
+      parentElem.appendChild(clone);
+      clone.setAttribute('y', placement.y);
+      clone.setAttribute('x', placement.x);
+      if (placement.evenDiagonal) {
+        Mirror && mirrorArtSvg(clone);
+        rotateArtSvg(clone, Flip ? RotateAngle + 180 : RotateAngle);
       } else {
-        const centerOffset = yTileHeight / 2;
-        yUp = (yTileCount / 2 - i) * yTileHeight - centerOffset - halfSvgHeight;
-        yDown = (yTileCount / 2 + i + 1) * yTileHeight - centerOffset - halfSvgHeight;
+        rotateArtSvg(clone, -RotateAngle);
       }
-
-      cloneUp.setAttribute('y', yUp);
-      cloneUp.setAttribute('x', columnXCoords[columnIndex]);
-      cloneDown.setAttribute('y', yDown);
-      cloneDown.setAttribute('x', columnXCoords[columnIndex]);
-
-      if (transformState) {
-        Mirror && mirrorArtSvg(cloneUp);
-        Mirror ? rotateArtSvg(cloneUp, RotateAngle) : rotateArtSvg(cloneUp, -RotateAngle);
-      } else {
-        rotateArtSvg(cloneUp, RotateAngle + (Flip ? 180 : 0));
-      }
-      oddRepeats ? null : (transformState = !transformState);
-      if (transformState && !(oddRepeats && i == 0)) {
-        Mirror && mirrorArtSvg(cloneDown);
-        Mirror ? rotateArtSvg(cloneDown, RotateAngle) : rotateArtSvg(cloneDown, -RotateAngle);
-      } else {
-        rotateArtSvg(cloneDown, RotateAngle + (Flip ? 180 : 0));
-      }
-      transformState = !transformState;
-
-      parentElem.appendChild(cloneUp);
-      parentElem.appendChild(cloneDown);
-
-      // Remove the cloneDown if it's the first iteration in an odd-repeats column
-      if (oddRepeats && i === 0) {
-        parentElem.removeChild(cloneDown);
-        transformState = !transformState;
-      }
+      parentElem.appendChild(clone);
     }
   }
 }

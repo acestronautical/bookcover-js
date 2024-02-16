@@ -33,6 +33,7 @@ const DefaultCover = {
     numColumns: 5,
     rotateAngle: 0,
     svg: CatSvg,
+    verticalLines: false,
     xOverhang: true,
     yOverhang: false,
   },
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('maxPerColumnInput').value = Cover.pattern.maxPerColumn;
     document.getElementById('mirrorCheckbox').checked = Cover.pattern.mirror;
     document.getElementById('rotateInput').value = Cover.pattern.rotateAngle;
+    document.getElementById('verticalLinesCheckbox').checked = Cover.pattern.verticalLines;
     document.getElementById('xOverhangCheckbox').checked = Cover.pattern.xOverhang;
     document.getElementById('yOverhangCheckbox').checked = Cover.pattern.yOverhang;
     generateCovers();
@@ -145,6 +147,8 @@ document.addEventListener('DOMContentLoaded', function () {
       Cover.pattern.yOverhang = target.checked;
     } else if (target.matches('#xOverhangCheckbox')) {
       Cover.pattern.xOverhang = target.checked;
+    } else if (target.matches('#verticalLinesCheckbox')) {
+      Cover.pattern.verticalLines = target.checked;
     }
     updateCovers();
   });
@@ -571,7 +575,7 @@ function createPlacementGrid(side) {
   return placementGrid;
 }
 
-// Calculate placements, append cloned svg arts, and apply transformations
+// Decorate the cover as per settings
 function tesselateCover(side) {
   const childrenToRemove = Cover[side].svgElem.querySelectorAll('.artSVG');
   childrenToRemove.forEach((child) => {
@@ -580,6 +584,7 @@ function tesselateCover(side) {
 
   const placementGrid = createPlacementGrid(side);
 
+  // tesselate art and apply transformations
   for (let columnIndex = 0; columnIndex < placementGrid.cols; columnIndex++) {
     for (let rowIndex = 0; rowIndex < placementGrid.rows; rowIndex++) {
       const placement = placementGrid.grid[columnIndex][rowIndex];
@@ -600,5 +605,37 @@ function tesselateCover(side) {
       rotateArtSvg(clone, rotateAngle);
       Cover[side].svgElem.appendChild(clone);
     }
+  }
+
+  // add vertical lines
+  if (Cover.pattern.verticalLines) {
+    const middleColumnIndex = Math.floor(placementGrid.cols / 2);
+    const xTileWidth = Cover.width / (placementGrid.cols - 1);
+
+    // Add vertical line to the left of the middle column
+    const lineXLeft = (middleColumnIndex - 1) * xTileWidth;
+    const lineLeft = createSVGElement('line', {
+      x1: lineXLeft,
+      y1: 0,
+      x2: lineXLeft,
+      y2: Cover.height,
+      stroke: Cover.elementColor,
+      'stroke-width': Cover.borderThickness / 1.5,
+      class: 'artSVG',
+    });
+    Cover[side].svgElem.appendChild(lineLeft);
+
+    // Add vertical line to the right of the middle column
+    const lineXRight = (middleColumnIndex + 1) * xTileWidth;
+    const lineRight = createSVGElement('line', {
+      x1: lineXRight,
+      y1: 0,
+      x2: lineXRight,
+      y2: Cover.height,
+      stroke: Cover.elementColor,
+      'stroke-width': Cover.borderThickness / 1.5,
+      class: 'artSVG',
+    });
+    Cover[side].svgElem.appendChild(lineRight);
   }
 }

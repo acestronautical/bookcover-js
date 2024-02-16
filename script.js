@@ -1,3 +1,4 @@
+// The default SVG
 let catSvg = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="preserve" viewBox="0 0 700 700" overflow="visible" class="artSVG">
                 <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
                   <g id="g3246" transform="matrix(.88815 0 0 .88815 456.78 214.39)" >
@@ -7,13 +8,14 @@ let catSvg = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="pr
               </svg>`;
 const Parser = new DOMParser();
 const CatSvg = Parser.parseFromString(catSvg, 'image/svg+xml').documentElement;
-const SVG_NS = 'http://www.w3.org/2000/svg';
 
+// These are used in DefaultCover for some calculations
 const DefaultCoverWidth = 360;
 const DefaultCoverProportions = 1.5;
 const DefaultSpineProportions = 8;
 const DefaultCoverHeight = DefaultCoverWidth * DefaultCoverProportions;
 
+// What you get on initial page load
 const DefaultCover = {
   // front, back, and spine shared properties
   backgroundColor: '#aeb2b1',
@@ -21,7 +23,7 @@ const DefaultCover = {
   width: DefaultCoverWidth,
   borderGap: DefaultCoverWidth / 18,
   borderThickness: 2.2,
-  height: DefaultCoverWidth * DefaultCoverProportions,
+  height: DefaultCoverHeight,
   proportions: DefaultCoverProportions,
   // tesselation settings and art svg image
   pattern: {
@@ -213,8 +215,9 @@ function saveSvg(fileName, svgElem) {
     const bbox = svgElem.getBBox();
 
     // Create a new SVG element with the same viewBox as the visible content
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('viewBox', `${bbox.x - 5} ${bbox.y - 5} ${bbox.width + 10} ${bbox.height + 10}`);
+    const svg = createSVGElement('svg', {
+      viewBox: `${bbox.x - 5} ${bbox.y - 5} ${bbox.width + 10} ${bbox.height + 10}`,
+    });
 
     // Clone and svgElem only the visible elements to the new SVG
     Array.from(svgElem.childNodes).forEach((node) => {
@@ -264,19 +267,20 @@ function getBBoxAfterRender(parent, child) {
  */
 function createCenteredSvgText(elementColor, fontSize, textString, textY, parentWidth, reposition) {
   const lines = textString.split('\n'); // Split textString by line breaks
-  const group = document.createElementNS(SVG_NS, 'g');
+  const group = createSVGElement('g', {});
   const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
   let lineSvgArr = [];
   let lineY;
   const fontFamilies =
     "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
   lines.forEach((line, index) => {
-    const text = document.createElementNS(SVG_NS, 'text');
-    lineSvgArr[index] = text;
-    text.setAttribute('fill', elementColor);
-    text.setAttribute('font-size', fontSize);
-    text.setAttribute('font-family', fontFamilies);
+    const text = createSVGElement('text', {
+      fill: elementColor,
+      'font-size': fontSize,
+      'font-family': fontFamilies,
+    });
     text.textContent = line;
+    lineSvgArr[index] = text;
 
     const textBBox = getBBoxAfterRender(Cover.front.svgElem, text);
     const textWidth = textBBox.width;
@@ -347,11 +351,12 @@ function colorArtSvg(svgElem, color) {
 
 function generateSpineCover() {
   // Create cover Svg
-  Cover.spine.svgElem = document.createElementNS(SVG_NS, 'svg');
-  Cover.spine.svgElem.setAttribute('width', Cover.spine.width);
-  Cover.spine.svgElem.setAttribute('height', Cover.height);
-  Cover.spine.svgElem.setAttribute('overflow', `hidden`);
-  Cover.spine.svgElem.style.backgroundColor = Cover.backgroundColor;
+  Cover.spine.svgElem = createSVGElement('svg', {
+    width: Cover.spine.width,
+    height: Cover.height,
+    overflow: 'hidden',
+    style: `background-color: ${Cover.backgroundColor};`,
+  });
 
   // Create div which shows background color margin for cover SVG
   Cover.spine.htmlElem.innerHTML = '';
@@ -424,7 +429,7 @@ function generateSpineCover() {
 }
 
 function createSVGElement(tag, attributes) {
-  const element = document.createElementNS(SVG_NS, tag);
+  const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (let attr in attributes) {
     element.setAttribute(attr, attributes[attr]);
   }

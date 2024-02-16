@@ -8,6 +8,8 @@ let catSvg = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="pr
               </svg>`;
 const Parser = new DOMParser();
 const CatSvg = Parser.parseFromString(catSvg, 'image/svg+xml').documentElement;
+const FontFamilies =
+  "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
 
 // These are used in DefaultCover for some calculations
 const DefaultCoverWidth = 360;
@@ -25,6 +27,8 @@ const DefaultCover = {
   borderThickness: 2.2,
   height: DefaultCoverHeight,
   proportions: DefaultCoverProportions,
+  author: 'Felix\nPawsley',
+  title: 'Cats Cradle\nChronicles',
   // tesselation settings and art svg image
   pattern: {
     flip: false,
@@ -41,12 +45,10 @@ const DefaultCover = {
   },
   // front cover specific properties
   front: {
-    author: 'Felix\nPawsley',
     fontSize: 18,
     htmlElem: document.getElementById('front-cover'),
     initialCopies: 2,
     svgElem: null,
-    title: 'Cats Cradle\nChronicles',
   },
   // back cover specific properties
   back: {
@@ -72,10 +74,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('coverProportionsInput').value = Cover.proportions;
     document.getElementById('elementColorInput').value = Cover.elementColor;
     // front cover
-    document.getElementById('authorInput').value = Cover.front.author;
+    document.getElementById('authorInput').value = Cover.author;
     document.getElementById('fontSizeInput').value = Cover.front.fontSize;
     document.getElementById('frontCoverInitialCopiesInput').value = Cover.front.initialCopies;
-    document.getElementById('titleInput').value = Cover.front.title;
+    document.getElementById('titleInput').value = Cover.title;
     // back cover
     document.getElementById('backCoverInitialCopiesInput').value = Cover.back.initialCopies;
     // spine cover
@@ -97,10 +99,10 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('settings').addEventListener('change', function (event) {
     const target = event.target;
     if (target.matches('#titleInput')) {
-      Cover.front.title = target.value;
+      Cover.title = target.value;
       generateCoverFrame('front');
     } else if (target.matches('#authorInput')) {
-      Cover.front.author = target.value;
+      Cover.author = target.value;
       generateCoverFrame('front');
     } else if (target.matches('#rotateInput')) {
       Cover.pattern.rotateAngle = parseInt(target.value);
@@ -271,13 +273,11 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
   let lineSvgArr = [];
   let lineY;
-  const fontFamilies =
-    "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
   lines.forEach((line, index) => {
     const text = createSVGElement('text', {
       fill: elementColor,
       'font-size': fontSize,
-      'font-family': fontFamilies,
+      'font-family': FontFamilies,
     });
     text.textContent = line;
     lineSvgArr[index] = text;
@@ -347,7 +347,7 @@ function colorArtSvg(svgElem, color) {
 }
 
 function generateSpineCover() {
-  // Create cover Svg
+  // Create spine cover parent Svg
   Cover.spine.svgElem = createSVGElement('svg', {
     width: Cover.spine.width,
     height: Cover.height,
@@ -375,30 +375,62 @@ function generateSpineCover() {
   });
   Cover.spine.svgElem.appendChild(borderRectangle);
 
-  // Create centered title and author
-  const textY = Cover.height / 2;
-  let text = Cover.front.title.split(/[ \n]+/).join('\n');
-  text += '\n\n';
-  text += Cover.front.author.split(/[ \n]+/).join('\n');
-  const textSvg = createCenteredSvgText(
-    Cover.elementColor,
-    Cover.spine.width / 5,
-    text,
-    textY,
-    Cover.spine.width,
-    true
-  );
-  Cover.spine.svgElem.appendChild(textSvg);
+  // Some placement calculations
+  const yTileCount = 12;
+  const yTileHeight = Cover.height / yTileCount;
+  const xCenter = Cover.spine.width / 2;
+  const yCenter = Cover.height / 2;
+  const thinSpine = Cover.spine.proportions > 12;
+
+  // If spin too slim just add rotated text and bail out
+  if (thinSpine) {
+    // If spine too small put the text sideways and no graphic
+    spineFontSize = Cover.spine.width / 3.5;
+    const titleSvg = createSVGElement('text', {
+      x: xCenter + spineFontSize / 2,
+      y: yCenter,
+      fill: Cover.elementColor,
+      'font-size': spineFontSize,
+      'font-family': FontFamilies,
+      'text-anchor': 'middle',
+      transform: `rotate(90 ${xCenter + spineFontSize / 2},${yCenter})`,
+    });
+    titleSvg.textContent = Cover.title;
+    Cover.spine.svgElem.appendChild(titleSvg);
+
+    const authorSvg = createSVGElement('text', {
+      x: xCenter - spineFontSize,
+      y: yCenter,
+      fill: Cover.elementColor,
+      'font-size': spineFontSize,
+      'font-family': FontFamilies,
+      'text-anchor': 'middle',
+      transform: `rotate(90 ${xCenter - spineFontSize},${yCenter})`,
+    });
+    authorSvg.textContent = Cover.author;
+    Cover.spine.svgElem.appendChild(authorSvg);
+  } else {
+    const textY = Cover.height / 2;
+    let text = Cover.title.split(/[ \n]+/).join('\n');
+    text += '\n\n';
+    text += Cover.author.split(/[ \n]+/).join('\n');
+    const textSvg = createCenteredSvgText(
+      Cover.elementColor,
+      Cover.spine.width / 5,
+      text,
+      textY,
+      Cover.spine.width,
+      true
+    );
+    Cover.spine.svgElem.appendChild(textSvg);
+  }
 
   // Add a couple graphics
   const artSvgBBox = getBBoxAfterRender(Cover.spine.svgElem, Cover.pattern.svg);
-  const artHeight = Cover.height / 9;
+  const artHeight = Cover.height / (thinSpine ? 12 : 9);
   const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
   const halfArtHeight = artHeight / 2;
   const halfArtWidth = artWidth / 2;
-  const yTileCount = 12;
-  const yTileHeight = Cover.height / yTileCount;
-  const xCenter = Cover.spine.width / 2 - halfArtWidth;
   Cover.pattern.svg.setAttribute('width', artWidth);
   Cover.pattern.svg.setAttribute('height', artHeight);
   colorArtSvg(Cover.pattern.svg, Cover.elementColor);
@@ -406,21 +438,21 @@ function generateSpineCover() {
   // Add art to top spine
   let clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * 1 - halfArtHeight);
-  clone.setAttribute('x', xCenter);
+  clone.setAttribute('x', xCenter - halfArtWidth);
   Cover.spine.svgElem.appendChild(clone);
   clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * 3 - halfArtHeight);
-  clone.setAttribute('x', xCenter);
+  clone.setAttribute('x', xCenter - halfArtWidth);
   Cover.spine.svgElem.appendChild(clone);
   mirrorArtSvg(clone);
   // Add art to bottom spine
   clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * (yTileCount - 3) - halfArtHeight);
-  clone.setAttribute('x', xCenter);
+  clone.setAttribute('x', xCenter - halfArtWidth);
   Cover.spine.svgElem.appendChild(clone);
   clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * (yTileCount - 1) - halfArtHeight);
-  clone.setAttribute('x', xCenter);
+  clone.setAttribute('x', xCenter - halfArtWidth);
   Cover.spine.svgElem.appendChild(clone);
   mirrorArtSvg(clone);
 }
@@ -465,7 +497,7 @@ function generateCoverFrame(side) {
   if (side == 'front') {
     // Create centered title
     const titleY = Cover.borderGap * 1.5;
-    const titleString = Cover[side].title;
+    const titleString = Cover.title;
     const titleSvg = createCenteredSvgText(
       Cover.elementColor,
       Cover[side].fontSize,
@@ -478,7 +510,7 @@ function generateCoverFrame(side) {
 
     // Create centered author
     const authorY = borderHeight - Cover.borderGap * 1.5;
-    const authorString = Cover[side].author;
+    const authorString = Cover.author;
     const authorSvg = createCenteredSvgText(
       Cover.elementColor,
       Cover[side].fontSize,

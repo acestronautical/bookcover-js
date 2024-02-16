@@ -19,14 +19,14 @@ const DefaultCover = {
   backgroundColor: '#aeb2b1',
   elementColor: '#292a5a',
   width: DefaultCoverWidth,
-  borderGap: DefaultCoverWidth / 16,
+  borderGap: DefaultCoverWidth / 18,
   borderThickness: 2.2,
   height: DefaultCoverWidth * DefaultCoverProportions,
   proportions: DefaultCoverProportions,
   // tesselation settings and art svg image
   pattern: {
     flip: false,
-    imageScale: 1,
+    imageScale: 0.6,
     increasePerColumn: 1,
     maxPerColumn: 4,
     mirror: true,
@@ -105,8 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (target.matches('#coverProportionsInput')) {
       Cover.proportions = parseFloat(target.value);
       Cover.height = Cover.width * Cover.proportions;
-      generateCoverFrame(Cover, 'back');
-      generateCoverFrame(Cover, 'front');
+      generateCovers();
+      return;
     } else if (target.matches('#spineProportionsInput')) {
       Cover.spine.proportions = parseFloat(target.value);
       Cover.spine.width = Cover.height / Cover.spine.proportions;
@@ -295,9 +295,13 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   return group;
 }
 
+function getSvgChild(svgElem) {
+  return svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+}
+
 function rotateArtSvg(svgElem, angle) {
   // For user uploaded SVGs the transformations often won't apply at the top level
-  let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+  let childElement = getSvgChild(svgElem);
   // This should be changed to getBBoxAfterRender
   const bbox = childElement.getBBox();
   const cx = bbox.x + bbox.width / 2;
@@ -310,7 +314,7 @@ function rotateArtSvg(svgElem, angle) {
 
 function mirrorArtSvg(svgElem) {
   // For user uploaded SVGs the transformations often won't apply at the top level
-  let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+  let childElement = getSvgChild(svgElem);
   // This should be changed to getBBoxAfterRender
   const bbox = childElement.getBBox();
   const cx = bbox.x + bbox.width / 2;
@@ -326,12 +330,12 @@ function mirrorArtSvg(svgElem) {
 function colorArtSvg(svgElem, color) {
   // Color at multiple levels in multiple ways
   const newStyle = `fill:${color} stroke:${color}`;
-  let childElement = svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+  let childElement = getSvgChild(svgElem);
   let prevStyle = childElement.getAttribute('style') || '';
   childElement.setAttribute('fill', color);
   childElement.setAttribute('stroke', color);
   childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
-  childElement = svgElem.querySelector('path') || svgElem.querySelector('g') || svgElem;
+  childElement = getSvgChild(svgElem);
   childElement.setAttribute('fill', color);
   childElement.setAttribute('stroke', color);
   childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
@@ -382,8 +386,8 @@ function generateSpineCover() {
 
   // Add a couple graphics
   const artSvgBBox = getBBoxAfterRender(Cover.spine.svgElem, Cover.pattern.svg);
-  const artWidth = Cover.spine.width - 10;
-  const artHeight = artWidth * (artSvgBBox.height / artSvgBBox.width);
+  const artHeight = Cover.height / 9;
+  const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
   const halfArtHeight = artHeight / 2;
   const halfArtWidth = artWidth / 2;
   const yTileCount = 12;
@@ -391,8 +395,8 @@ function generateSpineCover() {
   const xCenter = Cover.spine.width / 2 - halfArtWidth;
   Cover.pattern.svg.setAttribute('width', artWidth);
   Cover.pattern.svg.setAttribute('height', artHeight);
-  Cover.pattern.svg.setAttribute('class', 'artSVG');
   colorArtSvg(Cover.pattern.svg, Cover.elementColor);
+
   // Add art to top spine
   let clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * 1 - halfArtHeight);
@@ -502,16 +506,17 @@ function createPlacementGrid(side) {
   const xTileWidth = Cover.width / xTileCount;
 
   // Calculate Y tiling units
-  const yTileCount = Cover.pattern.yOverhang ? numRows - 1 : numRows;
-  const yOffset = Cover.pattern.yOverhang ? 0 : 0.5;
+  const yTileCount = Cover.pattern.yOverhang ? numRows - 1 : numRows + 1;
+  const yOffset = Cover.pattern.yOverhang ? 0 : 1;
   const yTileHeight = Cover.height / yTileCount;
 
   // set art sizing
-  const artSvgBBox = getBBoxAfterRender(Cover[side].svgElem, Cover.pattern.svg);
-  const artWidth = Cover.pattern.imageScale * (Cover.width / Cover.pattern.numColumns);
-  const artHeight = artWidth * (artSvgBBox.height / artSvgBBox.width);
+  const artSvgBBox = getBBoxAfterRender(getSvgChild(Cover[side].svgElem), Cover.pattern.svg);
+  const artHeight = Cover.pattern.imageScale * (Cover.height / Cover.pattern.numColumns);
+  const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
   Cover.pattern.svg.setAttribute('width', artWidth);
   Cover.pattern.svg.setAttribute('height', artHeight);
+  Cover.pattern.svg.setAttribute('viewBox', `${artSvgBBox.x} ${artSvgBBox.y} ${artSvgBBox.width} ${artSvgBBox.height}`);
   colorArtSvg(Cover.pattern.svg, Cover.elementColor);
   const halfArtWidth = artWidth / 2;
   const halfArtHeight = artHeight / 2;

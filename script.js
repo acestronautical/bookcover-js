@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('imageScale').value = Cover.pattern.imageScale;
     document.getElementById('increasePerColumnInput').value = Cover.pattern.increasePerColumn;
     document.getElementById('maxPerColumnInput').value = Cover.pattern.maxPerColumn;
+    document.getElementById('numColumnsInput').value = Cover.pattern.numColumns;
     document.getElementById('mirrorCheckbox').checked = Cover.pattern.mirror;
     document.getElementById('rotateInput').value = Cover.pattern.rotateAngle;
     document.getElementById('verticalLinesCheckbox').checked = Cover.pattern.verticalLines;
@@ -121,6 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
       generateCoverFrame('front');
     } else if (target.matches('#maxPerColumnInput')) {
       Cover.pattern.maxPerColumn = parseInt(target.value);
+    } else if (target.matches('#numColumnsInput')) {
+      Cover.pattern.numColumns = parseInt(target.value);
     } else if (target.matches('#increasePerColumnInput')) {
       Cover.pattern.increasePerColumn = parseInt(target.value);
     } else if (target.matches('#backCoverInitialCopiesInput')) {
@@ -537,6 +540,7 @@ function createPlacementGrid(side) {
   const maxColumnCopyCount = Math.max(max, Cover[side].initialCopies);
   const numRows = maxColumnCopyCount * 2 - 1;
   const middleRowIndex = Math.floor(numRows / 2);
+  const oddColumns = Cover.pattern.numColumns % 2 != 0;
 
   // Calculate X tiling units
   const xTileCount = Cover.pattern.xOverhang ? Cover.pattern.numColumns - 1 : Cover.pattern.numColumns;
@@ -555,7 +559,7 @@ function createPlacementGrid(side) {
   // Iterate through columns starting in the middle and working outwards
   for (let i = 0; i <= middleColumnIndex; i++) {
     let rightIndex = middleColumnIndex + i;
-    let leftIndex = middleColumnIndex - i;
+    let leftIndex = middleColumnIndex - (oddColumns ? i : i + 1);
     placementGrid.grid[rightIndex] = [];
     placementGrid.grid[leftIndex] = [];
     // If odd we start in the middle, if even on either side of middle
@@ -618,7 +622,9 @@ function tesselateCover(side) {
 
   // tesselate art and apply transformations
   const placementGrid = createPlacementGrid(side);
-  const middleColumnIndex = Math.floor(placementGrid.cols / 2);
+  const oddColumns = Cover.pattern.numColumns % 2 != 0;
+  const leftOfMiddle = oddColumns ? Math.floor(placementGrid.cols / 2) - 1 : placementGrid.cols / 2 - 2;
+  const rightOfMiddle = oddColumns ? Math.floor(placementGrid.cols / 2) + 1 : placementGrid.cols / 2 + 1;
   for (let columnIndex = 0; columnIndex < placementGrid.cols; columnIndex++) {
     let lineAdded = false;
     for (let rowIndex = 0; rowIndex < placementGrid.rows; rowIndex++) {
@@ -626,11 +632,7 @@ function tesselateCover(side) {
       if (!placement) continue;
 
       // Add vertical lines on either side of the middle
-      if (
-        Cover.pattern.verticalLines &&
-        !lineAdded &&
-        [middleColumnIndex + 1, middleColumnIndex - 1].includes(columnIndex)
-      ) {
+      if (Cover.pattern.verticalLines && !lineAdded && [leftOfMiddle, rightOfMiddle].includes(columnIndex)) {
         const lineLeft = createSVGElement('line', {
           x1: placement.x,
           y1: 0,

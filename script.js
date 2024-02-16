@@ -527,9 +527,29 @@ function generateCoverFrame(side) {
   return Cover[side].svgElem;
 }
 
+function transformDecider(x, y, placementGrid, style) {
+  switch (style) {
+    case 'diagonals':
+      return everyOtherOtherDiagonal(x, y);
+    case 'symmetric':
+      return lessThanMiddleOrOdd(x, y, placementGrid);
+  }
+}
+
 // Used to calculate how to apply transformation along diagonal
 function everyOtherOtherDiagonal(x, y) {
   return (x + y) % 4 === 1 || (x + y) % 4 === 2;
+}
+
+// Used to calculate how to apply symetric transformation
+function lessThanMiddleOrOdd(x, y, placementGrid) {
+  if (placementGrid.oddCols) {
+    if (x < Math.floor(placementGrid.cols / 2)) return true;
+    else if (x > Math.floor(placementGrid.cols / 2)) return false;
+    else return y % 4 == 1 || y % 4 == 2 ? false : true;
+  } else {
+    return x < placementGrid.cols / 2 ? true : false;
+  }
 }
 
 function createPlacementGrid(side) {
@@ -540,7 +560,6 @@ function createPlacementGrid(side) {
   const maxColumnCopyCount = Math.max(max, Cover[side].initialCopies);
   const numRows = maxColumnCopyCount * 2 - 1;
   const middleRowIndex = Math.floor(numRows / 2);
-  const oddColumns = Cover.pattern.numColumns % 2 != 0;
 
   // Calculate X tiling units
   const xTileCount = Cover.pattern.xOverhang ? Cover.pattern.numColumns - 1 : Cover.pattern.numColumns;
@@ -554,12 +573,17 @@ function createPlacementGrid(side) {
 
   // Columns x rows 2d array with elements either null or an object containing coordinates
   let placementGrid = {};
+  placementGrid.rows = numRows;
+  placementGrid.oddRows = Cover.pattern.numRows % 2 != 0;
+  placementGrid.cols = Cover.pattern.numColumns;
+  placementGrid.oddCols = Cover.pattern.numColumns % 2 != 0;
   placementGrid.grid = [];
+  const style = placementGrid.oddCols ? 'diagonals' : 'symmetric';
   let copies = Cover[side].initialCopies;
   // Iterate through columns starting in the middle and working outwards
   for (let i = 0; i <= middleColumnIndex; i++) {
     let rightIndex = middleColumnIndex + i;
-    let leftIndex = middleColumnIndex - (oddColumns ? i : i + 1);
+    let leftIndex = middleColumnIndex - (placementGrid.oddCols ? i : i + 1);
     placementGrid.grid[rightIndex] = [];
     placementGrid.grid[leftIndex] = [];
     // If odd we start in the middle, if even on either side of middle
@@ -569,22 +593,22 @@ function createPlacementGrid(side) {
       let upIndex = middleRowIndex + j;
       let downIndex = middleRowIndex - j;
       placementGrid.grid[rightIndex][upIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(rightIndex, upIndex),
+        applyTransform: transformDecider(rightIndex, upIndex, placementGrid, style),
         x: (rightIndex + xOffset) * xTileWidth,
         y: (upIndex + yOffset) * yTileHeight,
       };
       placementGrid.grid[leftIndex][upIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(leftIndex, upIndex),
+        applyTransform: transformDecider(leftIndex, upIndex, placementGrid, style),
         x: (leftIndex + xOffset) * xTileWidth,
         y: (upIndex + yOffset) * yTileHeight,
       };
       placementGrid.grid[rightIndex][downIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(rightIndex, downIndex),
+        applyTransform: transformDecider(rightIndex, downIndex, placementGrid, style),
         x: (rightIndex + xOffset) * xTileWidth,
         y: (downIndex + yOffset) * yTileHeight,
       };
       placementGrid.grid[leftIndex][downIndex] = {
-        evenDiagonal: everyOtherOtherDiagonal(leftIndex, downIndex),
+        applyTransform: transformDecider(leftIndex, downIndex, placementGrid, style),
         x: (leftIndex + xOffset) * xTileWidth,
         y: (downIndex + yOffset) * yTileHeight,
       };
@@ -595,9 +619,6 @@ function createPlacementGrid(side) {
         copies = Cover.pattern.maxPerColumn - 1;
       else copies = Cover.pattern.maxPerColumn;
   }
-
-  placementGrid.rows = numRows;
-  placementGrid.cols = Cover.pattern.numColumns;
 
   return placementGrid;
 }
@@ -621,22 +642,21 @@ function tesselateCover(side) {
   const halfArtHeight = artHeight / 2;
 
   // tesselate art and apply transformations
-  const placementGrid = createPlacementGrid(side);
-  const oddColumns = Cover.pattern.numColumns % 2 != 0;
-  const leftOfMiddle = oddColumns ? Math.floor(placementGrid.cols / 2) - 1 : placementGrid.cols / 2 - 2;
-  const rightOfMiddle = oddColumns ? Math.floor(placementGrid.cols / 2) + 1 : placementGrid.cols / 2 + 1;
-  for (let columnIndex = 0; columnIndex < placementGrid.cols; columnIndex++) {
+  const placement = createPlacementGrid(side);
+  const leftOfMiddle = placement.oddCols ? Math.floor(placement.cols / 2) - 1 : placement.cols / 2 - 2;
+  const rightOfMiddle = placement.oddCols ? Math.floor(placement.cols / 2) + 1 : placement.cols / 2 + 1;
+  for (let columnIndex = 0; columnIndex < placement.cols; columnIndex++) {
     let lineAdded = false;
-    for (let rowIndex = 0; rowIndex < placementGrid.rows; rowIndex++) {
-      const placement = placementGrid.grid[columnIndex][rowIndex];
-      if (!placement) continue;
+    for (let rowIndex = 0; rowIndex < placement.rows; rowIndex++) {
+      const place = placement.grid[columnIndex][rowIndex];
+      if (!place) continue;
 
       // Add vertical lines on either side of the middle
       if (Cover.pattern.verticalLines && !lineAdded && [leftOfMiddle, rightOfMiddle].includes(columnIndex)) {
         const lineLeft = createSVGElement('line', {
-          x1: placement.x,
+          x1: place.x,
           y1: 0,
-          x2: placement.x,
+          x2: place.x,
           y2: Cover.height,
           stroke: Cover.elementColor,
           'stroke-width': Cover.borderThickness / 1.5,
@@ -647,13 +667,13 @@ function tesselateCover(side) {
       }
       // Add the art at position, correcting for midpoint not top left
       const clone = Cover.pattern.svg.cloneNode(true);
-      clone.setAttribute('y', placement.y - halfArtHeight);
-      clone.setAttribute('x', placement.x - halfArtWidth);
+      clone.setAttribute('y', place.y - halfArtHeight);
+      clone.setAttribute('x', place.x - halfArtWidth);
       Cover[side].svgElem.appendChild(clone);
 
       // Apply transformations
       let rotateAngle = Cover.pattern.rotateAngle;
-      if (placement.evenDiagonal) {
+      if (place.applyTransform) {
         if (Cover.pattern.flip) rotateAngle += 180;
         if (Cover.pattern.mirror) {
           mirrorArtSvg(clone);

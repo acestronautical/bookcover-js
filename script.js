@@ -339,14 +339,11 @@ function colorArtSvg(svgElem, color) {
   // Color at multiple levels in multiple ways
   const newStyle = `fill:${color} stroke:${color}`;
   let childElement = getSvgChild(svgElem);
-  let prevStyle = childElement.getAttribute('style') || '';
   childElement.setAttribute('fill', color);
   childElement.setAttribute('stroke', color);
-  childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
-  childElement = getSvgChild(svgElem);
+  childElement = getSvgChild(childElement);
   childElement.setAttribute('fill', color);
   childElement.setAttribute('stroke', color);
-  childElement.setAttribute('style', `${prevStyle} ${newStyle}`);
 }
 
 function generateSpineCover() {

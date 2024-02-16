@@ -20,6 +20,7 @@ const DefaultCover = {
   elementColor: '#292a5a',
   width: DefaultCoverWidth,
   borderGap: DefaultCoverWidth / 16,
+  borderThickness: 2.2,
   height: DefaultCoverWidth * DefaultCoverProportions,
   proportions: DefaultCoverProportions,
   // tesselation settings and art svg image
@@ -317,6 +318,7 @@ function mirrorArtSvg(svgElem) {
   const mirrorTransform = `translate( ${cx} ${cy}) scale(-1 1) translate( ${-cx} ${-cy})`;
   const prevTransform = childElement.getAttribute('transform') || '';
   childElement.setAttribute('transform', `${prevTransform} ${mirrorTransform}`);
+  return svgElem;
 }
 
 function colorArtSvg(svgElem, color) {
@@ -349,18 +351,17 @@ function generateSpineCover() {
   Cover.spine.htmlElem.style.height = Cover.height + Cover.borderGap * 2 + 'px';
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
-  const coverRectangle = document.createElementNS(SVG_NS, 'rect');
-  const rectangleStroke = 2;
-  const rectangleWidth = Cover.spine.width - rectangleStroke;
-  const rectangleHeight = Cover.height - rectangleStroke;
-  coverRectangle.setAttribute('x', rectangleStroke / 2); // X-coordinate of the top-left corner
-  coverRectangle.setAttribute('y', rectangleStroke / 2); // Y-coordinate of the top-left corner
-  coverRectangle.setAttribute('width', rectangleWidth); // Width of the rectangle
-  coverRectangle.setAttribute('height', rectangleHeight); // Height of the rectangle
-  coverRectangle.setAttribute('fill', 'none');
-  coverRectangle.setAttribute('stroke', Cover.elementColor);
-  coverRectangle.setAttribute('stroke-width', rectangleStroke);
-  Cover.spine.svgElem.appendChild(coverRectangle);
+  const borderHeight = Cover.height - Cover.borderThickness;
+  const borderRectangle = createSVGElement('rect', {
+    x: Cover.borderThickness / 2,
+    y: Cover.borderThickness / 2,
+    width: Cover.spine.width - Cover.borderThickness,
+    height: borderHeight,
+    fill: 'none',
+    stroke: Cover.elementColor,
+    'stroke-width': Cover.borderThickness,
+  });
+  Cover.spine.svgElem.appendChild(borderRectangle);
 
   // Create centered title and author
   const textY = Cover.height / 2;
@@ -437,23 +438,21 @@ function generateCoverFrame(side) {
   Cover[side].htmlElem.style.height = Cover.height + Cover.borderGap * 2 + 'px';
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
-  const rectangleStroke = 2;
-  const rectangleWidth = Cover.width - rectangleStroke;
-  const rectangleHeight = Cover.height - rectangleStroke;
-  const coverRectangle = createSVGElement('rect', {
-    x: rectangleStroke / 2,
-    y: rectangleStroke / 2,
-    width: rectangleWidth,
-    height: rectangleHeight,
+  const borderHeight = Cover.height - Cover.borderThickness;
+  const borderRectangle = createSVGElement('rect', {
+    x: Cover.borderThickness / 2,
+    y: Cover.borderThickness / 2,
+    width: Cover.width - Cover.borderThickness,
+    height: borderHeight,
     fill: 'none',
     stroke: Cover.elementColor,
-    'stroke-width': rectangleStroke,
+    'stroke-width': Cover.borderThickness,
   });
-  Cover[side].svgElem.appendChild(coverRectangle);
+  Cover[side].svgElem.appendChild(borderRectangle);
 
   if (side == 'front') {
     // Create centered title
-    const titleY = Cover.borderGap * 2;
+    const titleY = Cover.borderGap * 1.5;
     const titleString = Cover[side].title;
     const titleSvg = createCenteredSvgText(
       Cover.elementColor,
@@ -466,7 +465,7 @@ function generateCoverFrame(side) {
     Cover[side].svgElem.appendChild(titleSvg);
 
     // Create centered author
-    const authorY = rectangleHeight - Cover.borderGap * 2;
+    const authorY = borderHeight - Cover.borderGap * 1.5;
     const authorString = Cover[side].author;
     const authorSvg = createCenteredSvgText(
       Cover.elementColor,
@@ -586,12 +585,16 @@ function tesselateCover(side) {
       clone.setAttribute('y', placement.y);
       clone.setAttribute('x', placement.x);
       Cover[side].svgElem.appendChild(clone);
+      let rotateAngle = Cover.pattern.rotateAngle;
       if (placement.evenDiagonal) {
-        Cover.pattern.mirror && mirrorArtSvg(clone);
-        rotateArtSvg(clone, Cover.pattern.flip ? Cover.pattern.rotateAngle + 180 : Cover.pattern.rotateAngle);
-      } else {
-        rotateArtSvg(clone, -Cover.pattern.rotateAngle);
+        if (Cover.pattern.flip) rotateAngle += 180;
+        if (Cover.pattern.mirror) {
+          mirrorArtSvg(clone);
+          rotateAngle = -rotateAngle;
+        }
+        rotateAngle = -rotateAngle;
       }
+      rotateArtSvg(clone, rotateAngle);
       Cover[side].svgElem.appendChild(clone);
     }
   }

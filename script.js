@@ -98,10 +98,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const target = event.target;
     if (target.matches('#titleInput')) {
       Cover.front.title = target.value;
-      generateCoverFrame(Cover, 'front');
+      generateCoverFrame('front');
     } else if (target.matches('#authorInput')) {
       Cover.front.author = target.value;
-      generateCoverFrame(Cover, 'front');
+      generateCoverFrame('front');
     } else if (target.matches('#rotateInput')) {
       Cover.pattern.rotateAngle = parseInt(target.value);
     } else if (target.matches('#imageScale')) {
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
       Cover.spine.width = Cover.height / Cover.spine.proportions;
     } else if (target.matches('#fontSizeInput')) {
       Cover.front.fontSize = parseInt(target.value);
-      generateCoverFrame(Cover, 'front');
+      generateCoverFrame('front');
     } else if (target.matches('#maxPerColumnInput')) {
       Cover.pattern.maxPerColumn = parseInt(target.value);
     } else if (target.matches('#increasePerColumnInput')) {

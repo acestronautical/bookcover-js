@@ -28,7 +28,7 @@ const DefaultCover = {
   // tesselation settings and art svg image
   pattern: {
     flip: false,
-    imageScale: 0.6,
+    imageScale: 1,
     increasePerColumn: 1,
     maxPerColumn: 4,
     mirror: true,
@@ -516,17 +516,6 @@ function createPlacementGrid(side) {
   const yOffset = Cover.pattern.yOverhang ? 0 : 1;
   const yTileHeight = Cover.height / yTileCount;
 
-  // set art sizing
-  const artSvgBBox = getBBoxAfterRender(getSvgChild(Cover[side].svgElem), Cover.pattern.svg);
-  const artHeight = Cover.pattern.imageScale * (Cover.height / Cover.pattern.numColumns);
-  const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
-  Cover.pattern.svg.setAttribute('width', artWidth);
-  Cover.pattern.svg.setAttribute('height', artHeight);
-  Cover.pattern.svg.setAttribute('viewBox', `${artSvgBBox.x} ${artSvgBBox.y} ${artSvgBBox.width} ${artSvgBBox.height}`);
-  colorArtSvg(Cover.pattern.svg, Cover.elementColor);
-  const halfArtWidth = artWidth / 2;
-  const halfArtHeight = artHeight / 2;
-
   // Columns x rows 2d array with elements either null or an object containing coordinates
   let placementGrid = {};
   placementGrid.grid = [];
@@ -545,23 +534,23 @@ function createPlacementGrid(side) {
       let downIndex = middleRowIndex - j;
       placementGrid.grid[rightIndex][upIndex] = {
         evenDiagonal: everyOtherOtherDiagonal(rightIndex, upIndex),
-        x: (rightIndex + xOffset) * xTileWidth - halfArtWidth,
-        y: (upIndex + yOffset) * yTileHeight - halfArtHeight,
+        x: (rightIndex + xOffset) * xTileWidth,
+        y: (upIndex + yOffset) * yTileHeight,
       };
       placementGrid.grid[leftIndex][upIndex] = {
         evenDiagonal: everyOtherOtherDiagonal(leftIndex, upIndex),
-        x: (leftIndex + xOffset) * xTileWidth - halfArtWidth,
-        y: (upIndex + yOffset) * yTileHeight - halfArtHeight,
+        x: (leftIndex + xOffset) * xTileWidth,
+        y: (upIndex + yOffset) * yTileHeight,
       };
       placementGrid.grid[rightIndex][downIndex] = {
         evenDiagonal: everyOtherOtherDiagonal(rightIndex, downIndex),
-        x: (rightIndex + xOffset) * xTileWidth - halfArtWidth,
-        y: (downIndex + yOffset) * yTileHeight - halfArtHeight,
+        x: (rightIndex + xOffset) * xTileWidth,
+        y: (downIndex + yOffset) * yTileHeight,
       };
       placementGrid.grid[leftIndex][downIndex] = {
         evenDiagonal: everyOtherOtherDiagonal(leftIndex, downIndex),
-        x: (leftIndex + xOffset) * xTileWidth - halfArtWidth,
-        y: (downIndex + yOffset) * yTileHeight - halfArtHeight,
+        x: (leftIndex + xOffset) * xTileWidth,
+        y: (downIndex + yOffset) * yTileHeight,
       };
     }
     copies = copies + Cover.pattern.increasePerColumn;
@@ -584,17 +573,51 @@ function tesselateCover(side) {
     child.remove();
   });
 
-  const placementGrid = createPlacementGrid(side);
+  // set art sizing
+  const artSvgBBox = getBBoxAfterRender(getSvgChild(Cover[side].svgElem), Cover.pattern.svg);
+  const artHeight = Cover.pattern.imageScale * (Cover.width / Cover.pattern.numColumns);
+  const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
+  Cover.pattern.svg.setAttribute('width', artWidth);
+  Cover.pattern.svg.setAttribute('height', artHeight);
+  Cover.pattern.svg.setAttribute('viewBox', `${artSvgBBox.x} ${artSvgBBox.y} ${artSvgBBox.width} ${artSvgBBox.height}`);
+  colorArtSvg(Cover.pattern.svg, Cover.elementColor);
+  const halfArtWidth = artWidth / 2;
+  const halfArtHeight = artHeight / 2;
 
   // tesselate art and apply transformations
+  const placementGrid = createPlacementGrid(side);
+  const middleColumnIndex = Math.floor(placementGrid.cols / 2);
   for (let columnIndex = 0; columnIndex < placementGrid.cols; columnIndex++) {
+    let lineAdded = false;
     for (let rowIndex = 0; rowIndex < placementGrid.rows; rowIndex++) {
       const placement = placementGrid.grid[columnIndex][rowIndex];
       if (!placement) continue;
+
+      // Add vertical lines on either side of the middle
+      if (
+        Cover.pattern.verticalLines &&
+        !lineAdded &&
+        [middleColumnIndex + 1, middleColumnIndex - 1].includes(columnIndex)
+      ) {
+        const lineLeft = createSVGElement('line', {
+          x1: placement.x,
+          y1: 0,
+          x2: placement.x,
+          y2: Cover.height,
+          stroke: Cover.elementColor,
+          'stroke-width': Cover.borderThickness / 1.5,
+          class: 'artSVG',
+        });
+        Cover[side].svgElem.appendChild(lineLeft);
+        lineAdded = true;
+      }
+      // Add the art at position, correcting for midpoint not top left
       const clone = Cover.pattern.svg.cloneNode(true);
-      clone.setAttribute('y', placement.y);
-      clone.setAttribute('x', placement.x);
+      clone.setAttribute('y', placement.y - halfArtHeight);
+      clone.setAttribute('x', placement.x - halfArtWidth);
       Cover[side].svgElem.appendChild(clone);
+
+      // Apply transformations
       let rotateAngle = Cover.pattern.rotateAngle;
       if (placement.evenDiagonal) {
         if (Cover.pattern.flip) rotateAngle += 180;
@@ -605,39 +628,9 @@ function tesselateCover(side) {
         rotateAngle = -rotateAngle;
       }
       rotateArtSvg(clone, rotateAngle);
+
+      // Update element with transformations
       Cover[side].svgElem.appendChild(clone);
     }
-  }
-
-  // add vertical lines
-  if (Cover.pattern.verticalLines) {
-    const middleColumnIndex = Math.floor(placementGrid.cols / 2);
-    const xTileWidth = Cover.width / (placementGrid.cols - 1);
-
-    // Add vertical line to the left of the middle column
-    const lineXLeft = (middleColumnIndex - 1) * xTileWidth;
-    const lineLeft = createSVGElement('line', {
-      x1: lineXLeft,
-      y1: 0,
-      x2: lineXLeft,
-      y2: Cover.height,
-      stroke: Cover.elementColor,
-      'stroke-width': Cover.borderThickness / 1.5,
-      class: 'artSVG',
-    });
-    Cover[side].svgElem.appendChild(lineLeft);
-
-    // Add vertical line to the right of the middle column
-    const lineXRight = (middleColumnIndex + 1) * xTileWidth;
-    const lineRight = createSVGElement('line', {
-      x1: lineXRight,
-      y1: 0,
-      x2: lineXRight,
-      y2: Cover.height,
-      stroke: Cover.elementColor,
-      'stroke-width': Cover.borderThickness / 1.5,
-      class: 'artSVG',
-    });
-    Cover[side].svgElem.appendChild(lineRight);
   }
 }

@@ -8,7 +8,7 @@ body {
 header {
     background-color: #454244;
     color: #cad7dd;
-    padding: 14px;
+    padding: 10px;
     text-align: center;
 }
 
@@ -28,7 +28,7 @@ header a:hover {
 
 h1 {
     margin: 0;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 main {
@@ -40,16 +40,18 @@ textarea {
     resize: none;
 }
 
-.space-out {
+.space-out,
+.space-even {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
+.space-out {
+    justify-content: space-between;
+}
+
 .space-even {
-    display: flex;
     justify-content: space-evenly;
-    align-items: center;
 }
 
 .p-12 {
@@ -60,20 +62,12 @@ textarea {
     padding-top: 12px;
 }
 
-.upload-section {
-    text-align: center;
-}
-
 .upload-section input[type="file"] {
     display: none;
 }
 
 .upload-section .file-label {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
     cursor: pointer;
-    border-radius: 5px;
     display: inline-block;
 }
 
@@ -83,12 +77,12 @@ textarea {
     margin: 18px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    min-width: 300px;
-    max-width: 400px;
+    min-width: 250px;
+    max-width: 100%;
 }
 
 .input-group {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .input-group label {
@@ -100,7 +94,7 @@ textarea {
 .input-group input[type="number"],
 .input-group textarea,
 .input-group input[type="color"] {
-    width: calc(100% - 10px);
+    width: 100%;
     padding: 2px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -110,17 +104,17 @@ textarea {
     padding: 4px;
 }
 
-button {
+.button {
     background-color: #4CAF50;
     color: white;
-    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    padding: 10px 20px;
+    font-size: 14px;
 }
 
-button:hover {
+.button:hover {
     background-color: #45a049;
 }
 
@@ -130,6 +124,8 @@ button:hover {
     align-items: center;
     border-radius: 3px;
     transform-origin: 0 0;
+    max-width: 100%;
+    height: auto;
 }
 
 #output svg {

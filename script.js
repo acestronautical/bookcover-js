@@ -34,9 +34,20 @@ class SVGHelper {
     return this.parser.parseFromString(svgText, 'image/svg+xml').documentElement;
   }
 
-  // Get the main child element of an SVG (could be <g>, <path>, etc.)
-  getChild(svgElem) {
-    return svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
+  // Traverse from svg -> g -> path
+  // Currently can't handle simple shapes like circle and rect
+  getChild(el) {
+    const tagName = el.tagName.toLowerCase();
+    if (tagName === 'svg') {
+      return el.querySelector('g') || el.querySelector('path') || el;
+    } else if (tagName === 'g') {
+      return el.querySelector('path') || el;
+    } else if (tagName === 'path') {
+      return el;
+    } else {
+      console.log('Element is neither <g>, <path>, nor <svg>.');
+      return el;
+    }
   }
 
   // Get the bounding box of an SVG element after rendering
@@ -70,13 +81,20 @@ class SVGHelper {
   }
 
   // Color an SVG element with a specified color
+  // This is a bit brute force because SVG images can have arbitrary nesting
+  // and 'style="stroke: fill:' attribute will override the stroke and fill attributes.
   color(svgElem, color) {
+    svgElem.setAttribute('fill', color);
+    svgElem.setAttribute('stroke', color);
+    svgElem.setAttribute('style', 'none');
     let childElement = this.getChild(svgElem);
     childElement.setAttribute('fill', color);
     childElement.setAttribute('stroke', color);
+    childElement.setAttribute('style', 'none');
     childElement = this.getChild(childElement);
     childElement.setAttribute('fill', color);
     childElement.setAttribute('stroke', color);
+    childElement.setAttribute('style', 'none');
   }
 
   createCenteredText(color, size, string, y, parent, parentWidth, reposition) {
@@ -494,7 +512,7 @@ class BookCover {
     });
 
     // set art sizing
-    const artSvgBBox = this.SVGUtils.getBBoxAfterRender(this.SVGUtils.getChild(Cover[side].svgElem), this.art.svg);
+    const artSvgBBox = this.SVGUtils.getBBoxAfterRender(Cover[side].svgElem, this.art.svg);
     const artHeight = this.art.imageScale * (this.width / this.art.numColumns);
     const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
     this.art.svg.setAttribute('width', artWidth);

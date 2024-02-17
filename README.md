@@ -30,3 +30,7 @@ Contributions are welcome! If you'd like to contribute to the project, please fo
 ## License
 
 This project is licensed under the Mozilla Public License. See the [LICENSE](LICENSE) file for details.
+
+## Disclaimer
+
+This project is provided as open-source software free of charge. Its main objective is to automate the tessellation of SVG images onto a book cover format. Any similarity to trademarked content owned by Penguin Random House LLC or its usage for the creation of covers resembling those owned by Penguin Random House LLC is solely at the discretion of the user. The creator of this project disclaims any ownership or affiliation with the intellectual property of Penguin Random House LLC.

@@ -6,7 +6,6 @@ const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml
                   </g>
                 </g>
               </svg>`;
-const Parser = new DOMParser();
 const FontFamilies =
   "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
 
@@ -16,7 +15,7 @@ const DefaultCoverProportions = 1.5;
 const DefaultSpineProportions = 8;
 const DefaultCoverHeight = DefaultCoverWidth * DefaultCoverProportions;
 
-class SVGUtils {
+class SVGHelper {
   constructor() {
     this.parser = new DOMParser();
   }
@@ -81,9 +80,9 @@ class SVGUtils {
   }
 
   createCenteredText(color, size, string, y, parent, parentWidth, reposition) {
-    const lines = string.split('\n'); // Split textString by line breaks
+    const lines = string.split('\n'); // Split string by line breaks
     const group = this.create('g', {});
-    const padding = size / 6; // Adjust this value to increase or decrease vertical spacing
+    const padding = size / 6; // Adjust to increase or decrease vertical spacing
     const lineSvgArr = [];
     let lineY;
     lines.forEach((line, index) => {
@@ -159,6 +158,7 @@ class BookCover {
     this.proportions = DefaultCoverProportions;
     this.author = 'Felix\nPawsley';
     this.title = 'Cats Cradle\nChronicles';
+    this.SVGUtils = new SVGHelper();
     // tesselation settings and art svg image
     this.art = {
       flip: false,
@@ -168,7 +168,7 @@ class BookCover {
       mirror: true,
       numColumns: 5,
       rotateAngle: 0,
-      svg: new DOMParser().parseFromString(DefaultSvgText, 'image/svg+xml').documentElement,
+      svg: this.SVGUtils.fromString(DefaultSvgText),
       vertLines: false,
       xOverhang: true,
       yOverhang: false,
@@ -193,7 +193,6 @@ class BookCover {
       svgElem: null,
       width: DefaultCoverHeight / DefaultSpineProportions,
     };
-    this.SVGUtils = new SVGUtils();
   }
 
   generateCovers() {
@@ -554,8 +553,6 @@ class BookCover {
   }
 }
 
-const Cover = new BookCover();
-
 function initializePage() {
   document.getElementById('backgroundColorInput').value = Cover.backgroundColor;
   document.getElementById('coverProportionsInput').value = Cover.proportions;
@@ -583,7 +580,7 @@ function initializePage() {
   Cover.generateCovers();
 }
 
-function addListeners() {
+function addEventListeners() {
   document.getElementById('settings').addEventListener('change', function (event) {
     const target = event.target;
     if (target.matches('#titleInput')) {
@@ -657,7 +654,7 @@ function addListeners() {
     const reader = new FileReader();
     reader.onload = function () {
       const svgText = reader.result;
-      Cover.art.svg = Parser.parseFromString(svgText, 'image/svg+xml').documentElement;
+      Cover.art.svg = Cover.SVGUtils.fromString(svgText);
       Cover.art.svg.setAttribute('overflow', `visible`);
       Cover.art.svg.setAttribute('class', 'artSVG');
       Cover.generateCovers();
@@ -670,7 +667,11 @@ function addListeners() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+const Cover = new BookCover();
+
+function main() {
   initializePage();
-  addListeners();
-});
+  addEventListeners();
+}
+
+document.addEventListener('DOMContentLoaded', main);

@@ -1,5 +1,5 @@
 // The default SVG
-let catSvg = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="preserve" viewBox="0 0 700 700" overflow="visible" class="artSVG">
+const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="preserve" viewBox="0 0 700 700" overflow="visible" class="artSVG">
                 <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
                   <g id="g3246" transform="matrix(.88815 0 0 .88815 456.78 214.39)" >
                     <path id="path3248" d="m0 0c-4.942 32.123-20.005 60.481-24.658 69.321-4.652 8.84-10.7 26.519-9.002 51.363 1.699 24.843-9.608 96.585-67.298 142.64-57.69 46.059-111 60.386-118.17 65.134-7.773 5.143-39.08 19.54-46.471 22.983-7.391 3.444-37.273 7.258-50.677 8.968s-27.537-3.105-32.96-3.148c-5.423-0.042-35.984 9.347-40.636 9.347s-1.861-4.652-1.396-7.444c0.466-2.791 10.277-21.046 10.277-21.046s-10.742 0.11-11.207-2.216 12.769-12.274 12.769-12.274-6.256-20.293-6.581-24.874c-0.326-4.582 5.908-20.077 6.839-24.264 0.93-4.187 0-13.958 0-13.958l4.622-4.716s7.939-5.519 9.8-6.449c1.861-0.931 8.132 0.126 8.132 0.126 4.875-1.734 20.713 6.853 29.088 11.97 8.374 5.118 20.005 6.513 23.361 6.539 3.355 0.024 6.414-10.727 6.274-14.241-0.141-3.516 2.932-16.491 3.862-20.678 0.931-4.187-4.332-12.528-4.332-12.528-4.798 2.359-11.486 4.619-15.673 6.015-4.188 1.396-17.214 10.7-20.936 11.631s-6.979 1.396-13.585 3.216c-6.606 1.821-28.287 6.554-32.942 5.95-4.654-0.603-16.746-7.306-18.451-14.149-1.704-6.845 7.753-13.627 11.475-15.023 3.722-1.395 15.353 1.396 19.447 0.973 4.095-0.423 6.71-3.791 6.71-3.791 14.526-0.491 21.298-9.278 29.672-16.722s47.92-29.31 53.503-30.241 20.933 2.981 20.933 2.981 4.655-18.799 6.516-29.964c1.861-11.166-6.048-47.456-6.978-54.434-0.931-6.979-1.163-15.818-2.908-18.145-1.423-1.898-2.908-1.512-10.628-2.678-9.245-1.396-19.409-15.013-19.031-21.049 0.465-7.444 8.536-9.667 12.137-9.667h12.753c5.583 0 21.401 2.223 21.401 2.223l25.124-2.223h151.72c15.146 0 30.171-30.879 32.748-54.071 2.791-25.123-14.669-90.658-25.589-113.99-10.235-21.866-32.824-46.467-54.433-51.176-36.289-7.909-60.947 15.818-79.092 12.562-16.51-2.964-13.027-21.401-5.583-28.846 6.869-6.869 66.112-27.327 105.14-14.887 42.337 13.492 67.63 62.931 81.418 102.82 13.047 37.712 19.095 75.861 13.512 112.15m-198.83 69.434c-8.839-3.256-16.283-8.374-21.866-6.979-5.583 1.396-7.909-2.791-12.562-1.395 0 0 4.653 13.957 9.297 21.925 4.643 7.969 10.918 33.922 10.918 33.922 1.606-9.753 10.957-25.141 17.935-34.446 6.979-9.305 5.118-9.771-3.722-13.027"/>
@@ -7,7 +7,7 @@ let catSvg = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="pr
                 </g>
               </svg>`;
 const Parser = new DOMParser();
-const CatSvg = Parser.parseFromString(catSvg, 'image/svg+xml').documentElement;
+const DefaultSvg = Parser.parseFromString(DefaultSvgText, 'image/svg+xml').documentElement;
 const FontFamilies =
   "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
 
@@ -38,7 +38,7 @@ const DefaultCover = {
     mirror: true,
     numColumns: 5,
     rotateAngle: 0,
-    svg: CatSvg,
+    svg: DefaultSvg,
     verticalLines: false,
     xOverhang: true,
     yOverhang: false,
@@ -66,7 +66,7 @@ const DefaultCover = {
   },
 };
 
-let Cover = { ...DefaultCover };
+const Cover = { ...DefaultCover };
 
 document.addEventListener('DOMContentLoaded', function () {
   function initialize() {
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = function () {
-      svgText = reader.result;
+      const svgText = reader.result;
       Cover.pattern.svg = Parser.parseFromString(svgText, 'image/svg+xml').documentElement;
       Cover.pattern.svg.setAttribute('overflow', `visible`);
       Cover.pattern.svg.setAttribute('class', 'artSVG');
@@ -274,7 +274,7 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   const lines = textString.split('\n'); // Split textString by line breaks
   const group = createSVGElement('g', {});
   const padding = fontSize / 6; // Adjust this value to increase or decrease vertical spacing
-  let lineSvgArr = [];
+  const lineSvgArr = [];
   let lineY;
   lines.forEach((line, index) => {
     const text = createSVGElement('text', {
@@ -298,8 +298,8 @@ function createCenteredSvgText(elementColor, fontSize, textString, textY, parent
   const height = lineY - textY;
 
   if (reposition) {
-    lineSvgArr.forEach((line, index) => {
-      y = parseFloat(line.getAttribute('y'));
+    lineSvgArr.forEach((line) => {
+      const y = parseFloat(line.getAttribute('y'));
       line.setAttribute('y', y - height / 2);
     });
   }
@@ -310,9 +310,9 @@ function getSvgChild(svgElem) {
   return svgElem.querySelector('g') || svgElem.querySelector('path') || svgElem;
 }
 
-function rotateArtSvg(svgElem, angle) {
+function rotateSvg(svgElem, angle) {
   // For user uploaded SVGs the transformations often won't apply at the top level
-  let childElement = getSvgChild(svgElem);
+  const childElement = getSvgChild(svgElem);
   // This should be changed to getBBoxAfterRender
   const bbox = childElement.getBBox();
   const cx = bbox.x + bbox.width / 2;
@@ -323,9 +323,9 @@ function rotateArtSvg(svgElem, angle) {
   childElement.setAttribute('transform', `${prevTransform} ${rotateTransform}`);
 }
 
-function mirrorArtSvg(svgElem) {
+function mirrorSvg(svgElem) {
   // For user uploaded SVGs the transformations often won't apply at the top level
-  let childElement = getSvgChild(svgElem);
+  const childElement = getSvgChild(svgElem);
   // This should be changed to getBBoxAfterRender
   const bbox = childElement.getBBox();
   const cx = bbox.x + bbox.width / 2;
@@ -338,9 +338,8 @@ function mirrorArtSvg(svgElem) {
   return svgElem;
 }
 
-function colorArtSvg(svgElem, color) {
+function colorSvg(svgElem, color) {
   // Color at multiple levels in multiple ways
-  const newStyle = `fill:${color} stroke:${color}`;
   let childElement = getSvgChild(svgElem);
   childElement.setAttribute('fill', color);
   childElement.setAttribute('stroke', color);
@@ -362,8 +361,8 @@ function generateSpineCover() {
   Cover.spine.htmlElem.innerHTML = '';
   Cover.spine.htmlElem.appendChild(Cover.spine.svgElem);
   Cover.spine.htmlElem.style.backgroundColor = Cover.backgroundColor;
-  Cover.spine.htmlElem.style.width = Cover.spine.width + Cover.borderGap / 2 + 'px';
-  Cover.spine.htmlElem.style.height = Cover.height + Cover.borderGap * 2 + 'px';
+  Cover.spine.htmlElem.style.width = `${Cover.spine.width + Cover.borderGap / 2}px`;
+  Cover.spine.htmlElem.style.height = `${Cover.height + Cover.borderGap * 2}px`;
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
   const borderHeight = Cover.height - Cover.borderThickness;
@@ -388,7 +387,7 @@ function generateSpineCover() {
   // If spin too slim just add rotated text and bail out
   if (thinSpine) {
     // If spine too small put the text sideways and no graphic
-    spineFontSize = Cover.spine.width / 3.5;
+    const spineFontSize = Cover.spine.width / 3.5;
     const titleSvg = createSVGElement('text', {
       x: xCenter + spineFontSize / 2,
       y: yCenter,
@@ -436,7 +435,7 @@ function generateSpineCover() {
   const halfArtWidth = artWidth / 2;
   Cover.pattern.svg.setAttribute('width', artWidth);
   Cover.pattern.svg.setAttribute('height', artHeight);
-  colorArtSvg(Cover.pattern.svg, Cover.elementColor);
+  colorSvg(Cover.pattern.svg, Cover.elementColor);
 
   // Add art to top spine
   let clone = Cover.pattern.svg.cloneNode(true);
@@ -447,7 +446,7 @@ function generateSpineCover() {
   clone.setAttribute('y', yTileHeight * 3 - halfArtHeight);
   clone.setAttribute('x', xCenter - halfArtWidth);
   Cover.spine.svgElem.appendChild(clone);
-  mirrorArtSvg(clone);
+  mirrorSvg(clone);
   // Add art to bottom spine
   clone = Cover.pattern.svg.cloneNode(true);
   clone.setAttribute('y', yTileHeight * (yTileCount - 3) - halfArtHeight);
@@ -457,12 +456,12 @@ function generateSpineCover() {
   clone.setAttribute('y', yTileHeight * (yTileCount - 1) - halfArtHeight);
   clone.setAttribute('x', xCenter - halfArtWidth);
   Cover.spine.svgElem.appendChild(clone);
-  mirrorArtSvg(clone);
+  mirrorSvg(clone);
 }
 
 function createSVGElement(tag, attributes) {
   const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  for (let attr in attributes) {
+  for (const attr in attributes) {
     element.setAttribute(attr, attributes[attr]);
   }
   return element;
@@ -481,8 +480,8 @@ function generateCoverFrame(side) {
   Cover[side].htmlElem.innerHTML = '';
   Cover[side].htmlElem.appendChild(Cover[side].svgElem);
   Cover[side].htmlElem.style.backgroundColor = Cover.backgroundColor;
-  Cover[side].htmlElem.style.width = Cover.width + Cover.borderGap * 2 + 'px';
-  Cover[side].htmlElem.style.height = Cover.height + Cover.borderGap * 2 + 'px';
+  Cover[side].htmlElem.style.width = `${Cover.width + Cover.borderGap * 2}px`;
+  Cover[side].htmlElem.style.height = `${Cover.height + Cover.borderGap * 2}px`;
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
   const borderHeight = Cover.height - Cover.borderThickness;
@@ -572,7 +571,7 @@ function createPlacementGrid(side) {
   const yTileHeight = Cover.height / yTileCount;
 
   // Columns x rows 2d array with elements either null or an object containing coordinates
-  let placementGrid = {};
+  const placementGrid = {};
   placementGrid.rows = numRows;
   placementGrid.oddRows = Cover.pattern.numRows % 2 != 0;
   placementGrid.cols = Cover.pattern.numColumns;
@@ -582,16 +581,16 @@ function createPlacementGrid(side) {
   let copies = Cover[side].initialCopies;
   // Iterate through columns starting in the middle and working outwards
   for (let i = 0; i <= middleColumnIndex; i++) {
-    let rightIndex = middleColumnIndex + i;
-    let leftIndex = middleColumnIndex - (placementGrid.oddCols ? i : i + 1);
+    const rightIndex = middleColumnIndex + i;
+    const leftIndex = middleColumnIndex - (placementGrid.oddCols ? i : i + 1);
     placementGrid.grid[rightIndex] = [];
     placementGrid.grid[leftIndex] = [];
     // If odd we start in the middle, if even on either side of middle
-    let jStart = copies % 2 == 0 ? 1 : 0;
+    const jStart = copies % 2 == 0 ? 1 : 0;
     // iterate over rows in both columns starting from middle and working outwards
     for (let j = jStart; j < copies; j += 2) {
-      let upIndex = middleRowIndex + j;
-      let downIndex = middleRowIndex - j;
+      const upIndex = middleRowIndex + j;
+      const downIndex = middleRowIndex - j;
       placementGrid.grid[rightIndex][upIndex] = {
         applyTransform: transformDecider(rightIndex, upIndex, placementGrid, style),
         x: (rightIndex + xOffset) * xTileWidth,
@@ -637,7 +636,7 @@ function tesselateCover(side) {
   Cover.pattern.svg.setAttribute('width', artWidth);
   Cover.pattern.svg.setAttribute('height', artHeight);
   Cover.pattern.svg.setAttribute('viewBox', `${artSvgBBox.x} ${artSvgBBox.y} ${artSvgBBox.width} ${artSvgBBox.height}`);
-  colorArtSvg(Cover.pattern.svg, Cover.elementColor);
+  colorSvg(Cover.pattern.svg, Cover.elementColor);
   const halfArtWidth = artWidth / 2;
   const halfArtHeight = artHeight / 2;
 
@@ -676,12 +675,12 @@ function tesselateCover(side) {
       if (place.applyTransform) {
         if (Cover.pattern.flip) rotateAngle += 180;
         if (Cover.pattern.mirror) {
-          mirrorArtSvg(clone);
+          mirrorSvg(clone);
           rotateAngle = -rotateAngle;
         }
         rotateAngle = -rotateAngle;
       }
-      rotateArtSvg(clone, rotateAngle);
+      rotateSvg(clone, rotateAngle);
 
       // Update element with transformations
       Cover[side].svgElem.appendChild(clone);

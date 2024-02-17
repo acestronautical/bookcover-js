@@ -62,13 +62,22 @@ textarea {
     padding-top: 12px;
 }
 
+.upload-section {
+    text-align: center;
+}
+
 .upload-section input[type="file"] {
     display: none;
 }
 
 .upload-section .file-label {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
     cursor: pointer;
+    border-radius: 5px;
     display: inline-block;
+    font-size: 14px;
 }
 
 .card {

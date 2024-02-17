@@ -429,7 +429,7 @@ class BookCover {
     // Calculate X tiling units
     const xTileCount = this.art.xOverhang ? this.art.numColumns - 1 : this.art.numColumns;
     const xOffset = this.art.xOverhang ? 0 : 0.5;
-    const xTileWidth = this.width / xTileCount;
+    const xTileWidth = (this.width - this.borderThickness * 2) / xTileCount;
 
     // Calculate Y tiling units
     const yTileCount = this.art.yOverhang ? numRows - 1 : numRows + 1;
@@ -459,22 +459,22 @@ class BookCover {
         const downIndex = middleRowIndex - j;
         placementGrid.grid[rightIndex][upIndex] = {
           applyTransform: this.transformDecider(rightIndex, upIndex, placementGrid, style),
-          x: (rightIndex + xOffset) * xTileWidth,
+          x: (rightIndex + xOffset) * xTileWidth + this.borderThickness,
           y: (upIndex + yOffset) * yTileHeight,
         };
         placementGrid.grid[leftIndex][upIndex] = {
           applyTransform: this.transformDecider(leftIndex, upIndex, placementGrid, style),
-          x: (leftIndex + xOffset) * xTileWidth,
+          x: (leftIndex + xOffset) * xTileWidth + this.borderThickness,
           y: (upIndex + yOffset) * yTileHeight,
         };
         placementGrid.grid[rightIndex][downIndex] = {
           applyTransform: this.transformDecider(rightIndex, downIndex, placementGrid, style),
-          x: (rightIndex + xOffset) * xTileWidth,
+          x: (rightIndex + xOffset) * xTileWidth + this.borderThickness,
           y: (downIndex + yOffset) * yTileHeight,
         };
         placementGrid.grid[leftIndex][downIndex] = {
           applyTransform: this.transformDecider(leftIndex, downIndex, placementGrid, style),
-          x: (leftIndex + xOffset) * xTileWidth,
+          x: (leftIndex + xOffset) * xTileWidth + this.borderThickness,
           y: (downIndex + yOffset) * yTileHeight,
         };
       }

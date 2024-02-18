@@ -169,8 +169,9 @@ class BookCover {
     maxPerColumn: 4,
     numColumns: 5,
     rotateAngle: 0,
-    scale: 1,
-    svg: SVGHelper.fromString(DefaultSvgText),
+    scale: 1.5,
+    defaultImages: [{ svg: SVGHelper.fromString(DefaultSvgText) }],
+    images: [],
     flip: false,
     mirror: true,
     vertLines: false,
@@ -241,8 +242,19 @@ class BookCover {
         SVGHelper.save(key, value);
       }
     } else {
-      SVGHelper.saveZip(downloads, 'combined.zip');
+      SVGHelper.saveZip(downloads, 'covers.zip');
     }
+  }
+
+  sizeImage(image, parent, height) {
+    image.BBox = SVGHelper.getBBoxAfterRender(parent, image.svg);
+    image.height = height;
+    image.width = image.height * (image.BBox.width / image.BBox.height);
+    image.svg.setAttribute('width', image.width);
+    image.svg.setAttribute('height', image.height);
+    SVGHelper.color(image.svg, this.elementColor);
+    image.halfHeight = image.height / 2;
+    image.halfWidth = image.width / 2;
   }
 
   genSpine() {
@@ -323,33 +335,34 @@ class BookCover {
     }
 
     // Add a couple graphics
-    const artSvgBBox = SVGHelper.getBBoxAfterRender(this.spine.svgElem, this.art.svg);
-    const artHeight = this.height / (thinSpine ? 12 : 9);
-    const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
-    const halfArtHeight = artHeight / 2;
-    const halfArtWidth = artWidth / 2;
-    this.art.svg.setAttribute('width', artWidth);
-    this.art.svg.setAttribute('height', artHeight);
-    SVGHelper.color(this.art.svg, this.elementColor);
+    const images = this.art.defaultImages || this.art.images;
+    const artHeight = this.height / (thinSpine ? 9 : 6);
+    images.forEach((image) => {
+      this.sizeImage(image, this.spine.svgElem, artHeight);
+    });
 
     // Add art to top spine
-    let clone = this.art.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * 1 - halfArtHeight);
-    clone.setAttribute('x', xCenter - halfArtWidth);
+    const image1 = images.at(-1);
+    const image2 = images.at(-(2 % images.length));
+    const image3 = images.at(-(3 % images.length));
+    const image4 = images.at(-(4 % images.length));
+    let clone = image1.svg.cloneNode(true);
+    clone.setAttribute('y', yTileHeight * 1 - image1.halfHeight);
+    clone.setAttribute('x', xCenter - image1.halfWidth);
     this.spine.svgElem.appendChild(clone);
-    clone = this.art.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * 3 - halfArtHeight);
-    clone.setAttribute('x', xCenter - halfArtWidth);
+    clone = image2.svg.cloneNode(true);
+    clone.setAttribute('y', yTileHeight * 3 - image2.halfHeight);
+    clone.setAttribute('x', xCenter - image2.halfWidth);
     this.spine.svgElem.appendChild(clone);
     SVGHelper.mirror(clone);
     // Add art to bottom spine
-    clone = this.art.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * (yTileCount - 3) - halfArtHeight);
-    clone.setAttribute('x', xCenter - halfArtWidth);
+    clone = image3.svg.cloneNode(true);
+    clone.setAttribute('y', yTileHeight * (yTileCount - 3) - image3.halfHeight);
+    clone.setAttribute('x', xCenter - image3.halfWidth);
     this.spine.svgElem.appendChild(clone);
-    clone = this.art.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * (yTileCount - 1) - halfArtHeight);
-    clone.setAttribute('x', xCenter - halfArtWidth);
+    clone = image4.svg.cloneNode(true);
+    clone.setAttribute('y', yTileHeight * (yTileCount - 1) - image4.halfHeight);
+    clone.setAttribute('x', xCenter - image4.halfWidth);
     this.spine.svgElem.appendChild(clone);
     SVGHelper.mirror(clone);
   }
@@ -501,17 +514,14 @@ class BookCover {
     });
 
     // set art sizing
-    const artSvgBBox = SVGHelper.getBBoxAfterRender(Cover[side].svgElem, this.art.svg);
+    const images = this.art.defaultImages || this.art.images;
     const artHeight = this.art.scale * (this.width / this.art.numColumns);
-    const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
-    this.art.svg.setAttribute('width', artWidth);
-    this.art.svg.setAttribute('height', artHeight);
-    this.art.svg.setAttribute('viewBox', `${artSvgBBox.x} ${artSvgBBox.y} ${artSvgBBox.width} ${artSvgBBox.height}`);
-    SVGHelper.color(this.art.svg, this.elementColor);
-    const halfArtWidth = artWidth / 2;
-    const halfArtHeight = artHeight / 2;
+    images.forEach((image) => {
+      this.sizeImage(image, this[side].svgElem, artHeight);
+    });
 
     // tesselate art and apply transformations
+    const imageCounter = { odd: 1, even: 0 };
     const placement = this.createPlacementGrid(side);
     const leftOfMiddle = placement.oddCols ? Math.floor(placement.cols / 2) - 1 : placement.cols / 2 - 2;
     const rightOfMiddle = placement.oddCols ? Math.floor(placement.cols / 2) + 1 : placement.cols / 2 + 1;
@@ -532,14 +542,17 @@ class BookCover {
             'stroke-width': this.borderThickness / 1.5,
             class: 'artSVG',
           });
-          Cover[side].svgElem.appendChild(lineLeft);
+          this[side].svgElem.appendChild(lineLeft);
           lineAdded = true;
         }
         // Add the art at position, correcting for midpoint not top left
-        const clone = this.art.svg.cloneNode(true);
-        clone.setAttribute('y', place.y - halfArtHeight);
-        clone.setAttribute('x', place.x - halfArtWidth);
-        Cover[side].svgElem.appendChild(clone);
+        const count = place.applyTransform ? imageCounter.even : imageCounter.odd;
+        place.applyTransform ? (imageCounter.even += 4) : (imageCounter.odd += 4);
+        const image = images.at(-(count % images.length));
+        const clone = image.svg.cloneNode(true);
+        clone.setAttribute('y', place.y - image.halfHeight);
+        clone.setAttribute('x', place.x - image.halfWidth);
+        this[side].svgElem.appendChild(clone);
 
         // Apply transformations
         let rotateAngle = this.art.rotateAngle;
@@ -554,7 +567,7 @@ class BookCover {
         SVGHelper.rotate(clone, rotateAngle);
 
         // Update element with transformations
-        Cover[side].svgElem.appendChild(clone);
+        this[side].svgElem.appendChild(clone);
       }
     }
   }
@@ -660,9 +673,11 @@ function addEventListeners() {
     const reader = new FileReader();
     reader.onload = function () {
       const svgText = reader.result;
-      Cover.art.svg = SVGHelper.fromString(svgText);
-      Cover.art.svg.setAttribute('overflow', `visible`);
-      Cover.art.svg.setAttribute('class', 'artSVG');
+      Cover.art.defaultImages = null;
+      Cover.art.images.push({ svg: SVGHelper.fromString(svgText) });
+      Cover.art.images.at(-1).svg.setAttribute('overflow', `visible`);
+      Cover.art.images.at(-1).svg.setAttribute('class', 'artSVG');
+      document.getElementById('fileInputLabel').innerHTML = 'Upload Another';
       Cover.generateCovers();
     };
     reader.readAsText(file);

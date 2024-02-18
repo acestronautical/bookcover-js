@@ -41,8 +41,7 @@ textarea {
 }
 
 .space-out,
-.space-even,
-.center {
+.space-even {
     display: flex;
     align-items: center;
 }
@@ -53,10 +52,6 @@ textarea {
 
 .space-even {
     justify-content: space-evenly;
-}
-
-.space-even {
-    justify-content: center;
 }
 
 .p-12 {

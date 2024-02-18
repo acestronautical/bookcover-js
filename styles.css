@@ -108,11 +108,6 @@ textarea {
     padding: 4px;
     border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-.input-group input[type="text"],
-.input-group input[type="number"],
-.input-group input[type="color"] {
     width: 8.5rem;
 }
 
@@ -136,7 +131,7 @@ textarea {
     align-items: center;
     border-radius: 3px;
     transform-origin: 0 0;
-    max-width: 100%;
+    width: 100%;
     height: auto;
 }
 

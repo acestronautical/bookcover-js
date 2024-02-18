@@ -9,19 +9,10 @@ const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml
 const FontFamilies =
   "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
 
-// These are used in DefaultCover for some calculations
-const DefaultCoverWidth = 360;
-const DefaultCoverProportions = 1.5;
-const DefaultSpineProportions = 8;
-const DefaultCoverHeight = DefaultCoverWidth * DefaultCoverProportions;
-
+// Static helper class, does not need to be instantiated it's just a namespace
 class SVGHelper {
-  constructor() {
-    this.parser = new DOMParser();
-  }
-
   // Create an SVG element with specified tag and attributes
-  create(tag, attributes) {
+  static create(tag, attributes) {
     const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
     for (const attr in attributes) {
       element.setAttribute(attr, attributes[attr]);
@@ -30,13 +21,14 @@ class SVGHelper {
   }
 
   // Parse SVG text and return the SVG element
-  fromString(svgText) {
-    return this.parser.parseFromString(svgText, 'image/svg+xml').documentElement;
+  static fromString(svgText) {
+    const parser = new DOMParser();
+    return parser.parseFromString(svgText, 'image/svg+xml').documentElement;
   }
 
   // Traverse from svg -> g -> path
   // Currently can't handle simple shapes like circle and rect
-  getChild(el) {
+  static getChild(el) {
     const tagName = el.tagName.toLowerCase();
     if (tagName === 'svg') {
       return el.querySelector('g') || el.querySelector('path') || el;
@@ -51,7 +43,7 @@ class SVGHelper {
   }
 
   // Get the bounding box of an SVG element after rendering
-  getBBoxAfterRender(parent, child) {
+  static getBBoxAfterRender(parent, child) {
     parent.appendChild(child);
     const childBBox = child.getBBox();
     parent.removeChild(child);
@@ -59,8 +51,8 @@ class SVGHelper {
   }
 
   // Rotate an SVG element by a specified angle around its center
-  rotate(svgElem, angle) {
-    const childElement = this.getChild(svgElem);
+  static rotate(svgElem, angle) {
+    const childElement = SVGHelper.getChild(svgElem);
     const bbox = childElement.getBBox();
     const cx = bbox.x + bbox.width / 2;
     const cy = bbox.y + bbox.height / 2;
@@ -70,8 +62,8 @@ class SVGHelper {
   }
 
   // Mirror an SVG element horizontally
-  mirror(svgElem) {
-    const childElement = this.getChild(svgElem);
+  static mirror(svgElem) {
+    const childElement = SVGHelper.getChild(svgElem);
     const bbox = childElement.getBBox();
     const cx = bbox.x + bbox.width / 2;
     const cy = bbox.y + bbox.height / 2;
@@ -83,28 +75,23 @@ class SVGHelper {
   // Color an SVG element with a specified color
   // This is a bit brute force because SVG images can have arbitrary nesting
   // and 'style="stroke: fill:' attribute will override the stroke and fill attributes.
-  color(svgElem, color) {
-    svgElem.setAttribute('fill', color);
-    svgElem.setAttribute('stroke', color);
-    svgElem.setAttribute('style', 'none');
-    let childElement = this.getChild(svgElem);
-    childElement.setAttribute('fill', color);
-    childElement.setAttribute('stroke', color);
-    childElement.setAttribute('style', 'none');
-    childElement = this.getChild(childElement);
-    childElement.setAttribute('fill', color);
-    childElement.setAttribute('stroke', color);
-    childElement.setAttribute('style', 'none');
+  static color(svgElem, color) {
+    const elements = svgElem.querySelectorAll('*');
+    elements.forEach((element) => {
+      element.setAttribute('fill', color);
+      element.setAttribute('stroke', color);
+      element.removeAttribute('style');
+    });
   }
 
-  createCenteredText(color, size, string, y, parent, parentWidth, reposition) {
+  static createCenteredText({ color, size, string, y, parent, parentWidth, reposition }) {
     const lines = string.split('\n'); // Split string by line breaks
-    const group = this.create('g', {});
+    const group = SVGHelper.create('g', {});
     const padding = size / 6; // Adjust to increase or decrease vertical spacing
     const lineSvgArr = [];
     let lineY;
     lines.forEach((line, index) => {
-      const text = this.create('text', {
+      const text = SVGHelper.create('text', {
         fill: color,
         'font-size': size,
         'font-family': FontFamilies,
@@ -112,7 +99,7 @@ class SVGHelper {
       text.textContent = line;
       lineSvgArr[index] = text;
 
-      const textBBox = this.getBBoxAfterRender(parent, text);
+      const textBBox = SVGHelper.getBBoxAfterRender(parent, text);
       const textWidth = textBBox.width;
 
       const lineX = (parentWidth - textWidth) / 2;
@@ -133,7 +120,7 @@ class SVGHelper {
     return group;
   }
 
-  saveBlobAsFile(blob, filename) {
+  static saveBlobAsFile(blob, filename) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -144,76 +131,78 @@ class SVGHelper {
     URL.revokeObjectURL(url);
   }
 
-  save(fileName, svgElem) {
+  static save(fileName, svgElem) {
     if (svgElem) {
       const svgData = new XMLSerializer().serializeToString(svgElem);
       const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      this.saveBlobAsFile(blob, fileName);
+      SVGHelper.saveBlobAsFile(blob, fileName);
     }
   }
 
-  saveZip(downloads, filename) {
+  static saveZip(downloads, filename) {
     const zip = new JSZip();
     for (const [file, svgElem] of Object.entries(downloads)) {
       const svgData = new XMLSerializer().serializeToString(svgElem);
       zip.file(file, svgData);
     }
     zip.generateAsync({ type: 'blob' }).then((content) => {
-      this.saveBlobAsFile(content, filename);
+      SVGHelper.saveBlobAsFile(content, filename);
     });
   }
 }
 
 class BookCover {
-  constructor() {
-    // front, back, and spine shared properties
-    this.backgroundColor = '#aeb2b1';
-    this.elementColor = '#292a5a';
-    this.width = DefaultCoverWidth; // Spine has it's own width
-    this.borderGap = DefaultCoverWidth / 18;
-    this.borderThickness = 2.2;
-    this.height = DefaultCoverHeight;
-    this.proportions = DefaultCoverProportions;
-    this.author = 'Felix\nPawsley';
-    this.title = 'Cats Cradle\nChronicles';
-    this.SVGUtils = new SVGHelper();
-    // tesselation settings and art svg image
-    this.art = {
-      flip: false,
-      imageScale: 1,
-      increasePerColumn: 1,
-      maxPerColumn: 4,
-      mirror: true,
-      numColumns: 5,
-      rotateAngle: 0,
-      svg: this.SVGUtils.fromString(DefaultSvgText),
-      vertLines: false,
-      xOverhang: true,
-      yOverhang: false,
-    };
-    // front cover specific properties
-    this.front = {
-      fontSize: 18,
-      htmlElem: document.getElementById('front-cover'),
-      initialCopies: 2,
-      svgElem: null,
-    };
-    // back cover specific properties
-    this.back = {
-      htmlElem: document.getElementById('back-cover'),
-      initialCopies: 4,
-      svgElem: null,
-    };
-    // spine cover specific properties
-    this.spine = {
-      fontSize: 12,
-      fontRotation: false,
-      htmlElem: document.getElementById('spine-cover'),
-      proportions: DefaultSpineProportions,
-      svgElem: null,
-      width: DefaultCoverHeight / DefaultSpineProportions,
-    };
+  backgroundColor = '#aeb2b1';
+  elementColor = '#292a5a';
+  author = 'Felix\nPawsley';
+  title = 'Cats Cradle\nChronicles';
+  proportions = 1.5;
+  width = 360; // Spine has it's own width
+  get height() {
+    // automatically updates height when width or proportions change
+    return this.width * this.proportions;
   }
+  borderGap = this.width / 18;
+  borderThickness = 2.2;
+  art = {
+    increasePerColumn: 1,
+    maxPerColumn: 4,
+    numColumns: 5,
+    rotateAngle: 0,
+    scale: 1,
+    svg: SVGHelper.fromString(DefaultSvgText),
+    flip: false,
+    mirror: true,
+    vertLines: false,
+    xOverhang: true,
+    yOverhang: false,
+  };
+  front = {
+    fontSize: 18,
+    htmlElem: document.getElementById('front-cover'),
+    initialCopies: 2,
+    svgElem: null,
+  };
+  back = {
+    htmlElem: document.getElementById('back-cover'),
+    initialCopies: 4,
+    svgElem: null,
+  };
+  spine = (() => {
+    // This is haunted but the only way to make get width close over height
+    const _book = this;
+    return {
+      fontRotation: false,
+      fontSize: 12,
+      htmlElem: document.getElementById('spine-cover'),
+      proportions: 8,
+      svgElem: null,
+      get width() {
+        // automatically update spine.height when height or spine.proportions change
+        return _book.height / this.proportions;
+      },
+    };
+  })();
 
   generateCovers() {
     this.genFront();
@@ -249,16 +238,16 @@ class BookCover {
 
     if (!isSafari) {
       for (const [key, value] of Object.entries(downloads)) {
-        this.SVGUtils.save(key, value);
+        SVGHelper.save(key, value);
       }
     } else {
-      this.SVGUtils.saveZip(downloads, 'combined.zip');
+      SVGHelper.saveZip(downloads, 'combined.zip');
     }
   }
 
   genSpine() {
     // Create spine cover parent Svg
-    this.spine.svgElem = this.SVGUtils.create('svg', {
+    this.spine.svgElem = SVGHelper.create('svg', {
       width: this.spine.width,
       height: this.height,
       overflow: 'hidden',
@@ -274,7 +263,7 @@ class BookCover {
 
     // Create rectangle border slightly inset from cover SVG as per penguin style
     const borderHeight = this.height - this.borderThickness;
-    const borderRectangle = this.SVGUtils.create('rect', {
+    const borderRectangle = SVGHelper.create('rect', {
       x: this.borderThickness / 2,
       y: this.borderThickness / 2,
       width: this.spine.width - this.borderThickness,
@@ -292,10 +281,8 @@ class BookCover {
     const yCenter = this.height / 2;
     const thinSpine = this.spine.proportions > 12;
 
-    // If spin too slim just add rotated text and bail out
     if (this.spine.fontRotation) {
-      // If spine too small put the text sideways and no graphic
-      const titleSvg = this.SVGUtils.create('text', {
+      const titleSvg = SVGHelper.create('text', {
         x: xCenter + this.spine.fontSize / 2,
         y: yCenter,
         fill: this.elementColor,
@@ -307,7 +294,7 @@ class BookCover {
       titleSvg.textContent = this.title;
       this.spine.svgElem.appendChild(titleSvg);
 
-      const authorSvg = this.SVGUtils.create('text', {
+      const authorSvg = SVGHelper.create('text', {
         x: xCenter - this.spine.fontSize,
         y: yCenter,
         fill: this.elementColor,
@@ -323,27 +310,27 @@ class BookCover {
       let text = this.title.split(/[ \n]+/).join('\n');
       text += '\n\n';
       text += this.author.split(/[ \n]+/).join('\n');
-      const textSvg = this.SVGUtils.createCenteredText(
-        this.elementColor,
-        this.spine.fontSize,
-        text,
-        textY,
-        this.spine.svgElem,
-        this.spine.width,
-        true
-      );
+      const textSvg = SVGHelper.createCenteredText({
+        color: this.elementColor,
+        size: this.spine.fontSize,
+        string: text,
+        y: textY,
+        parent: this.spine.svgElem,
+        parentWidth: this.spine.width,
+        reposition: true,
+      });
       this.spine.svgElem.appendChild(textSvg);
     }
 
     // Add a couple graphics
-    const artSvgBBox = this.SVGUtils.getBBoxAfterRender(this.spine.svgElem, this.art.svg);
+    const artSvgBBox = SVGHelper.getBBoxAfterRender(this.spine.svgElem, this.art.svg);
     const artHeight = this.height / (thinSpine ? 12 : 9);
     const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
     const halfArtHeight = artHeight / 2;
     const halfArtWidth = artWidth / 2;
     this.art.svg.setAttribute('width', artWidth);
     this.art.svg.setAttribute('height', artHeight);
-    this.SVGUtils.color(this.art.svg, this.elementColor);
+    SVGHelper.color(this.art.svg, this.elementColor);
 
     // Add art to top spine
     let clone = this.art.svg.cloneNode(true);
@@ -354,7 +341,7 @@ class BookCover {
     clone.setAttribute('y', yTileHeight * 3 - halfArtHeight);
     clone.setAttribute('x', xCenter - halfArtWidth);
     this.spine.svgElem.appendChild(clone);
-    this.SVGUtils.mirror(clone);
+    SVGHelper.mirror(clone);
     // Add art to bottom spine
     clone = this.art.svg.cloneNode(true);
     clone.setAttribute('y', yTileHeight * (yTileCount - 3) - halfArtHeight);
@@ -364,12 +351,12 @@ class BookCover {
     clone.setAttribute('y', yTileHeight * (yTileCount - 1) - halfArtHeight);
     clone.setAttribute('x', xCenter - halfArtWidth);
     this.spine.svgElem.appendChild(clone);
-    this.SVGUtils.mirror(clone);
+    SVGHelper.mirror(clone);
   }
 
   genCoverFrame(side) {
     // Create cover Svg
-    Cover[side].svgElem = this.SVGUtils.create('svg', {
+    Cover[side].svgElem = SVGHelper.create('svg', {
       width: this.width,
       height: this.height,
       overflow: 'hidden',
@@ -385,7 +372,7 @@ class BookCover {
 
     // Create rectangle border slightly inset from cover SVG as per penguin style
     const borderHeight = this.height - this.borderThickness;
-    const borderRectangle = this.SVGUtils.create('rect', {
+    const borderRectangle = SVGHelper.create('rect', {
       x: this.borderThickness / 2,
       y: this.borderThickness / 2,
       width: this.width - this.borderThickness,
@@ -400,45 +387,45 @@ class BookCover {
       // Create centered title
       const titleY = this.borderGap * 1.5;
       const titleString = this.title;
-      const titleSvg = this.SVGUtils.createCenteredText(
-        this.elementColor,
-        this[side].fontSize,
-        titleString,
-        titleY,
-        this[side].svgElem,
-        this.width,
-        false
-      );
+      const titleSvg = SVGHelper.createCenteredText({
+        color: this.elementColor,
+        size: this[side].fontSize,
+        string: titleString,
+        y: titleY,
+        parent: this[side].svgElem,
+        parentWidth: this.width,
+        reposition: false,
+      });
       Cover[side].svgElem.appendChild(titleSvg);
 
       // Create centered author
       const authorY = borderHeight - this.borderGap * 1.5;
       const authorString = this.author;
-      const authorSvg = this.SVGUtils.createCenteredText(
-        this.elementColor,
-        this[side].fontSize,
-        authorString,
-        authorY,
-        this[side].svgElem,
-        this.width,
-        true
-      );
+      const authorSvg = SVGHelper.createCenteredText({
+        color: this.elementColor,
+        size: this[side].fontSize,
+        string: authorString,
+        y: authorY,
+        parent: this[side].svgElem,
+        parentWidth: this.width,
+        reposition: true,
+      });
       Cover[side].svgElem.appendChild(authorSvg);
     }
     return Cover[side].svgElem;
   }
 
-  transformDecider(x, y, placementGrid, style) {
+  transformDecider({ x, y, grid, style }) {
     switch (style) {
       case 'diagonals':
         return (x + y) % 4 === 1 || (x + y) % 4 === 2;
       case 'symmetric':
-        if (placementGrid.oddCols) {
-          if (x < Math.floor(placementGrid.cols / 2)) return true;
-          else if (x > Math.floor(placementGrid.cols / 2)) return false;
+        if (grid.oddCols) {
+          if (x < Math.floor(grid.cols / 2)) return true;
+          else if (x > Math.floor(grid.cols / 2)) return false;
           else return y % 4 == 1 || y % 4 == 2 ? false : true;
         } else {
-          return x < placementGrid.cols / 2 ? true : false;
+          return x < grid.cols / 2 ? true : false;
         }
     }
   }
@@ -463,12 +450,14 @@ class BookCover {
     const yTileHeight = this.height / yTileCount;
 
     // Columns x rows 2d array with elements either null or an object containing coordinates
-    const placementGrid = {};
-    placementGrid.rows = numRows;
-    placementGrid.oddRows = this.art.numRows % 2 != 0;
-    placementGrid.cols = this.art.numColumns;
-    placementGrid.oddCols = this.art.numColumns % 2 != 0;
-    placementGrid.grid = [];
+    const placementGrid = {
+      rows: numRows,
+      oddRows: this.art.numRows % 2 != 0,
+      cols: this.art.numColumns,
+      oddCols: this.art.numColumns % 2 != 0,
+      grid: [],
+    };
+    // Decides which elements to mirror/flip/rotate
     const style = placementGrid.oddCols ? 'diagonals' : 'symmetric';
     let copies = Cover[side].initialCopies;
     // Iterate through columns starting in the middle and working outwards
@@ -483,26 +472,17 @@ class BookCover {
       for (let j = jStart; j < copies; j += 2) {
         const upIndex = middleRowIndex + j;
         const downIndex = middleRowIndex - j;
-        placementGrid.grid[rightIndex][upIndex] = {
-          applyTransform: this.transformDecider(rightIndex, upIndex, placementGrid, style),
-          x: (rightIndex + xOffset) * xTileWidth + this.borderThickness,
-          y: (upIndex + yOffset) * yTileHeight,
+        const fillGrid = (index1, index2) => {
+          placementGrid.grid[index1][index2] = {
+            applyTransform: this.transformDecider({ x: index1, y: index2, grid: placementGrid, style: style }),
+            x: (index1 + xOffset) * xTileWidth + this.borderThickness,
+            y: (index2 + yOffset) * yTileHeight,
+          };
         };
-        placementGrid.grid[leftIndex][upIndex] = {
-          applyTransform: this.transformDecider(leftIndex, upIndex, placementGrid, style),
-          x: (leftIndex + xOffset) * xTileWidth + this.borderThickness,
-          y: (upIndex + yOffset) * yTileHeight,
-        };
-        placementGrid.grid[rightIndex][downIndex] = {
-          applyTransform: this.transformDecider(rightIndex, downIndex, placementGrid, style),
-          x: (rightIndex + xOffset) * xTileWidth + this.borderThickness,
-          y: (downIndex + yOffset) * yTileHeight,
-        };
-        placementGrid.grid[leftIndex][downIndex] = {
-          applyTransform: this.transformDecider(leftIndex, downIndex, placementGrid, style),
-          x: (leftIndex + xOffset) * xTileWidth + this.borderThickness,
-          y: (downIndex + yOffset) * yTileHeight,
-        };
+        fillGrid(rightIndex, upIndex);
+        fillGrid(leftIndex, upIndex);
+        fillGrid(rightIndex, downIndex);
+        fillGrid(leftIndex, downIndex);
       }
       copies = copies + this.art.increasePerColumn;
       if (copies > this.art.maxPerColumn)
@@ -521,13 +501,13 @@ class BookCover {
     });
 
     // set art sizing
-    const artSvgBBox = this.SVGUtils.getBBoxAfterRender(Cover[side].svgElem, this.art.svg);
-    const artHeight = this.art.imageScale * (this.width / this.art.numColumns);
+    const artSvgBBox = SVGHelper.getBBoxAfterRender(Cover[side].svgElem, this.art.svg);
+    const artHeight = this.art.scale * (this.width / this.art.numColumns);
     const artWidth = artHeight * (artSvgBBox.width / artSvgBBox.height);
     this.art.svg.setAttribute('width', artWidth);
     this.art.svg.setAttribute('height', artHeight);
     this.art.svg.setAttribute('viewBox', `${artSvgBBox.x} ${artSvgBBox.y} ${artSvgBBox.width} ${artSvgBBox.height}`);
-    this.SVGUtils.color(this.art.svg, this.elementColor);
+    SVGHelper.color(this.art.svg, this.elementColor);
     const halfArtWidth = artWidth / 2;
     const halfArtHeight = artHeight / 2;
 
@@ -543,7 +523,7 @@ class BookCover {
 
         // Add vertical lines on either side of the middle
         if (this.art.vertLines && !lineAdded && [leftOfMiddle, rightOfMiddle].includes(columnIndex)) {
-          const lineLeft = this.SVGUtils.create('line', {
+          const lineLeft = SVGHelper.create('line', {
             x1: place.x,
             y1: 0,
             x2: place.x,
@@ -566,12 +546,12 @@ class BookCover {
         if (place.applyTransform) {
           if (this.art.flip) rotateAngle += 180;
           if (this.art.mirror) {
-            this.SVGUtils.mirror(clone);
+            SVGHelper.mirror(clone);
             rotateAngle = -rotateAngle;
           }
           rotateAngle = -rotateAngle;
         }
-        this.SVGUtils.rotate(clone, rotateAngle);
+        SVGHelper.rotate(clone, rotateAngle);
 
         // Update element with transformations
         Cover[side].svgElem.appendChild(clone);
@@ -584,19 +564,15 @@ function initializePage() {
   document.getElementById('backgroundColorInput').value = Cover.backgroundColor;
   document.getElementById('coverProportionsInput').value = Cover.proportions;
   document.getElementById('elementColorInput').value = Cover.elementColor;
-  // front cover
   document.getElementById('authorInput').value = Cover.author;
   document.getElementById('coverFontSizeInput').value = Cover.front.fontSize;
   document.getElementById('spineFontSizeInput').value = Cover.spine.fontSize;
   document.getElementById('frontCoverInitialCopiesInput').value = Cover.front.initialCopies;
   document.getElementById('titleInput').value = Cover.title;
-  // back cover
   document.getElementById('backCoverInitialCopiesInput').value = Cover.back.initialCopies;
-  // spine cover
   document.getElementById('spineProportionsInput').value = Cover.spine.proportions;
-  // pattern
   document.getElementById('flipCheckbox').checked = Cover.art.flip;
-  document.getElementById('imageScale').value = Cover.art.imageScale;
+  document.getElementById('imageScale').value = Cover.art.scale;
   document.getElementById('increasePerColumnInput').value = Cover.art.increasePerColumn;
   document.getElementById('maxPerColumnInput').value = Cover.art.maxPerColumn;
   document.getElementById('numColumnsInput').value = Cover.art.numColumns;
@@ -620,15 +596,13 @@ function addEventListeners() {
     } else if (target.matches('#rotateInput')) {
       Cover.art.rotateAngle = parseInt(target.value);
     } else if (target.matches('#imageScale')) {
-      Cover.art.imageScale = parseFloat(target.value);
+      Cover.art.scale = parseFloat(target.value);
     } else if (target.matches('#coverProportionsInput')) {
       Cover.proportions = parseFloat(target.value);
-      Cover.height = Cover.width * Cover.proportions;
       Cover.generateCovers();
       return;
     } else if (target.matches('#spineProportionsInput')) {
       Cover.spine.proportions = parseFloat(target.value);
-      Cover.spine.width = Cover.height / Cover.spine.proportions;
     } else if (target.matches('#coverFontSizeInput')) {
       Cover.front.fontSize = parseInt(target.value);
       Cover.genCoverFrame('front');
@@ -660,7 +634,6 @@ function addEventListeners() {
 
   document.getElementById('settings').addEventListener('change', function (event) {
     const target = event.target;
-
     if (target.matches('#mirrorCheckbox')) {
       Cover.art.mirror = target.checked;
     } else if (target.matches('#flipCheckbox')) {
@@ -687,7 +660,7 @@ function addEventListeners() {
     const reader = new FileReader();
     reader.onload = function () {
       const svgText = reader.result;
-      Cover.art.svg = Cover.SVGUtils.fromString(svgText);
+      Cover.art.svg = SVGHelper.fromString(svgText);
       Cover.art.svg.setAttribute('overflow', `visible`);
       Cover.art.svg.setAttribute('class', 'artSVG');
       Cover.generateCovers();

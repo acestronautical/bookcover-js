@@ -172,6 +172,7 @@ class BookCover {
     scale: 1.5,
     defaultImages: [{ svg: SVGHelper.fromString(DefaultSvgText) }],
     images: [],
+    step: 2, // determines which image to choose for multi-image placement
     flip: false,
     mirror: true,
     vertLines: false,
@@ -547,7 +548,7 @@ class BookCover {
         }
         // Add the art at position, correcting for midpoint not top left
         const count = place.applyTransform ? imageCounter.even : imageCounter.odd;
-        place.applyTransform ? (imageCounter.even += 4) : (imageCounter.odd += 4);
+        place.applyTransform ? (imageCounter.even += this.art.step) : (imageCounter.odd += this.art.step);
         const image = images.at(-(count % images.length));
         const clone = image.svg.cloneNode(true);
         clone.setAttribute('y', place.y - image.halfHeight);
@@ -678,6 +679,7 @@ function addEventListeners() {
       Cover.art.images.at(-1).svg.setAttribute('overflow', `visible`);
       Cover.art.images.at(-1).svg.setAttribute('class', 'artSVG');
       document.getElementById('fileInputLabel').innerHTML = 'Upload Another';
+      if (Cover.art.images.length > 2) Cover.art.step = Math.floor(Math.random() * 100);
       Cover.generateCovers();
     };
     reader.readAsText(file);

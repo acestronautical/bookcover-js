@@ -86,7 +86,7 @@ textarea {
     margin: 18px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    min-width: 250px;
+    min-width: 320px;
     max-width: 100%;
 }
 
@@ -97,6 +97,7 @@ textarea {
 .input-group label {
     display: block;
     margin-bottom: 5px;
+    font-size: 15px;
 }
 
 .input-group input[type="text"],
@@ -104,13 +105,15 @@ textarea {
 .input-group textarea,
 .input-group input[type="color"] {
     width: 100%;
-    padding: 2px;
+    padding: 4px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
-.color-input input[type="color"] {
-    padding: 4px;
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group input[type="color"] {
+    width: 8rem;
 }
 
 .button {

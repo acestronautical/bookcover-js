@@ -369,7 +369,7 @@ class BookCover {
 
   genCoverFrame(side) {
     // Create cover Svg
-    Cover[side].svgElem = SVGHelper.create('svg', {
+    this[side].svgElem = SVGHelper.create('svg', {
       width: this.width,
       height: this.height,
       overflow: 'hidden',
@@ -377,11 +377,11 @@ class BookCover {
     });
 
     // Create div which shows background color margin for cover SVG
-    Cover[side].htmlElem.innerHTML = '';
-    Cover[side].htmlElem.appendChild(Cover[side].svgElem);
-    Cover[side].htmlElem.style.backgroundColor = this.backgroundColor;
-    Cover[side].htmlElem.style.width = `${this.width + this.borderGap * 2}px`;
-    Cover[side].htmlElem.style.height = `${this.height + this.borderGap * 2}px`;
+    this[side].htmlElem.innerHTML = '';
+    this[side].htmlElem.appendChild(this[side].svgElem);
+    this[side].htmlElem.style.backgroundColor = this.backgroundColor;
+    this[side].htmlElem.style.width = `${this.width + this.borderGap * 2}px`;
+    this[side].htmlElem.style.height = `${this.height + this.borderGap * 2}px`;
 
     // Create rectangle border slightly inset from cover SVG as per penguin style
     const borderHeight = this.height - this.borderThickness;
@@ -394,7 +394,7 @@ class BookCover {
       stroke: this.elementColor,
       'stroke-width': this.borderThickness,
     });
-    Cover[side].svgElem.appendChild(borderRectangle);
+    this[side].svgElem.appendChild(borderRectangle);
 
     if (side == 'front') {
       // Create centered title
@@ -409,7 +409,7 @@ class BookCover {
         parentWidth: this.width,
         reposition: false,
       });
-      Cover[side].svgElem.appendChild(titleSvg);
+      this[side].svgElem.appendChild(titleSvg);
 
       // Create centered author
       const authorY = borderHeight - this.borderGap * 1.5;
@@ -423,9 +423,9 @@ class BookCover {
         parentWidth: this.width,
         reposition: true,
       });
-      Cover[side].svgElem.appendChild(authorSvg);
+      this[side].svgElem.appendChild(authorSvg);
     }
-    return Cover[side].svgElem;
+    return this[side].svgElem;
   }
 
   transformDecider({ x, y, grid, style }) {
@@ -446,9 +446,9 @@ class BookCover {
   createPlacementGrid(side) {
     // Calculate column/row counts and middle
     const middleColumnIndex = Math.floor(this.art.numColumns / 2);
-    let max = Cover[side].initialCopies + this.art.increasePerColumn * middleColumnIndex;
+    let max = this[side].initialCopies + this.art.increasePerColumn * middleColumnIndex;
     if (max > this.art.maxPerColumn) max = this.art.maxPerColumn;
-    const maxColumnCopyCount = Math.max(max, Cover[side].initialCopies);
+    const maxColumnCopyCount = Math.max(max, this[side].initialCopies);
     const numRows = maxColumnCopyCount * 2 - 1;
     const middleRowIndex = Math.floor(numRows / 2);
 
@@ -472,7 +472,7 @@ class BookCover {
     };
     // Decides which elements to mirror/flip/rotate
     const style = placementGrid.oddCols ? 'diagonals' : 'symmetric';
-    let copies = Cover[side].initialCopies;
+    let copies = this[side].initialCopies;
     // Iterate through columns starting in the middle and working outwards
     for (let i = 0; i <= middleColumnIndex; i++) {
       const rightIndex = middleColumnIndex + i;
@@ -508,7 +508,7 @@ class BookCover {
 
   // Decorate the cover as per settings
   tesselate(side) {
-    const childrenToRemove = Cover[side].svgElem.querySelectorAll('.artSVG');
+    const childrenToRemove = this[side].svgElem.querySelectorAll('.artSVG');
     childrenToRemove.forEach((child) => {
       child.remove();
     });

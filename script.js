@@ -206,6 +206,8 @@ class BookCover {
     };
     // spine cover specific properties
     this.spine = {
+      fontSize: 12,
+      fontRotation: false,
       htmlElem: document.getElementById('spine-cover'),
       proportions: DefaultSpineProportions,
       svgElem: null,
@@ -291,29 +293,28 @@ class BookCover {
     const thinSpine = this.spine.proportions > 12;
 
     // If spin too slim just add rotated text and bail out
-    if (thinSpine) {
+    if (this.spine.fontRotation) {
       // If spine too small put the text sideways and no graphic
-      const spineFontSize = this.spine.width / 3.5;
       const titleSvg = this.SVGUtils.create('text', {
-        x: xCenter + spineFontSize / 2,
+        x: xCenter + this.spine.fontSize / 2,
         y: yCenter,
         fill: this.elementColor,
-        'font-size': spineFontSize,
+        'font-size': this.spine.fontSize,
         'font-family': FontFamilies,
         'text-anchor': 'middle',
-        transform: `rotate(90 ${xCenter + spineFontSize / 2},${yCenter})`,
+        transform: `rotate(90 ${xCenter + this.spine.fontSize / 2},${yCenter})`,
       });
       titleSvg.textContent = this.title;
       this.spine.svgElem.appendChild(titleSvg);
 
       const authorSvg = this.SVGUtils.create('text', {
-        x: xCenter - spineFontSize,
+        x: xCenter - this.spine.fontSize,
         y: yCenter,
         fill: this.elementColor,
-        'font-size': spineFontSize,
+        'font-size': this.spine.fontSize,
         'font-family': FontFamilies,
         'text-anchor': 'middle',
-        transform: `rotate(90 ${xCenter - spineFontSize},${yCenter})`,
+        transform: `rotate(90 ${xCenter - this.spine.fontSize},${yCenter})`,
       });
       authorSvg.textContent = this.author;
       this.spine.svgElem.appendChild(authorSvg);
@@ -324,7 +325,7 @@ class BookCover {
       text += this.author.split(/[ \n]+/).join('\n');
       const textSvg = this.SVGUtils.createCenteredText(
         this.elementColor,
-        this.spine.width / 5,
+        this.spine.fontSize,
         text,
         textY,
         this.spine.svgElem,
@@ -585,7 +586,8 @@ function initializePage() {
   document.getElementById('elementColorInput').value = Cover.elementColor;
   // front cover
   document.getElementById('authorInput').value = Cover.author;
-  document.getElementById('fontSizeInput').value = Cover.front.fontSize;
+  document.getElementById('coverFontSizeInput').value = Cover.front.fontSize;
+  document.getElementById('spineFontSizeInput').value = Cover.spine.fontSize;
   document.getElementById('frontCoverInitialCopiesInput').value = Cover.front.initialCopies;
   document.getElementById('titleInput').value = Cover.title;
   // back cover
@@ -627,9 +629,11 @@ function addEventListeners() {
     } else if (target.matches('#spineProportionsInput')) {
       Cover.spine.proportions = parseFloat(target.value);
       Cover.spine.width = Cover.height / Cover.spine.proportions;
-    } else if (target.matches('#fontSizeInput')) {
+    } else if (target.matches('#coverFontSizeInput')) {
       Cover.front.fontSize = parseInt(target.value);
       Cover.genCoverFrame('front');
+    } else if (target.matches('#spineFontSizeInput')) {
+      Cover.spine.fontSize = parseInt(target.value);
     } else if (target.matches('#maxPerColumnInput')) {
       Cover.art.maxPerColumn = parseInt(target.value);
     } else if (target.matches('#numColumnsInput')) {
@@ -656,6 +660,7 @@ function addEventListeners() {
 
   document.getElementById('settings').addEventListener('change', function (event) {
     const target = event.target;
+
     if (target.matches('#mirrorCheckbox')) {
       Cover.art.mirror = target.checked;
     } else if (target.matches('#flipCheckbox')) {
@@ -666,6 +671,8 @@ function addEventListeners() {
       Cover.art.xOverhang = target.checked;
     } else if (target.matches('#verticalLinesCheckbox')) {
       Cover.art.vertLines = target.checked;
+    } else if (target.matches('#spineFontRotationInput')) {
+      Cover.spine.fontRotation = target.checked;
     }
     Cover.updateCovers();
   });

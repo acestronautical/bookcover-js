@@ -133,34 +133,34 @@ class SVGHelper {
     return group;
   }
 
+  saveBlobAsFile(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   save(fileName, svgElem) {
     if (svgElem) {
-      // Get the bounding box of the visible content
-      const bbox = svgElem.getBBox();
-
-      // Create a new SVG element with the same viewBox as the visible content
-      const svg = this.create('svg', {
-        viewBox: `${bbox.x - 5} ${bbox.y - 5} ${bbox.width + 10} ${bbox.height + 10}`,
-      });
-
-      // Clone and svgElem only the visible elements to the new SVG
-      Array.from(svgElem.childNodes).forEach((node) => {
-        const clonedNode = node.cloneNode(true);
-        svg.appendChild(clonedNode);
-      });
-
-      // Serialize the new SVG and save it
-      const svgData = new XMLSerializer().serializeToString(svg);
+      const svgData = new XMLSerializer().serializeToString(svgElem);
       const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      this.saveBlobAsFile(blob, fileName);
     }
+  }
+
+  saveZip(downloads, filename) {
+    const zip = new JSZip();
+    for (const [file, svgElem] of Object.entries(downloads)) {
+      const svgData = new XMLSerializer().serializeToString(svgElem);
+      zip.file(file, svgData);
+    }
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      this.saveBlobAsFile(content, filename);
+    });
   }
 }
 
@@ -236,13 +236,21 @@ class BookCover {
   }
 
   saveCovers() {
-    const covers = {
-      'front_cover.svg': this.front.svgElem,
-      'back_cover.svg': this.back.svgElem,
-      'spine_cover.svg': this.spine.svgElem,
-    };
-    for (const [key, value] of Object.entries(covers)) {
-      this.SVGUtils.save(key, value);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    const covers = [this.back.svgElem, this.spine.svgElem, this.front.svgElem];
+    const files = ['back_cover.svg', 'spine_cover.svg', 'front_cover.svg'];
+    const downloads = files.reduce((result, key, index) => {
+      result[key] = covers[index];
+      return result;
+    }, {});
+
+    if (!isSafari) {
+      for (const [key, value] of Object.entries(downloads)) {
+        this.SVGUtils.save(key, value);
+      }
+    } else {
+      this.SVGUtils.saveZip(downloads, 'combined.zip');
     }
   }
 

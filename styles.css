@@ -104,7 +104,7 @@ textarea {
 .input-group input[type="number"],
 .input-group textarea,
 .input-group input[type="color"] {
-    width: 100%;
+    width: 97%;
     padding: 4px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -113,7 +113,7 @@ textarea {
 .input-group input[type="text"],
 .input-group input[type="number"],
 .input-group input[type="color"] {
-    width: 8rem;
+    width: 8.5rem;
 }
 
 .button {

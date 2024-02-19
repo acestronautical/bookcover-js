@@ -1,5 +1,5 @@
 
-# <img src="bookcover-js-favicon.png" width="22"> Book Cover JS
+# <img src="bookcover-js-favicon.png" width="28"> Book Cover JS
 
 ![Application Screenshot](bookcover-js-screenshot.png)
 

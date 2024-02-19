@@ -9,8 +9,8 @@ const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml
                   </g>
                 </g>
               </svg>`;
-const FontFamilies =
-  "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
+// Fonts and fallback fonts
+const FontFamilies = "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
 
 // Static helper class, does not need to be instantiated it's just a namespace
 class SVGHelper {
@@ -95,9 +95,7 @@ class SVGHelper {
     let lineY;
     lines.forEach((line, index) => {
       const text = SVGHelper.create('text', {
-        fill: color,
-        'font-size': size,
-        'font-family': FontFamilies,
+        fill: color, 'font-size': size, 'font-family': FontFamilies
       });
       text.textContent = line;
       lineSvgArr[index] = text;
@@ -161,10 +159,8 @@ class BookCover {
   title = 'Cats Cradle\nChronicles';
   proportions = 1.5;
   width = 360; // Spine has it's own width
-  get height() {
-    // automatically updates height when width or proportions change
-    return this.width * this.proportions;
-  }
+  // getters automatically update when other properties change
+  get height() { return this.width * this.proportions; }
   borderGap = this.width / 18;
   borderThickness = 2.2;
   art = {
@@ -183,58 +179,40 @@ class BookCover {
     yOverhang: false,
   };
   front = (() => {
-    // This is haunted but the only way to make get width/height close over 'this'
+    // This is haunted but the only way to make the getters close over 'this'
     // We want shared properties to be available on BookCover and on relevant children
-    const _book = this;
+    const _bookCover = this;
     return {
       fontSize: 18,
       htmlElem: document.getElementById('front-cover'),
       initialCopies: 2,
       svgElem: null,
-      get height() {
-        return _book.height;
-      },
-      get width() {
-        return _book.width;
-      },
-      get proportions() {
-        return _book.proportions;
-      },
+      get height() { return _bookCover.height; },
+      get width() { return _bookCover.width; },
+      get proportions() { return _bookCover.proportions; },
     };
   })();
   back = (() => {
-    const _book = this;
+    const _bookCover = this;
     return {
       htmlElem: document.getElementById('back-cover'),
       initialCopies: 4,
       svgElem: null,
-      get height() {
-        return _book.height;
-      },
-      get width() {
-        return _book.width;
-      },
-      get proportions() {
-        return _book.proportions;
-      },
+      get height() { return _bookCover.height; },
+      get width() { return _bookCover.width; },
+      get proportions() { return _bookCover.proportions; },
     };
   })();
   spine = (() => {
-    const _book = this;
+    const _bookCover = this;
     return {
       fontRotation: false,
       fontSize: 12,
       htmlElem: document.getElementById('spine-cover'),
       proportions: 8,
       svgElem: null,
-      get height() {
-        // automatically update spine.height when height or spine.proportions change
-        return _book.height;
-      },
-      get width() {
-        // automatically update spine.height when height or spine.proportions change
-        return _book.height / this.proportions;
-      },
+      get height() { return _bookCover.height; },
+      get width() { return _bookCover.height / this.proportions; },
     };
   })();
 
@@ -294,13 +272,9 @@ class BookCover {
     const borderHeight = this[side].height - this.borderThickness;
     const borderWidth = this[side].width - this.borderThickness;
     const borderRectangle = SVGHelper.create('rect', {
-      fill: 'none',
-      stroke: this.elementColor,
-      'stroke-width': this.borderThickness,
-      x: this.borderThickness / 2,
-      y: this.borderThickness / 2,
-      width: borderWidth,
-      height: borderHeight,
+      fill: 'none', stroke: this.elementColor, 'stroke-width': this.borderThickness,
+      x: this.borderThickness / 2, y: this.borderThickness / 2,
+      width: borderWidth, height: borderHeight,
     });
     this[side].svgElem.appendChild(borderRectangle);
     return { height: borderHeight, width: borderWidth };
@@ -318,26 +292,23 @@ class BookCover {
     const thinSpine = this.spine.proportions > 12;
 
     if (this.spine.fontRotation) {
+      const commonTextAttrs = {
+        y: yCenter, fill: this.elementColor, 'font-size': this.spine.fontSize,
+        'font-family': FontFamilies, 'text-anchor': 'middle',
+      };
+
       const titleSvg = SVGHelper.create('text', {
         x: xCenter + this.spine.fontSize / 2,
-        y: yCenter,
-        fill: this.elementColor,
-        'font-size': this.spine.fontSize,
-        'font-family': FontFamilies,
-        'text-anchor': 'middle',
         transform: `rotate(90 ${xCenter + this.spine.fontSize / 2},${yCenter})`,
+        ...commonTextAttrs
       });
       titleSvg.textContent = this.title;
       this.spine.svgElem.appendChild(titleSvg);
 
       const authorSvg = SVGHelper.create('text', {
         x: xCenter - this.spine.fontSize,
-        y: yCenter,
-        fill: this.elementColor,
-        'font-size': this.spine.fontSize,
-        'font-family': FontFamilies,
-        'text-anchor': 'middle',
         transform: `rotate(90 ${xCenter - this.spine.fontSize},${yCenter})`,
+        ...commonTextAttrs
       });
       authorSvg.textContent = this.author;
       this.spine.svgElem.appendChild(authorSvg);
@@ -406,8 +377,9 @@ class BookCover {
     this[side].htmlElem.appendChild(this[side].svgElem);
     this[side].htmlElem.style.backgroundColor = this.backgroundColor;
     // spine doesn't have as much width gap
-    const htmlElemWidth =
-      side == 'spine' ? this[side].width + this.borderGap / 2 : this[side].width + this.borderGap * 2;
+    const htmlElemWidth = (side == 'spine') ?
+      this[side].width + this.borderGap / 2 :
+      this[side].width + this.borderGap * 2;
     this[side].htmlElem.style.width = `${htmlElemWidth}px`;
     this[side].htmlElem.style.height = `${this[side].height + this.borderGap * 2}px`;
 

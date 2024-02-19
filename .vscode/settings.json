@@ -1,0 +1,18 @@
+{
+    "editor.formatOnSave": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    // visual guides for line limit at 80 and 120
+    "editor.rulers": [
+        {
+            "column": 80,
+            "color": "#66666622"
+        },
+        {
+            "column": 120,
+            "color": "#66666644"
+        }
+    ],
+    "eslint.enable": true,
+}

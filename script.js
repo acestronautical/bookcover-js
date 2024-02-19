@@ -1,3 +1,6 @@
+// make eslint happy
+/* global JSZip */
+
 // The default SVG
 const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="preserve" viewBox="0 0 700 700" overflow="visible" class="artSVG">
                 <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
@@ -179,19 +182,44 @@ class BookCover {
     xOverhang: true,
     yOverhang: false,
   };
-  front = {
-    fontSize: 18,
-    htmlElem: document.getElementById('front-cover'),
-    initialCopies: 2,
-    svgElem: null,
-  };
-  back = {
-    htmlElem: document.getElementById('back-cover'),
-    initialCopies: 4,
-    svgElem: null,
-  };
+  front = (() => {
+    // This is haunted but the only way to make get width/height close over 'this'
+    // We want shared properties to be available on BookCover and on relevant children
+    const _book = this;
+    return {
+      fontSize: 18,
+      htmlElem: document.getElementById('front-cover'),
+      initialCopies: 2,
+      svgElem: null,
+      get height() {
+        return _book.height;
+      },
+      get width() {
+        return _book.width;
+      },
+      get proportions() {
+        return _book.proportions;
+      },
+    };
+  })();
+  back = (() => {
+    const _book = this;
+    return {
+      htmlElem: document.getElementById('back-cover'),
+      initialCopies: 4,
+      svgElem: null,
+      get height() {
+        return _book.height;
+      },
+      get width() {
+        return _book.width;
+      },
+      get proportions() {
+        return _book.proportions;
+      },
+    };
+  })();
   spine = (() => {
-    // This is haunted but the only way to make get width close over height
     const _book = this;
     return {
       fontRotation: false,
@@ -199,6 +227,10 @@ class BookCover {
       htmlElem: document.getElementById('spine-cover'),
       proportions: 8,
       svgElem: null,
+      get height() {
+        // automatically update spine.height when height or spine.proportions change
+        return _book.height;
+      },
       get width() {
         // automatically update spine.height when height or spine.proportions change
         return _book.height / this.proportions;
@@ -257,41 +289,32 @@ class BookCover {
     image.halfHeight = image.height / 2;
     image.halfWidth = image.width / 2;
   }
-
-  genSpine() {
-    // Create spine cover parent Svg
-    this.spine.svgElem = SVGHelper.create('svg', {
-      width: this.spine.width,
-      height: this.height,
-      overflow: 'hidden',
-      style: `background-color: ${this.backgroundColor};`,
-    });
-
-    // Create div which shows background color margin for cover SVG
-    this.spine.htmlElem.innerHTML = '';
-    this.spine.htmlElem.appendChild(this.spine.svgElem);
-    this.spine.htmlElem.style.backgroundColor = this.backgroundColor;
-    this.spine.htmlElem.style.width = `${this.spine.width + this.borderGap / 2}px`;
-    this.spine.htmlElem.style.height = `${this.height + this.borderGap * 2}px`;
-
-    // Create rectangle border slightly inset from cover SVG as per penguin style
-    const borderHeight = this.height - this.borderThickness;
+  // Create rectangle border slightly inset from cover SVG as per penguin style
+  genBorderRectangle(side) {
+    const borderHeight = this[side].height - this.borderThickness;
+    const borderWidth = this[side].width - this.borderThickness;
     const borderRectangle = SVGHelper.create('rect', {
-      x: this.borderThickness / 2,
-      y: this.borderThickness / 2,
-      width: this.spine.width - this.borderThickness,
-      height: borderHeight,
       fill: 'none',
       stroke: this.elementColor,
       'stroke-width': this.borderThickness,
+      x: this.borderThickness / 2,
+      y: this.borderThickness / 2,
+      width: borderWidth,
+      height: borderHeight,
     });
-    this.spine.svgElem.appendChild(borderRectangle);
+    this[side].svgElem.appendChild(borderRectangle);
+    return { height: borderHeight, width: borderWidth };
+  }
+
+  genSpine() {
+
+    this.genCoverFrame('spine');
 
     // Some placement calculations
     const yTileCount = 12;
-    const yTileHeight = this.height / yTileCount;
+    const yTileHeight = this.spine.height / yTileCount;
     const xCenter = this.spine.width / 2;
-    const yCenter = this.height / 2;
+    const yCenter = this.spine.height / 2;
     const thinSpine = this.spine.proportions > 12;
 
     if (this.spine.fontRotation) {
@@ -319,7 +342,7 @@ class BookCover {
       authorSvg.textContent = this.author;
       this.spine.svgElem.appendChild(authorSvg);
     } else {
-      const textY = this.height / 2;
+      const textY = this.spine.height / 2;
       let text = this.title.split(/[ \n]+/).join('\n');
       text += '\n\n';
       text += this.author.split(/[ \n]+/).join('\n');
@@ -337,7 +360,7 @@ class BookCover {
 
     // Add a couple graphics
     const images = this.art.defaultImages || this.art.images;
-    const artHeight = this.height / (thinSpine ? 9 : 6);
+    const artHeight = this.spine.height / (thinSpine ? 9 : 6);
     images.forEach((image) => {
       this.sizeImage(image, this.spine.svgElem, artHeight);
     });
@@ -368,11 +391,12 @@ class BookCover {
     SVGHelper.mirror(clone);
   }
 
+  // Size divs and populate borders and text, but not art
   genCoverFrame(side) {
     // Create cover Svg
     this[side].svgElem = SVGHelper.create('svg', {
-      width: this.width,
-      height: this.height,
+      width: this[side].width,
+      height: this[side].height,
       overflow: 'hidden',
       style: `background-color: ${this.backgroundColor};`,
     });
@@ -381,21 +405,13 @@ class BookCover {
     this[side].htmlElem.innerHTML = '';
     this[side].htmlElem.appendChild(this[side].svgElem);
     this[side].htmlElem.style.backgroundColor = this.backgroundColor;
-    this[side].htmlElem.style.width = `${this.width + this.borderGap * 2}px`;
-    this[side].htmlElem.style.height = `${this.height + this.borderGap * 2}px`;
+    // spine doesn't have as much width gap
+    const htmlElemWidth =
+      side == 'spine' ? this[side].width + this.borderGap / 2 : this[side].width + this.borderGap * 2;
+    this[side].htmlElem.style.width = `${htmlElemWidth}px`;
+    this[side].htmlElem.style.height = `${this[side].height + this.borderGap * 2}px`;
 
-    // Create rectangle border slightly inset from cover SVG as per penguin style
-    const borderHeight = this.height - this.borderThickness;
-    const borderRectangle = SVGHelper.create('rect', {
-      x: this.borderThickness / 2,
-      y: this.borderThickness / 2,
-      width: this.width - this.borderThickness,
-      height: borderHeight,
-      fill: 'none',
-      stroke: this.elementColor,
-      'stroke-width': this.borderThickness,
-    });
-    this[side].svgElem.appendChild(borderRectangle);
+    const borderHeight = this.genBorderRectangle(side).height;
 
     if (side == 'front') {
       // Create centered title
@@ -407,7 +423,7 @@ class BookCover {
         string: titleString,
         y: titleY,
         parent: this[side].svgElem,
-        parentWidth: this.width,
+        parentWidth: this[side].width,
         reposition: false,
       });
       this[side].svgElem.appendChild(titleSvg);
@@ -421,7 +437,7 @@ class BookCover {
         string: authorString,
         y: authorY,
         parent: this[side].svgElem,
-        parentWidth: this.width,
+        parentWidth: this[side].width,
         reposition: true,
       });
       this[side].svgElem.appendChild(authorSvg);
@@ -456,12 +472,12 @@ class BookCover {
     // Calculate X tiling units
     const xTileCount = this.art.xOverhang ? this.art.numColumns - 1 : this.art.numColumns;
     const xOffset = this.art.xOverhang ? 0 : 0.5;
-    const xTileWidth = (this.width - this.borderThickness * 2) / xTileCount;
+    const xTileWidth = (this[side].width - this.borderThickness * 2) / xTileCount;
 
     // Calculate Y tiling units
     const yTileCount = this.art.yOverhang ? numRows - 1 : numRows + 1;
     const yOffset = this.art.yOverhang ? 0 : 1;
-    const yTileHeight = this.height / yTileCount;
+    const yTileHeight = this[side].height / yTileCount;
 
     // Columns x rows 2d array with elements either null or an object containing coordinates
     const placementGrid = {
@@ -516,7 +532,7 @@ class BookCover {
 
     // set art sizing
     const images = this.art.defaultImages || this.art.images;
-    const artHeight = this.art.scale * (this.width / this.art.numColumns);
+    const artHeight = this.art.scale * (this[side].width / this.art.numColumns);
     images.forEach((image) => {
       this.sizeImage(image, this[side].svgElem, artHeight);
     });
@@ -538,7 +554,7 @@ class BookCover {
             x1: place.x,
             y1: 0,
             x2: place.x,
-            y2: this.height,
+            y2: this[side].height,
             stroke: this.elementColor,
             'stroke-width': this.borderThickness / 1.5,
             class: 'artSVG',

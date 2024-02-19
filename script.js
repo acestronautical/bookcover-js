@@ -606,10 +606,10 @@ function addEventListeners() {
     } else if (target.matches('#spineProportionsInput')) {
       Cover.spine.proportions = parseFloat(target.value);
     } else if (target.matches('#coverFontSizeInput')) {
-      Cover.front.fontSize = parseInt(target.value);
+      Cover.front.fontSize = parseFloat(target.value);
       Cover.genCoverFrame('front');
     } else if (target.matches('#spineFontSizeInput')) {
-      Cover.spine.fontSize = parseInt(target.value);
+      Cover.spine.fontSize = parseFloat(target.value);
     } else if (target.matches('#maxPerColumnInput')) {
       Cover.art.maxPerColumn = parseInt(target.value);
     } else if (target.matches('#numColumnsInput')) {

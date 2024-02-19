@@ -5,23 +5,18 @@
 
  Bookcover-js is a web application that allows users to generate penguin clothbound classics style book covers with their own SVG images. The generated covers are also presented in SVG format suitable for use with a cricut or silhoutte or other cutting plotter.
 
-Bookcover-js is available on GitHub Pages. 
-
 Click --> [HERE](https://acestronautical.github.io/bookcover-js/) <-- to use
 
 ## Offline Usage
 
-1. Clone the repository:
-
-    ```
-    git clone https://github.com/acestronautical/bookcover-js.git
-    ```
-
-2. Open `index.html` in any web browser.
+1. Download the repository with this [link](https://github.com/acestronautical/bookcover-js/archive/refs/heads/main.zip):
+2. Decompress the zip file
+3. Open `index.html` in any web browser.
 
 ## Dependencies
 
 The project does not have any external dependencies and can be run directly in a web browser without additional setup.
+For Safari browsers JSZip is used via CDN to allow downloading as a zip file (safari does not support multi file download).
 
 ## Contributing
 

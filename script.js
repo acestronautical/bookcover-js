@@ -671,7 +671,7 @@ function addEventListeners() {
   });
 
   document.getElementById('fileDelete').addEventListener('click', function () {
-    Cover.art.images.shift();
+    Cover.art.images.pop();
     if (Cover.art.images.length == 0) {
       Cover.art.defaultImages = [{ svg: SVGHelper.fromString(DefaultSvgText) }];
       splitFileButtons(false);

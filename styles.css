@@ -58,7 +58,6 @@ textarea {
 .center {
     justify-content: center;
 }
-
 .p-12 {
     padding: 12px;
 }
@@ -75,14 +74,9 @@ textarea {
     display: none;
 }
 
-.upload-section .file-label {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
+.upload-section {
     cursor: pointer;
-    border-radius: 5px;
     display: inline-block;
-    font-size: 14px;
     border: none;
 }
 
@@ -128,7 +122,6 @@ textarea {
     padding: 10px 20px;
     font-size: 14px;
 }
-
 .button-split-right {
     background-color: #4cafa7;
     border-radius: 0 5px 5px 0;
@@ -164,7 +157,6 @@ textarea {
 .hidden {
     display: none;
 }
-
 #output svg {
     border: 1px solid grey;
 }

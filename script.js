@@ -668,13 +668,13 @@ function addEventListeners() {
   function splitFileButtons(split) {
     if (split) {
       document.getElementById('fileDelete').classList.remove('hidden');
-      document.getElementById('fileInputWrapper').classList.remove('button');
-      document.getElementById('fileInputWrapper').classList.add('button-split-left');
+      document.getElementById('fileInputLabel').classList.remove('button');
+      document.getElementById('fileInputLabel').classList.add('button-split-left');
       document.getElementById('fileInputLabel').innerHTML = 'Another';
     } else {
       document.getElementById('fileDelete').classList.add('hidden');
-      document.getElementById('fileInputWrapper').classList.add('button');
-      document.getElementById('fileInputWrapper').classList.remove('button-split-left');
+      document.getElementById('fileInputLabel').classList.add('button');
+      document.getElementById('fileInputLabel').classList.remove('button-split-left');
       document.getElementById('fileInputLabel').innerHTML = 'Upload An SVG';
     }
   }

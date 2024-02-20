@@ -1,3 +1,5 @@
+/* ELEMENT STYLING */
+
 body {
     background-color: #36383c;
     font-family: Arial, sans-serif;
@@ -12,18 +14,9 @@ header {
     text-align: center;
 }
 
-.darker {
-    color: #646c70;
-    line-height: 1.8;
-}
-
 header a {
     color: #5b5a5a;
     text-decoration: none;
-}
-
-header a:hover {
-    color: #555;
 }
 
 h1 {
@@ -39,6 +32,8 @@ main {
 textarea {
     resize: none;
 }
+
+/* CLASS STYLING */
 
 .space-out,
 .space-even,
@@ -58,12 +53,9 @@ textarea {
 .center {
     justify-content: center;
 }
+
 .p-12 {
     padding: 12px;
-}
-
-.pt-12 {
-    padding-top: 12px;
 }
 
 .upload-section {
@@ -111,6 +103,10 @@ textarea {
     width: 8.5rem;
 }
 
+.button {
+    height: 34px;;
+}
+
 .button,
 .button-split-left,
 .button-split-right {
@@ -121,6 +117,7 @@ textarea {
     cursor: pointer;
     padding: 10px 20px;
     font-size: 14px;
+    text-align: center;
 }
 .button-split-right {
     background-color: #4cafa7;
@@ -154,9 +151,18 @@ textarea {
     height: auto;
 }
 
+.darker {
+    color: #646c70;
+    line-height: 1.8;
+}
+
 .hidden {
     display: none;
 }
-#output svg {
-    border: 1px solid grey;
+
+.force-height {
+    overflow: hidden;
+    height: 34px;
 }
+
+/* ID STYLING */

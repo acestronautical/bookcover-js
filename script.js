@@ -258,7 +258,9 @@ class BookCover {
   }
 
   sizeImage(image, parent, height) {
-    image.BBox = SVGHelper.getBBoxAfterRender(parent, image.svg);
+    if (!image.BBox) {
+      image.BBox = SVGHelper.getBBoxAfterRender(parent, image.svg);
+    }
     image.height = height;
     image.width = image.height * (image.BBox.width / image.BBox.height);
     image.svg.setAttribute('width', image.width);
@@ -267,6 +269,7 @@ class BookCover {
     image.halfHeight = image.height / 2;
     image.halfWidth = image.width / 2;
   }
+
   // Create rectangle border slightly inset from cover SVG as per penguin style
   genBorderRectangle(side) {
     const borderHeight = this[side].height - this.borderThickness;
@@ -442,13 +445,15 @@ class BookCover {
     const middleRowIndex = Math.floor(numRows / 2);
 
     // Calculate X tiling units
-    const xTileCount = this.art.xOverhang ? this.art.numColumns - 1 : this.art.numColumns;
-    const xOffset = this.art.xOverhang ? 0 : 0.5;
+    const xOverhang = this.art.xOverhang && this.art.numColumns > 1;
+    const xTileCount = xOverhang ? this.art.numColumns - 1 : this.art.numColumns;
+    const xOffset = xOverhang ? 0 : 0.5;
     const xTileWidth = (this[side].width - this.borderThickness * 2) / xTileCount;
 
     // Calculate Y tiling units
-    const yTileCount = this.art.yOverhang ? numRows - 1 : numRows + 1;
-    const yOffset = this.art.yOverhang ? 0 : 1;
+    const yOverhang = this.art.yOverhang && numRows > 1;
+    const yTileCount = yOverhang ? numRows - 1 : numRows + 1;
+    const yOffset = yOverhang ? 0 : 1;
     const yTileHeight = this[side].height / yTileCount;
 
     // Columns x rows 2d array with elements either null or an object containing coordinates

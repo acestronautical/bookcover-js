@@ -257,12 +257,19 @@ class BookCover {
     }
   }
 
-  sizeImage(image, parent, height) {
+  sizeImage(image, parent, maxHeight, maxWidth) {
     if (!image.BBox) {
       image.BBox = SVGHelper.getBBoxAfterRender(parent, image.svg);
     }
-    image.height = height;
-    image.width = image.height * (image.BBox.width / image.BBox.height);
+    const size = Math.min(maxHeight, maxWidth);
+    if (image.BBox.width > image.BBox.height) {
+      image.width = size;
+      image.height = image.width * (image.BBox.height / image.BBox.width);
+
+    } else {
+      image.height = size;
+      image.width = image.height * (image.BBox.width / image.BBox.height);
+    }
     image.svg.setAttribute('width', image.width);
     image.svg.setAttribute('height', image.height);
     SVGHelper.color(image.svg, this.elementColor);
@@ -292,7 +299,6 @@ class BookCover {
     const yTileHeight = this.spine.height / yTileCount;
     const xCenter = this.spine.width / 2;
     const yCenter = this.spine.height / 2;
-    const thinSpine = this.spine.proportions > 12;
 
     if (this.spine.fontRotation) {
       const commonTextAttrs = {
@@ -334,9 +340,10 @@ class BookCover {
 
     // Add a couple graphics
     const images = this.art.defaultImages || this.art.images;
-    const artHeight = this.spine.height / (thinSpine ? 9 : 6);
+    const maxWidth = this.spine.width - this.borderThickness * 2;
+    const maxHeight = this.spine.height / 6;
     images.forEach((image) => {
-      this.sizeImage(image, this.spine.svgElem, artHeight);
+      this.sizeImage(image, this.spine.svgElem, maxHeight, maxWidth);
     });
 
     // Add art to top spine
@@ -507,16 +514,18 @@ class BookCover {
       child.remove();
     });
 
+    const placement = this.createPlacementGrid(side);
+
     // set art sizing
     const images = this.art.defaultImages || this.art.images;
-    const artHeight = this.art.scale * (this[side].width / this.art.numColumns);
+    const maxHeight = this.art.scale * (this[side].height / placement.rows);
+    const maxWidth = this.art.scale * (this[side].width / this.art.numColumns);
     images.forEach((image) => {
-      this.sizeImage(image, this[side].svgElem, artHeight);
+      this.sizeImage(image, this[side].svgElem, maxHeight, maxWidth);
     });
 
     // tesselate art and apply transformations
     const imageCounter = { odd: 1, even: 0 };
-    const placement = this.createPlacementGrid(side);
     const leftOfMiddle = placement.oddCols ? Math.floor(placement.cols / 2) - 1 : placement.cols / 2 - 2;
     const rightOfMiddle = placement.oddCols ? Math.floor(placement.cols / 2) + 1 : placement.cols / 2 + 1;
     for (let columnIndex = 0; columnIndex < placement.cols; columnIndex++) {

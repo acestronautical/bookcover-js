@@ -656,17 +656,42 @@ function addEventListeners() {
     Cover.saveCovers();
   });
 
+  document.getElementById('fileDelete').addEventListener('click', function () {
+    Cover.art.images.shift();
+    if (Cover.art.images.length == 0) {
+      Cover.art.defaultImages = [{ svg: SVGHelper.fromString(DefaultSvgText) }];
+      splitFileButtons(false);
+    }
+    Cover.updateCovers();
+  });
+
+  function splitFileButtons(split) {
+    if (split) {
+      document.getElementById('fileDelete').classList.remove('hidden');
+      document.getElementById('fileInputWrapper').classList.remove('button');
+      document.getElementById('fileInputWrapper').classList.add('button-split-left');
+      document.getElementById('fileInputLabel').innerHTML = 'Another';
+    } else {
+      document.getElementById('fileDelete').classList.add('hidden');
+      document.getElementById('fileInputWrapper').classList.add('button');
+      document.getElementById('fileInputWrapper').classList.remove('button-split-left');
+      document.getElementById('fileInputLabel').innerHTML = 'Upload An SVG';
+    }
+  }
+
   document.getElementById('fileInput').addEventListener('change', function (event) {
     // Load user uploaded SVG to tile
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = function () {
       const svgText = reader.result;
+      if (Cover.art.defaultImages != null) {
+        splitFileButtons(true);
+      }
       Cover.art.defaultImages = null;
       Cover.art.images.push({ svg: SVGHelper.fromString(svgText) });
       Cover.art.images.at(-1).svg.setAttribute('overflow', `visible`);
       Cover.art.images.at(-1).svg.setAttribute('class', 'artSVG');
-      document.getElementById('fileInputLabel').innerHTML = 'Upload Another';
       if (Cover.art.images.length > 2) Cover.art.step = Math.floor(Math.random() * 100);
       Cover.generateCovers();
     };

@@ -41,7 +41,8 @@ textarea {
 }
 
 .space-out,
-.space-even {
+.space-even,
+.center {
     display: flex;
     align-items: center;
 }
@@ -52,6 +53,10 @@ textarea {
 
 .space-even {
     justify-content: space-evenly;
+}
+
+.center {
+    justify-content: center;
 }
 
 .p-12 {
@@ -78,6 +83,7 @@ textarea {
     border-radius: 5px;
     display: inline-block;
     font-size: 14px;
+    border: none;
 }
 
 .card {
@@ -111,8 +117,10 @@ textarea {
     width: 8.5rem;
 }
 
-.button {
-    background-color: #4CAF50;
+.button,
+.button-split-left,
+.button-split-right {
+    background-color: #4caf6d;
     color: white;
     border: none;
     border-radius: 5px;
@@ -121,7 +129,25 @@ textarea {
     font-size: 14px;
 }
 
-.button:hover {
+.button-split-right {
+    background-color: #4cafa7;
+    border-radius: 0 5px 5px 0;
+    padding: 10px 10px;
+    margin: 0;
+}
+
+.button-split-left {
+    border-radius: 5px 0 0 5px;
+    padding: 10px 10px;
+    margin: 0;
+}
+
+.button-split-right:hover {
+    background-color: #3c8a83;
+}
+
+.button:hover,
+.button-split-left:hover {
     background-color: #45a049;
 }
 
@@ -133,6 +159,10 @@ textarea {
     transform-origin: 0 0;
     width: 100%;
     height: auto;
+}
+
+.hidden {
+    display: none;
 }
 
 #output svg {

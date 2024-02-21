@@ -200,7 +200,7 @@ class BookCover {
       proportions: 8,
       svgElem: null,
       get height() { return _bookCover.height; },
-      get width() { return _bookCover.height / this.proportions; },
+      get width() { return (_bookCover.height - _bookCover.borderGap * 2) / this.proportions; },
     };
   })();
 

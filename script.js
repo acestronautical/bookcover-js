@@ -635,14 +635,16 @@ function addEventListeners() {
     Cover.updateCovers();
   });
 
-  document.getElementById('saveBack').addEventListener('click', function () {
-    SVGHelper.save('cover_back.svg', Cover.back.svgElem);
-  });
-  document.getElementById('saveSpine').addEventListener('click', function () {
-    SVGHelper.save('cover_spine.svg', Cover.spine.svgElem);
-  });
-  document.getElementById('saveFront').addEventListener('click', function () {
-    SVGHelper.save('cover_front.svg', Cover.front.svgElem);
+  document.getElementById('coverSection').addEventListener('click', function (event) {
+    const target = event.target;
+    const lastName = Cover.author.split(/[\s,]+/).at(-1).toLowerCase();
+    if (target.matches('#saveBack')) {
+      SVGHelper.save(`${lastName}_cover_back.svg`, Cover.back.svgElem);
+    } else if (target.matches('#saveSpine')) {
+      SVGHelper.save(`${lastName}_cover_spine.svg`, Cover.spine.svgElem);
+    } else if (target.matches('#saveFront')) {
+      SVGHelper.save(`${lastName}_cover_front.svg`, Cover.front.svgElem);
+    }
   });
 
   document.getElementById('fileDelete').addEventListener('click', function () {

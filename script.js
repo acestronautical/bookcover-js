@@ -158,7 +158,8 @@ class BookCover {
     scale: 1.5,
     defaultImages: [{ svg: SVGHelper.fromString(DefaultSvgText) }],
     images: [],
-    step: 2, // determines which image to choose for multi-image placement
+    // determines which image to choose for multi-image placement
+    get step() { return this.images.length > 2 ? Math.floor(Math.random() * 13) : 2; },
     flip: false,
     mirror: true,
     vertLines: false,
@@ -683,7 +684,6 @@ function addEventListeners() {
       Cover.art.images.push({ svg: SVGHelper.fromString(svgText) });
       Cover.art.images.at(-1).svg.setAttribute('overflow', `visible`);
       Cover.art.images.at(-1).svg.setAttribute('class', 'artSVG');
-      if (Cover.art.images.length > 2) Cover.art.step = Math.floor(Math.random() * 100);
       Cover.generateCovers();
     };
     reader.readAsText(file);

@@ -398,7 +398,8 @@ class BookCover {
   transformDecider({ x, y, grid, style }) {
     switch (style) {
       case 'diagonals':
-        return (x + y) % 4 === 1 || (x + y) % 4 === 2;
+        // every other diagonal
+        return !((x + y) % 4 === 1 || (x + y) % 4 === 2);
       case 'symmetric':
         if (grid.oddCols) {
           if (x < Math.floor(grid.cols / 2)) return true;

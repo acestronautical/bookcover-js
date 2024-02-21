@@ -150,7 +150,7 @@ textarea {
     filter: brightness(60%);
 }
 #coverSection {
-    margin-top: 7px;
+    margin-top: 20px;
 }
 #settingsSection {
     background-color: var(--background-light);

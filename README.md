@@ -16,7 +16,6 @@ click --> [HERE](https://acestronautical.github.io/bookcover-js/) <-- to use
 ## Dependencies
 
 The project does not have any external dependencies and can be run directly in a web browser without additional setup.
-For Safari browsers JSZip is used via CDN to allow downloading as a zip file (safari does not support multi file download).
 
 ## Contributing
 

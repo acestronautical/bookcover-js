@@ -1,146 +1,131 @@
-/* ELEMENT STYLING */
+/* COLORS */
+:root {
+    --background-dark: #2e2f33;
+    --header-bg-color: #3f3e3f;
+    --loud-element: #4caf6d;
+    --muted-element: #6a6e74;
+    --background-light: #f7f7f7;
+}
 
+/* ELEMENT STYLING */
 body {
-    background-color: #36383c;
+    background-color: var(--background-dark);
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
-
 header {
-    background-color: #454244;
-    color: #cad7dd;
+    background-color: var(--header-bg-color);
+    color: var(--background-light);
     padding: 10px;
     text-align: center;
+    filter: brightness(95%);
 }
-
 header a {
-    color: #5b5a5a;
+    color: var(--loud-element);
     text-decoration: none;
 }
-
 h1 {
     margin: 0;
     font-size: 20px;
 }
-
 main {
     padding: 20px;
     align-items: center;
 }
-
 textarea {
     resize: none;
 }
 
 /* CLASS STYLING */
-
+.column {
+    flex-direction: column;
+}
 .space-out,
 .space-even,
 .center {
     display: flex;
     align-items: center;
 }
-
 .space-out {
     justify-content: space-between;
 }
-
 .space-even {
     justify-content: space-evenly;
 }
-
 .center {
     justify-content: center;
 }
-
 .p-12 {
     padding: 12px;
 }
-
-.upload-section {
-    text-align: center;
+.pt-12 {
+    padding-top: 12px;
 }
-
-.upload-section input[type="file"] {
-    display: none;
+.pb-12 {
+    padding-bottom: 12px;
 }
-
-.upload-section {
-    cursor: pointer;
-    display: inline-block;
-    border: none;
+.pr-12 {
+    padding-right: 12px;
 }
-
-.card {
-    background-color: #f0f0f0;
-    padding: 20px;
-    margin: 18px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    min-width: 320px;
-    max-width: 100%;
+.pl-12 {
+    padding-left: 12px;
 }
-
 .input-group {
     margin-bottom: 5px;
 }
-
 .input-group label {
     display: block;
     margin-bottom: 5px;
     font-size: 15px;
 }
-
 .input-group input[type="text"],
 .input-group input[type="number"],
 .input-group textarea,
 .input-group input[type="color"] {
-    width: 97%;
     padding: 4px;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 8.5rem;
 }
-
 .button {
-    height: 34px;;
+    height: 34px;
 }
-
 .button,
 .button-split-left,
-.button-split-right {
-    background-color: #4caf6d;
+.button-split-right,
+.button-save {
+    background-color: var(--loud-element);
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    padding: 10px 20px;
+    padding: 14px 24px;
     font-size: 14px;
     text-align: center;
 }
-.button-split-right {
-    background-color: #4cafa7;
-    border-radius: 0 5px 5px 0;
-    padding: 10px 10px;
-    margin: 0;
-}
-
 .button-split-left {
+    background-color: var(--loud-element);
     border-radius: 5px 0 0 5px;
-    padding: 10px 10px;
+    padding: 14px 12px;
     margin: 0;
 }
-
-.button-split-right:hover {
-    background-color: #3c8a83;
+.button-split-right {
+    background-color: var(--muted-element);
+    border-radius: 0 5px 5px 0;
+    padding: 14px 12px;
+    margin: 0;
 }
-
+.button-save {
+    background-color: var(--muted-element);
+    padding: 6px 10px;
+}
 .button:hover,
-.button-split-left:hover {
-    background-color: #45a049;
+.button-split-left:hover,
+.button-split-right:hover,
+.button-save:hover {
+    filter: brightness(110%);
 }
-
 .cover {
     display: flex;
     justify-content: center;
@@ -149,20 +134,39 @@ textarea {
     transform-origin: 0 0;
     width: 100%;
     height: auto;
+    margin-bottom: 8px;
 }
-
-.darker {
-    color: #646c70;
-    line-height: 1.8;
-}
-
 .hidden {
     display: none;
 }
-
 .force-height {
     overflow: hidden;
-    height: 34px;
+    height: 42px;
 }
 
 /* ID STYLING */
+#subHeading {
+    line-height: 1.8;
+    filter: brightness(60%);
+}
+#coverSection {
+    margin-top: 7px;
+}
+#settingsSection {
+    background-color: var(--background-light);
+    padding: 20px;
+    margin: 18px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    min-width: 320px;
+    max-width: 100%;
+}
+#uploadSection {
+    text-align: center;
+    cursor: pointer;
+    display: inline-block;
+    border: none;
+}
+#uploadSection input[type="file"] {
+    display: none;
+}

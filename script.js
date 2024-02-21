@@ -1,6 +1,3 @@
-// make eslint happy
-/* global JSZip */
-
 // The default SVG
 const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml:space="preserve" viewBox="0 0 700 700" overflow="visible" class="artSVG">
                 <g id="g3236" transform="matrix(1.25 0 0 -1.25 0 700)">
@@ -140,16 +137,6 @@ class SVGHelper {
     }
   }
 
-  static saveZip(downloads, filename) {
-    const zip = new JSZip();
-    for (const [file, svgElem] of Object.entries(downloads)) {
-      const svgData = new XMLSerializer().serializeToString(svgElem);
-      zip.file(file, svgData);
-    }
-    zip.generateAsync({ type: 'blob' }).then((content) => {
-      SVGHelper.saveBlobAsFile(content, filename);
-    });
-  }
 }
 
 class BookCover {
@@ -236,25 +223,6 @@ class BookCover {
   genBack() {
     this.genCoverFrame('back');
     this.tesselate('back');
-  }
-
-  saveCovers() {
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-    const covers = [this.back.svgElem, this.spine.svgElem, this.front.svgElem];
-    const files = ['back_cover.svg', 'spine_cover.svg', 'front_cover.svg'];
-    const downloads = files.reduce((result, key, index) => {
-      result[key] = covers[index];
-      return result;
-    }, {});
-
-    if (!isSafari) {
-      for (const [key, value] of Object.entries(downloads)) {
-        SVGHelper.save(key, value);
-      }
-    } else {
-      SVGHelper.saveZip(downloads, 'covers.zip');
-    }
   }
 
   sizeImage(image, parent, maxHeight, maxWidth) {
@@ -601,7 +569,7 @@ function initializePage() {
 }
 
 function addEventListeners() {
-  document.getElementById('settings').addEventListener('change', function (event) {
+  document.getElementById('settingsSection').addEventListener('change', function (event) {
     const target = event.target;
     if (target.matches('#titleInput')) {
       Cover.title = target.value;
@@ -638,7 +606,7 @@ function addEventListeners() {
     Cover.updateCovers();
   });
 
-  document.getElementById('settings').addEventListener('input', function (event) {
+  document.getElementById('settingsSection').addEventListener('input', function (event) {
     const target = event.target;
     if (target.matches('#elementColorInput')) {
       Cover.elementColor = target.value;
@@ -648,7 +616,7 @@ function addEventListeners() {
     Cover.generateCovers();
   });
 
-  document.getElementById('settings').addEventListener('change', function (event) {
+  document.getElementById('settingsSection').addEventListener('change', function (event) {
     const target = event.target;
     if (target.matches('#mirrorCheckbox')) {
       Cover.art.mirror = target.checked;
@@ -666,8 +634,14 @@ function addEventListeners() {
     Cover.updateCovers();
   });
 
-  document.getElementById('save-cover').addEventListener('click', function () {
-    Cover.saveCovers();
+  document.getElementById('saveBack').addEventListener('click', function () {
+    SVGHelper.save('cover_back.svg', Cover.back.svgElem);
+  });
+  document.getElementById('saveSpine').addEventListener('click', function () {
+    SVGHelper.save('cover_spine.svg', Cover.spine.svgElem);
+  });
+  document.getElementById('saveFront').addEventListener('click', function () {
+    SVGHelper.save('cover_front.svg', Cover.front.svgElem);
   });
 
   document.getElementById('fileDelete').addEventListener('click', function () {

@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=0.5, viewport-fit=main" />
   <link rel="icon" type="image/x-icon" href="bookcover-js-favicon.png" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <title>Book Cover JS</title>
   <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
@@ -13,24 +12,27 @@
 <body>
   <header>
     <h1>Penguin Clothbound Cover Generator</h1>
-    <small class="darker">
+    <small id="subHeading">
       Created by Acestronautical -
       <a href="https://github.com/acestronautical/bookcover-js" target="_blank">GitHub</a>
     </small>
   </header>
   <main class="space-even">
-    <div id="covers" class="space-even">
-      <div class="p-12">
+    <div id="coverSection" class="space-out">
+      <div class="center column pr-12">
         <div id="back-cover" class="cover"></div>
+        <button class="button-save" id="saveBack">Save</button>
       </div>
-      <div>
+      <div class="center column">
         <div id="spine-cover" class="cover"></div>
+        <button class="button-save" id="saveSpine">Save</button>
       </div>
-      <div class="p-12">
+      <div class="center column pl-12">
         <div id="front-cover" class="cover"></div>
+        <button class="button-save" id="saveFront">Save</button>
       </div>
     </div>
-    <div id="settings" class="card">
+    <div id="settingsSection">
       <div class="space-out">
         <div class="input-group">
           <label for="titleInput">Title</label>
@@ -113,7 +115,7 @@
           <input type="number" id="spineProportionsInput" min="4" max="20" step="0.05" />
         </div>
       </div>
-      <div class="space-out">
+      <div class="space-out pb-12">
         <div class="input-group">
           <label for="mirrorCheckbox">Mirror</label>
           <input type="checkbox" id="mirrorCheckbox" />
@@ -135,15 +137,12 @@
           <input type="checkbox" id="xOverhangCheckbox" />
         </div>
       </div>
-      <div class="space-out">
-        <div class="center force-height">
-          <div class="upload-section">
-            <label for="fileInput" id="fileInputLabel" class="file-label button">Upload An SVG</label>
-            <input type="file" id="fileInput" accept=".svg" />
-          </div>
-          <button id="fileDelete" class="button-split-right hidden">Remove</button>
+      <div class="center force-height">
+        <div id="uploadSection">
+          <label for="fileInput" id="fileInputLabel" class="file-label button">Upload An SVG</label>
+          <input type="file" id="fileInput" accept=".svg" />
         </div>
-        <button class="button" id="save-cover">Save Covers</button>
+        <button id="fileDelete" class="button-split-right hidden">Remove</button>
       </div>
     </div>
   </main>

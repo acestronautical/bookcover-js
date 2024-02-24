@@ -140,12 +140,12 @@ class SVGHelper {
 }
 
 class BookCover {
-  backgroundColor = '#aeb2b1';
-  elementColor = '#292a5a';
+  backgroundColor = '#a6a6a6';
+  elementColor = '#27285f';
   author = 'Felix\nPawsley';
   title = 'Cats Cradle\nChronicles';
-  proportions = 1.5;
-  outerWidth = 380; // Spine has it's own width
+  proportions = 1.6;
+  outerWidth = 360; // Spine has it's own width
   borderGap = this.outerWidth / 21;
   // getters automatically update when other properties change
   get outerHeight() { return this.outerWidth * this.proportions; }
@@ -173,7 +173,7 @@ class BookCover {
     // We want shared properties to be available on BookCover and on relevant children
     const _bookCover = this;
     return {
-      fontSize: 18,
+      fontSize: 20,
       htmlElem: document.getElementById('front-cover'),
       initialCopies: 2,
       svgElem: null,
@@ -201,9 +201,9 @@ class BookCover {
     const _bookCover = this;
     return {
       fontRotation: false,
-      fontSize: 12,
+      fontSize: 14,
       htmlElem: document.getElementById('spine-cover'),
-      proportions: 8,
+      proportions: 7,
       svgElem: null,
       get outerHeight() { return _bookCover.outerHeight; },
       get outerWidth() { return _bookCover.outerHeight / this.proportions; },
@@ -277,7 +277,7 @@ class BookCover {
 
     if (side == 'front') {
       // Create centered title
-      const titleY = this.borderGap * 1.5;
+      const titleY = this.borderGap * 2;
       const titleString = this.title;
       const titleSvg = SVGHelper.createCenteredText({
         color: this.elementColor,
@@ -291,7 +291,7 @@ class BookCover {
       this[side].svgElem.appendChild(titleSvg);
 
       // Create centered author
-      const authorY = borderHeight - this.borderGap * 1.5;
+      const authorY = borderHeight - this.borderGap * 2;
       const authorString = this.author;
       const authorSvg = SVGHelper.createCenteredText({
         color: this.elementColor,

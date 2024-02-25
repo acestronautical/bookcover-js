@@ -151,7 +151,7 @@ class BookCover {
   get outerHeight() { return this.outerWidth * this.proportions; }
   get innerWidth() { return (this.outerWidth - this.borderGap * 2); }
   get innerHeight() { return (this.outerHeight - this.borderGap * 2); }
-  borderThickness = 2.2;
+  borderThickness = 3.5;
   art = {
     increasePerColumn: 1,
     maxPerColumn: 4,

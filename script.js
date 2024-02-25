@@ -310,15 +310,27 @@ class BookCover {
 
   // Create rectangle border slightly inset from cover SVG as per penguin style
   genBorderRectangle(side) {
-    const borderHeight = this[side].innerHeight - this.borderThickness;
-    const borderWidth = this[side].innerWidth - this.borderThickness;
-    const borderRectangle = SVGHelper.create('rect', {
+    const group = SVGHelper.create('g', { id: `${side}Border` });
+    const outerHeight = this[side].innerHeight;
+    const outerWidth = this[side].innerWidth;
+    const outerRectangle = SVGHelper.create('rect', {
+      fill: 'none', stroke: this.elementColor, 'stroke-width': this.borderThickness,
+      x: 0, y: 0,
+      width: outerWidth, height: outerHeight,
+      id: `${side}OuterBorder`
+    });
+    group.appendChild(outerRectangle);
+    const innerHeight = this[side].innerHeight - this.borderThickness;
+    const innerWidth = this[side].innerWidth - this.borderThickness;
+    const innerRectangle = SVGHelper.create('rect', {
       fill: 'none', stroke: this.elementColor, 'stroke-width': this.borderThickness,
       x: this.borderThickness / 2, y: this.borderThickness / 2,
-      width: borderWidth, height: borderHeight,
+      width: innerWidth, height: innerHeight,
+      id: `${side}InnerBorder`
     });
-    this[side].svgElem.appendChild(borderRectangle);
-    return { height: borderHeight, width: borderWidth };
+    group.appendChild(innerRectangle);
+    this[side].svgElem.appendChild(group);
+    return { height: innerHeight, width: innerWidth };
   }
 
   genSpine() {

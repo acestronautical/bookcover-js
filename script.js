@@ -145,8 +145,8 @@ class BookCover {
   author = 'Felix\nPawsley';
   title = 'Cats Cradle\nChronicles';
   proportions = 1.6;
-  outerWidth = 360; // Spine has it's own width
-  borderGap = this.outerWidth / 21;
+  outerWidth = 396; // Spine has it's own width
+  borderGap = this.outerWidth / 20;
   // getters automatically update when other properties change
   get outerHeight() { return this.outerWidth * this.proportions; }
   get innerWidth() { return (this.outerWidth - this.borderGap * 2); }

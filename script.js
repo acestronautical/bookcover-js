@@ -140,22 +140,23 @@ class SVGHelper {
 }
 
 class BookCover {
+  inchToPx = 72; // Assume 72 DPI for adobe illustrator
+  mmToPx = 2.8346;
   backgroundColor = '#a6a6a6';
   elementColor = '#27285f';
   author = 'Felix\nPawsley';
   title = 'Cats Cradle\nChronicles';
-  // We assume 72px per inch
   outerWidth = 396; // 5.5 inches
   outerHeight = 648; // 9 inches
   borderGap = this.outerWidth / 20;
-  set outerWidthInches(inches) { this.outerWidth = inches * 72; }
-  set outerHeightInches(inches) { this.outerHeight = inches * 72; }
-  get outerWidthInches() { return this.outerWidth / 72; }
-  get outerHeightInches() { return this.outerHeight / 72; }
-  set outerWidthMilli(mm) { this.outerWidth = mm * 2.8346; }
-  set outerHeightMilli(mm) { this.outerHeight = mm * 2.8346; }
-  get outerWidthMilli() { return this.outerWidth / 2.8346; }
-  get outerHeightMilli() { return this.outerHeight / 2.8346; }
+  set outerWidthInches(inches) { this.outerWidth = inches * this.inchToPx; }
+  set outerHeightInches(inches) { this.outerHeight = inches * this.inchToPx; }
+  get outerWidthInches() { return this.outerWidth / this.inchToPx; }
+  get outerHeightInches() { return this.outerHeight / this.inchToPx; }
+  set outerWidthMilli(mm) { this.outerWidth = mm * this.mmToPx; }
+  set outerHeightMilli(mm) { this.outerHeight = mm * this.mmToPx; }
+  get outerWidthMilli() { return this.outerWidth / this.mmToPx; }
+  get outerHeightMilli() { return this.outerHeight / this.mmToPx; }
   // getters automatically update when other properties change
   get scale() { return (this.outerWidth * 2 + this.spine.outerWidth) / 360; }
   get proportions() { return this.outerHeight / this.outerWidth; }
@@ -215,10 +216,10 @@ class BookCover {
       htmlElem: document.getElementById('spine-cover'),
       svgElem: null,
       outerWidth: 108, // 1.5 inches
-      get outerWidthInches() { return this.outerWidth / 72; },
-      get outerWidthMilli() { return this.outerWidth / 2.8346; },
-      set outerWidthInches(inches) { this.outerWidth = inches * 72; },
-      set outerWidthMilli(mm) { this.outerWidth = mm * 2.8346; },
+      get outerWidthInches() { return this.outerWidth / _bookCover.inchToPx; },
+      get outerWidthMilli() { return this.outerWidth / _bookCover.mmToPx; },
+      set outerWidthInches(inches) { this.outerWidth = inches * _bookCover.inchToPx; },
+      set outerWidthMilli(mm) { this.outerWidth = mm * _bookCover.mmToPx; },
       get outerHeight() { return _bookCover.outerHeight; },
       get proportions() { return _bookCover.outerHeight / this.outerWidth; },
       get innerHeight() { return _bookCover.innerHeight; },

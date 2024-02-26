@@ -144,11 +144,21 @@ class BookCover {
   elementColor = '#27285f';
   author = 'Felix\nPawsley';
   title = 'Cats Cradle\nChronicles';
-  proportions = 1.6;
-  outerWidth = 396; // Spine has it's own width
+  // We assume 72px per inch
+  outerWidth = 396; // 5.5 inches
+  outerHeight = 648; // 9 inches
   borderGap = this.outerWidth / 20;
+  set outerWidthInches(inches) { this.outerWidth = inches * 72; }
+  set outerHeightInches(inches) { this.outerHeight = inches * 72; }
+  get outerWidthInches() { return this.outerWidth / 72; }
+  get outerHeightInches() { return this.outerHeight / 72; }
+  set outerWidthMilli(mm) { this.outerWidth = mm * 2.8346; }
+  set outerHeightMilli(mm) { this.outerHeight = mm * 2.8346; }
+  get outerWidthMilli() { return this.outerWidth / 2.8346; }
+  get outerHeightMilli() { return this.outerHeight / 2.8346; }
   // getters automatically update when other properties change
-  get outerHeight() { return this.outerWidth * this.proportions; }
+  get scale() { return (this.outerWidth * 2 + this.spine.outerWidth) / 360; }
+  get proportions() { return this.outerHeight / this.outerWidth; }
   get innerWidth() { return (this.outerWidth - this.borderGap * 2); }
   get innerHeight() { return (this.outerHeight - this.borderGap * 2); }
   borderThickness = 3.5;
@@ -157,7 +167,7 @@ class BookCover {
     maxPerColumn: 4,
     numColumns: 5,
     rotateAngle: 0,
-    scale: 1.5,
+    scale: 1.7,
     defaultImages: [{ svg: SVGHelper.fromString(DefaultSvgText) }],
     images: [],
     // determines which image to choose for multi-image placement
@@ -173,7 +183,7 @@ class BookCover {
     // We want shared properties to be available on BookCover and on relevant children
     const _bookCover = this;
     return {
-      fontSize: 20,
+      fontSize: 24,
       htmlElem: document.getElementById('front-cover'),
       initialCopies: 2,
       svgElem: null,
@@ -201,12 +211,16 @@ class BookCover {
     const _bookCover = this;
     return {
       fontRotation: false,
-      fontSize: 14,
+      fontSize: 18,
       htmlElem: document.getElementById('spine-cover'),
-      proportions: 7,
       svgElem: null,
+      outerWidth: 108, // 1.5 inches
+      get outerWidthInches() { return this.outerWidth / 72; },
+      get outerWidthMilli() { return this.outerWidth / 2.8346; },
+      set outerWidthInches(inches) { this.outerWidth = inches * 72; },
+      set outerWidthMilli(mm) { this.outerWidth = mm * 2.8346; },
       get outerHeight() { return _bookCover.outerHeight; },
-      get outerWidth() { return _bookCover.outerHeight / this.proportions; },
+      get proportions() { return _bookCover.outerHeight / this.outerWidth; },
       get innerHeight() { return _bookCover.innerHeight; },
       get innerWidth() { return this.outerWidth - (0.5 * _bookCover.borderGap); },
     };
@@ -567,7 +581,10 @@ class BookCover {
 
 function initializePage() {
   document.getElementById('backgroundColorInput').value = Cover.backgroundColor;
-  document.getElementById('coverProportionsInput').value = Cover.proportions;
+  document.getElementById('lengthUnitInput').value = 'inches';
+  document.getElementById('coverWidthInput').value = Cover.outerWidthInches;
+  document.getElementById('coverHeightInput').value = Cover.outerHeightInches;
+  document.getElementById('spineWidthInput').value = Cover.spine.outerWidthInches;
   document.getElementById('elementColorInput').value = Cover.elementColor;
   document.getElementById('authorInput').value = Cover.author;
   document.getElementById('coverFontSizeInput').value = Cover.front.fontSize;
@@ -575,7 +592,6 @@ function initializePage() {
   document.getElementById('frontCoverInitialCopiesInput').value = Cover.front.initialCopies;
   document.getElementById('titleInput').value = Cover.title;
   document.getElementById('backCoverInitialCopiesInput').value = Cover.back.initialCopies;
-  document.getElementById('spineProportionsInput').value = Cover.spine.proportions;
   document.getElementById('flipCheckbox').checked = Cover.art.flip;
   document.getElementById('imageScale').value = Cover.art.scale;
   document.getElementById('increasePerColumnInput').value = Cover.art.increasePerColumn;
@@ -602,12 +618,49 @@ function addEventListeners() {
       Cover.art.rotateAngle = parseInt(target.value);
     } else if (target.matches('#imageScale')) {
       Cover.art.scale = parseFloat(target.value);
-    } else if (target.matches('#coverProportionsInput')) {
-      Cover.proportions = parseFloat(target.value);
+    } else if (target.matches('#lengthUnitInput')) {
+      const coverWidthElem = document.getElementById('coverWidthInput');
+      const coverHeightElem = document.getElementById('coverHeightInput');
+      const spineWidthElem = document.getElementById('spineWidthInput');
+      if (target.value == 'inches') {
+        coverWidthElem.value = Cover.outerWidthInches.toPrecision(5);
+        coverHeightElem.value = Cover.outerHeightInches.toPrecision(5);
+        spineWidthElem.value = Cover.spine.outerWidthInches.toPrecision(5);
+      } else if (target.value == 'millimeters') {
+        coverWidthElem.value = Cover.outerWidthMilli.toPrecision(4);
+        coverHeightElem.value = Cover.outerHeightMilli.toPrecision(4);
+        spineWidthElem.value = Cover.spine.outerWidthMilli.toPrecision(4);
+      }
+    } else if (target.matches('#coverWidthInput')) {
+      const unitType = document.getElementById('lengthUnitInput').value;
+      const width = parseFloat(target.value);
+      if (unitType == 'inches') {
+        Cover.outerWidthInches = width;
+      } else if (unitType == 'millimeters') {
+        Cover.outerWidthMilli = width;
+      }
       Cover.generateCovers();
       return;
-    } else if (target.matches('#spineProportionsInput')) {
-      Cover.spine.proportions = parseFloat(target.value);
+    } else if (target.matches('#coverHeightInput')) {
+      const unitType = document.getElementById('lengthUnitInput').value;
+      const width = parseFloat(target.value);
+      if (unitType == 'inches') {
+        Cover.outerHeightInches = width;
+      } else if (unitType == 'millimeters') {
+        Cover.outerHeightMilli = width;
+      }
+      Cover.generateCovers();
+      return;
+    } else if (target.matches('#spineWidthInput')) {
+      const unitType = document.getElementById('lengthUnitInput').value;
+      const width = parseFloat(target.value);
+      if (unitType == 'inches') {
+        Cover.spine.outerWidthInches = width;
+      } else if (unitType == 'millimeters') {
+        Cover.spine.outerWidthMilli = width;
+      }
+      Cover.generateCovers();
+      return;
     } else if (target.matches('#coverFontSizeInput')) {
       Cover.front.fontSize = parseFloat(target.value);
       Cover.genCoverFrame('front');

@@ -76,17 +76,21 @@ textarea {
 }
 .input-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-top: 3px;
+    margin-top: 2px;
     font-size: 15px;
 }
+.input-group textarea,
+.input-group select,
 .input-group input[type="text"],
 .input-group input[type="number"],
-.input-group textarea,
 .input-group input[type="color"] {
     padding: 4px;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 8.5rem;
+    font-size: 14px;
+    background-color: white; 
 }
 .button {
     height: 34px;
@@ -151,12 +155,11 @@ textarea {
 }
 #coverSection {
     margin-top: 20px;
-    scale: 0.92;
+    scale: 0.9;
 }
 #settingsSection {
     background-color: var(--background-light);
     padding: 20px;
-    margin: 18px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     min-width: 320px;

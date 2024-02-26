@@ -43,6 +43,16 @@
           <textarea id="authorInput"></textarea>
         </div>
       </div>
+      <div class="space-out">
+        <div class="input-group">
+          <label for="coverFontSizeInput">Cover Font Size</label>
+          <input type="number" id="coverFontSizeInput" min="4" max="40" step="0.5" />
+        </div>
+        <div class="input-group">
+          <label for="spineFontSizeInput">Spine Font Size</label>
+          <input type="number" id="spineFontSizeInput" min="4" max="40" step="0.5" />
+        </div>
+      </div>
       <div class="input-group">
         <div>
           <label for="spineFontRotationInput">
@@ -50,16 +60,31 @@
           </label>
         </div>
       </div>
+      <hr>
       <div class="space-out">
         <div class="input-group">
-          <label for="coverFontSizeInput">Cover Font Size</label>
-          <input type="number" id="coverFontSizeInput" min="6" max="30" step="0.5" />
+          <label for="coverWidthInput">Cover Width</label>
+          <input type="number" id="coverWidthInput" min="1" max="300" step="0.1" />
         </div>
         <div class="input-group">
-          <label for="spineFontSizeInput">Spine Font Size</label>
-          <input type="number" id="spineFontSizeInput" min="6" max="30" step="0.5" />
+          <label for="coverHeightInput">Cover Height</label>
+          <input type="number" id="coverHeightInput" min="1" max="300" step="0.1" />
         </div>
       </div>
+      <div class="space-out">
+        <div class="input-group">
+          <label for="spineWidthInput">Spine Width</label>
+          <input type="number" id="spineWidthInput" min="1" max="150" step="0.1" />
+        </div>
+        <div class="input-group">
+          <label for="lengthUnitInput">Length Unit</label>
+          <select id="lengthUnitInput">
+            <option value="inches">inches</option>
+            <option value="millimeters">millimeters</option>
+          </select>
+        </div>
+      </div>
+      <hr>
       <div class="space-out">
         <div class="input-group color-input">
           <label for="elementColorInput">Element Color</label>
@@ -103,16 +128,6 @@
         <div class="input-group">
           <label for="frontCoverInitialCopiesInput">Front Middle Rows</label>
           <input type="number" id="frontCoverInitialCopiesInput" min="0" max="8" />
-        </div>
-      </div>
-      <div class="space-out">
-        <div class="input-group">
-          <label for="coverProportionsInput">Cover Proportions</label>
-          <input type="number" id="coverProportionsInput" min="1" max="2" step="0.01" />
-        </div>
-        <div class="input-group">
-          <label for="spineProportionsInput">Spine Proportions</label>
-          <input type="number" id="spineProportionsInput" min="4" max="20" step="0.05" />
         </div>
       </div>
       <div class="space-out pb-12">

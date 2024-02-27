@@ -3,9 +3,19 @@
 
 ![Application Screenshot](bookcover-js-screenshot.png)
 
- Bookcover-js is a web application that allows users to generate penguin clothbound classics style book covers with their own SVG images. The generated covers are also presented in SVG format suitable for use with a cricut or silhoutte or other cutting plotter.
+ Bookcover-js is a web application that allows users to generate penguin clothbound classics style book covers with their own SVG images. The generated covers may be saved in either SVG or PNG format for use with cricut, silhoutte, or other cutting plotters.
 
 click --> [HERE](https://acestronautical.github.io/bookcover-js/) <-- to use
+
+## Tips and Gotchas
+
+* For import into cricut design space PNG is preferred at the moment
+* Silhoutte Studio works well with the provided SVG, and should size correctly on import
+* When more than two images have been uploaded the image placement selection becomes random
+* The gap between the covers and borders is 1/20th the overall cover width is not curently settable
+* Font selection is based on your installed system fonts in this order:
+    * Adobe Garamond Pro, EB Garamond, Garamond, Cormorant Garamond, Libre Baskerville, Crimson Text, Georgia, Palatino, Book Antiqua, Times New Roman, Baskerville, serif
+* Image sizing attempts to scale correctly using 72 DPI or 72 PPI (not 96)
 
 ## Offline Usage
 

@@ -7,7 +7,7 @@ const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml
                 </g>
               </svg>`;
 // Fonts and fallback fonts
-const FontFamilies = "'EB Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', 'Cormorant Garamond', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
+const FontFamilies = "'Adobe Garamond Pro', 'EB Garamond','Cormorant Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
 
 // Static helper class, does not need to be instantiated it's just a namespace
 class SVGHelper {

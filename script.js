@@ -223,7 +223,7 @@ class BookCover {
       get outerHeight() { return _bookCover.outerHeight; },
       get proportions() { return _bookCover.outerHeight / this.outerWidth; },
       get innerHeight() { return _bookCover.innerHeight; },
-      get innerWidth() { return this.outerWidth - (0.5 * _bookCover.borderGap); },
+      get innerWidth() { return this.outerWidth - _bookCover.borderGap; },
     };
   })();
 

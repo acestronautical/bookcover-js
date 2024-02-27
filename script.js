@@ -137,7 +137,7 @@ class SVGHelper {
     }
   }
 
-  static saveAsPng(filename, svgElem, scaleFactor = 3) {
+  static saveAsPng(filename, svgElem, scaleFactor = 10) {
     const svgData = new XMLSerializer().serializeToString(svgElem);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');

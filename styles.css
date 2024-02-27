@@ -21,6 +21,13 @@ header {
     text-align: center;
     filter: brightness(95%);
 }
+small{
+    color: var(--background-light);
+    padding-bottom: 4px;
+    text-align: center;
+    line-height: .8;
+    filter: brightness(35%);
+}
 header a {
     color: var(--loud-element);
     text-decoration: none;
@@ -140,6 +147,9 @@ textarea {
     height: auto;
     margin-bottom: 8px;
 }
+.darker {
+    filter: brightness(90%);
+}
 .hidden {
     display: none;
 }
@@ -149,7 +159,7 @@ textarea {
 }
 
 /* ID STYLING */
-#subHeading {
+#subHeading{
     line-height: 1.8;
     filter: brightness(60%);
 }

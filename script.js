@@ -137,6 +137,30 @@ class SVGHelper {
     }
   }
 
+  static saveAsPng(filename, svgElem, scaleFactor = 3) {
+    const svgData = new XMLSerializer().serializeToString(svgElem);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = function () {
+      const width = img.width * scaleFactor;
+      const height = img.height * scaleFactor;
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Convert the canvas to PNG and save it
+      canvas.toBlob(function (blob) {
+        if (blob) {
+          SVGHelper.saveBlobAsFile(blob, filename);
+        }
+      });
+    };
+
+    // Create a data URL from the SVG data and set it as the image source
+    img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`;
+  }
 }
 
 class BookCover {
@@ -283,7 +307,6 @@ class BookCover {
       width: this[side].innerWidth,
       height: this[side].innerHeight,
       overflow: 'hidden',
-      style: `background-color: ${this.backgroundColor};`,
     });
     this[side].htmlElem.appendChild(this[side].svgElem);
 
@@ -712,11 +735,17 @@ function addEventListeners() {
   document.getElementById('coverSection').addEventListener('click', function (event) {
     const target = event.target;
     const lastName = Cover.author.split(/[\s,]+/).at(-1).toLowerCase();
-    if (target.matches('#saveBack')) {
+    if (target.matches('#saveBackPNG')) {
+      SVGHelper.saveAsPng(`${lastName}_cover_back.png`, Cover.back.svgElem);
+    } else if (target.matches('#saveSpinePNG')) {
+      SVGHelper.saveAsPng(`${lastName}_cover_spine.png`, Cover.spine.svgElem);
+    } else if (target.matches('#saveFrontPNG')) {
+      SVGHelper.saveAsPng(`${lastName}_cover_front.png`, Cover.front.svgElem);
+    } else if (target.matches('#saveBackSVG')) {
       SVGHelper.save(`${lastName}_cover_back.svg`, Cover.back.svgElem);
-    } else if (target.matches('#saveSpine')) {
+    } else if (target.matches('#saveSpineSVG')) {
       SVGHelper.save(`${lastName}_cover_spine.svg`, Cover.spine.svgElem);
-    } else if (target.matches('#saveFront')) {
+    } else if (target.matches('#saveFrontSVG')) {
       SVGHelper.save(`${lastName}_cover_front.svg`, Cover.front.svgElem);
     }
   });

@@ -421,7 +421,7 @@ class BookCover {
 
     // Add a couple graphics
     const images = this.art.defaultImages || this.art.images;
-    const maxWidth = this.spine.innerWidth - this.borderThickness * 2;
+    const maxWidth = this.spine.innerWidth - this.borderThickness * 4;
     const maxHeight = this.spine.innerHeight / 6;
     images.forEach((image) => {
       this.sizeImage(image, this.spine.svgElem, maxHeight, maxWidth);

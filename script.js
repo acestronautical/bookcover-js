@@ -569,7 +569,7 @@ class BookCover {
             x2: place.x,
             y2: this[side].innerHeight,
             stroke: this.elementColor,
-            'stroke-width': this.borderThickness / 1.5,
+            'stroke-width': this.borderThickness * 0.5,
             class: 'artSVG',
           });
           this[side].svgElem.appendChild(lineLeft);

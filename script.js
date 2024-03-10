@@ -428,20 +428,38 @@ class BookCover {
     });
 
     // Add art to top spine
-    const image1 = images.at(-1);
-    const image2 = images.at(-(2 % images.length));
-    let clone = image1.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * 2 - image1.halfHeight);
-    clone.setAttribute('x', xCenter - image1.halfWidth);
-    this.spine.svgElem.appendChild(clone);
-    SVGHelper.mirror(clone);
-    SVGHelper.rotate(clone, this.art.rotateAngle);
+    const repeats = 4;
+    const spacing = 4 / repeats;
+    const xNudge = .7 + this.spine.innerWidth / 200;
+    let right = false;
+    let yPos = yTileHeight * (spacing / 2);
+    for (let i = 1; i <= repeats; i++) {
+      const image = images.at(-i % images.length);
+      const xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);
+      const clone = image.svg.cloneNode(true);
+      clone.setAttribute('y', yPos - image.halfHeight);
+      clone.setAttribute('x', xPos);
+      this.spine.svgElem.appendChild(clone);
+      if (!right) SVGHelper.mirror(clone);
+      SVGHelper.rotate(clone, this.art.rotateAngle);
+      right = !right;
+      yPos += yTileHeight * spacing;
+    }
+    right = !right;
     // Add art to bottom spine
-    clone = image2.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * (yTileCount - 2) - image2.halfHeight);
-    clone.setAttribute('x', xCenter - image2.halfWidth);
-    this.spine.svgElem.appendChild(clone);
-    SVGHelper.rotate(clone, this.art.rotateAngle);
+    yPos = yTileHeight * (yTileCount - spacing / 2);
+    for (let i = 1; i <= repeats; i++) {
+      const image = images.at(-i % images.length);
+      const xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);
+      const clone = image.svg.cloneNode(true);
+      clone.setAttribute('y', yPos - image.halfHeight);
+      clone.setAttribute('x', xPos);
+      this.spine.svgElem.appendChild(clone);
+      if (!right) SVGHelper.mirror(clone);
+      SVGHelper.rotate(clone, this.art.rotateAngle);
+      right = !right;
+      yPos -= yTileHeight * spacing;
+    }
   }
 
   transformDecider({ x, y, grid, style }) {

@@ -421,8 +421,8 @@ class BookCover {
 
     // Add a couple graphics
     const images = this.art.defaultImages || this.art.images;
-    const maxWidth = this.spine.innerWidth - this.borderThickness * 4;
-    const maxHeight = this.spine.innerHeight / 6;
+    const maxWidth = this.art.scale * (this.spine.innerWidth - this.borderThickness * 6);
+    const maxHeight = this.art.scale * (this.spine.innerHeight / 8);
     images.forEach((image) => {
       this.sizeImage(image, this.spine.svgElem, maxHeight, maxWidth);
     });
@@ -430,27 +430,18 @@ class BookCover {
     // Add art to top spine
     const image1 = images.at(-1);
     const image2 = images.at(-(2 % images.length));
-    const image3 = images.at(-(3 % images.length));
-    const image4 = images.at(-(4 % images.length));
     let clone = image1.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * 1 - image1.halfHeight);
+    clone.setAttribute('y', yTileHeight * 2 - image1.halfHeight);
     clone.setAttribute('x', xCenter - image1.halfWidth);
     this.spine.svgElem.appendChild(clone);
+    SVGHelper.mirror(clone);
+    SVGHelper.rotate(clone, this.art.rotateAngle);
+    // Add art to bottom spine
     clone = image2.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * 3 - image2.halfHeight);
+    clone.setAttribute('y', yTileHeight * (yTileCount - 2) - image2.halfHeight);
     clone.setAttribute('x', xCenter - image2.halfWidth);
     this.spine.svgElem.appendChild(clone);
-    SVGHelper.mirror(clone);
-    // Add art to bottom spine
-    clone = image3.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * (yTileCount - 3) - image3.halfHeight);
-    clone.setAttribute('x', xCenter - image3.halfWidth);
-    this.spine.svgElem.appendChild(clone);
-    clone = image4.svg.cloneNode(true);
-    clone.setAttribute('y', yTileHeight * (yTileCount - 1) - image4.halfHeight);
-    clone.setAttribute('x', xCenter - image4.halfWidth);
-    this.spine.svgElem.appendChild(clone);
-    SVGHelper.mirror(clone);
+    SVGHelper.rotate(clone, this.art.rotateAngle);
   }
 
   transformDecider({ x, y, grid, style }) {

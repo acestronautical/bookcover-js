@@ -208,7 +208,7 @@ class BookCover {
     // We want shared properties to be available on BookCover and on relevant children
     const _bookCover = this;
     return {
-      fontSize: 24,
+      fontSize: 26,
       htmlElem: document.getElementById('front-cover'),
       initialCopies: 3,
       svgElem: null,

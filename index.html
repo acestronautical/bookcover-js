@@ -71,13 +71,6 @@
           <input type="number" id="spineFontSizeInput" min="4" max="40" step="0.5" />
         </div>
       </div>
-      <div class="input-group">
-        <div>
-          <label for="spineFontRotationInput">
-            Rotate Spine Text <input type="checkbox" id="spineFontRotationInput" />
-          </label>
-        </div>
-      </div>
       <hr>
       <div class="space-out">
         <div class="input-group">
@@ -113,6 +106,34 @@
         </div>
       </div>
       <hr>
+      <div class="space-out">
+
+        <div class="input-group">
+          <label for="spineFontStyleInput">Spine Font Style</label>
+          <select id="spineFontStyleInput">
+            <option value="1">both centered</option>
+            <option value="2">both rotated</option>
+            <option value="3">title rotated</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="spineArtStyleInput">Spine Art Style</label>
+          <select id="spineArtStyleInput">
+            <option value="0">no art</option>
+            <option value="2">2 x 2 sides</option>
+            <option value="3">3 x 3 sides</option>
+            <option value="4">4 x 4 sides</option>
+            <option value="5">1 x 1 center</option>
+            <option value="6">2 x 2 center</option>
+            <option value="7">3 x 2 sides</option>
+            <option value="8">4 x 3 sides</option>
+            <option value="9">2 x 3 sides</option>
+            <option value="10">3 x 4 sides</option>
+            <option value="11">1 top</option>
+            <option value="12">1 bottom</option>
+          </select>
+        </div>
+      </div>
       <div class="space-out">
         <div class="input-group color-input">
           <label for="elementColorInput">Element Color</label>

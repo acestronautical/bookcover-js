@@ -92,7 +92,7 @@ class SVGHelper {
     let lineY;
     lines.forEach((line, index) => {
       const text = SVGHelper.create('text', {
-        fill: color, 'font-size': size, 'font-family': FontFamilies
+        fill: color, 'font-size': size, 'font-family': FontFamilies, 'white-space': 'pre'
       });
       text.textContent = line;
       lineSvgArr[index] = text;
@@ -243,7 +243,8 @@ class BookCover {
   spine = (() => {
     const _bookCover = this;
     return {
-      fontRotation: false,
+      artStyle: 4,
+      fontStyle: 1,
       fontSize: 18,
       htmlElem: document.getElementById('spine-cover'),
       svgElem: null,
@@ -388,29 +389,13 @@ class BookCover {
     const yTileHeight = this.spine.innerHeight / yTileCount;
     const xCenter = this.spine.innerWidth / 2;
     const yCenter = this.spine.innerHeight / 2;
+    const commonTextAttrs = {
+      y: yCenter, fill: this.elementColor, 'font-size': this.spine.fontSize,
+      'font-family': FontFamilies, 'text-anchor': 'middle', 'white-space': 'pre'
+    };
 
-    if (this.spine.fontRotation) {
-      const commonTextAttrs = {
-        y: yCenter, fill: this.elementColor, 'font-size': this.spine.fontSize,
-        'font-family': FontFamilies, 'text-anchor': 'middle',
-      };
-
-      const titleSvg = SVGHelper.create('text', {
-        x: xCenter + this.spine.fontSize / 2,
-        transform: `rotate(90 ${xCenter + this.spine.fontSize / 2},${yCenter})`,
-        ...commonTextAttrs
-      });
-      titleSvg.textContent = this.title;
-      this.spine.svgElem.appendChild(titleSvg);
-
-      const authorSvg = SVGHelper.create('text', {
-        x: xCenter - this.spine.fontSize,
-        transform: `rotate(90 ${xCenter - this.spine.fontSize},${yCenter})`,
-        ...commonTextAttrs
-      });
-      authorSvg.textContent = this.author;
-      this.spine.svgElem.appendChild(authorSvg);
-    } else {
+    if (this.spine.fontStyle == 1) {
+      // center title and author
       const textY = this.spine.innerHeight / 2;
       let text = this.title.split(/[ \n]+/).join('\n');
       text += '\n\n';
@@ -425,6 +410,32 @@ class BookCover {
         reposition: true,
       });
       this.spine.svgElem.appendChild(textSvg);
+    } else if (this.spine.fontStyle == 2) {
+      // Rotated title and author
+      const titleSvg = SVGHelper.create('text', {
+        x: xCenter + this.spine.fontSize / 2,
+        transform: `rotate(90 ${xCenter + this.spine.fontSize / 2},${yCenter})`,
+        ...commonTextAttrs
+      });
+      titleSvg.textContent = this.title.split(/[\n]+/).join(' ');
+      this.spine.svgElem.appendChild(titleSvg);
+
+      const authorSvg = SVGHelper.create('text', {
+        x: xCenter - this.spine.fontSize,
+        transform: `rotate(90 ${xCenter - this.spine.fontSize},${yCenter})`,
+        ...commonTextAttrs
+      });
+      authorSvg.textContent = this.author.split(/[\n]+/).join(' ');
+      this.spine.svgElem.appendChild(authorSvg);
+    } else if (this.spine.fontStyle == 3) {
+      // center rotated title
+      const titleSvg = SVGHelper.create('text', {
+        x: xCenter,
+        transform: `rotate(90 ${xCenter},${yCenter - this.spine.fontSize / 4})`,
+        ...commonTextAttrs
+      });
+      titleSvg.textContent = this.title.split(/[\n]+/).join(' ');
+      this.spine.svgElem.appendChild(titleSvg);
     }
 
     // Add a couple graphics
@@ -435,15 +446,33 @@ class BookCover {
       this.sizeImage(image, this.spine.svgElem, maxHeight, maxWidth);
     });
 
-    // Add art to top spine
-    const repeats = 4;
-    const spacing = 4 / repeats;
+    const artStyles = {
+      // offset
+      0: [0, 0, false], 2: [2, 2, false],
+      3: [3, 3, false], 4: [4, 4, false],
+      // centered
+      5: [1, 1, true], 6: [2, 2, true],
+      // top heavy offset
+      7: [3, 2, false], 8: [4, 3, false],
+      // bottom heavy offset
+      9: [2, 3, false], 10: [3, 4, false],
+      // top only
+      11: [1, 0, true],
+      // bottom only
+      12: [0, 1, true]
+
+    };
+    const [topRepeats, bottomRepeats, centered] = artStyles[this.spine.artStyle];
+    const topSpacing = 4 / topRepeats;
+    const bottomSpacing = 4 / bottomRepeats;
     const xNudge = .65 + this.spine.innerWidth / 200;
     let right = false;
-    let yPos = yTileHeight * (spacing / 2);
-    for (let i = 1; i <= repeats; i++) {
+    // Add art to top spine
+    let yPos = yTileHeight * (topSpacing / 2) / (topRepeats == 1 ? 2 : 1);
+    for (let i = 1; i <= topRepeats; i++) {
       const image = images.at(-i % images.length);
-      const xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);
+      let xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);
+      xPos = centered ? xCenter - image.halfWidth : xPos;
       const clone = image.svg.cloneNode(true);
       clone.setAttribute('y', yPos - image.halfHeight);
       clone.setAttribute('x', xPos);
@@ -451,14 +480,15 @@ class BookCover {
       if (!right) SVGHelper.mirror(clone);
       SVGHelper.rotate(clone, this.art.rotateAngle);
       right = !right;
-      yPos += yTileHeight * spacing;
+      yPos += yTileHeight * topSpacing;
     }
     right = !right;
     // Add art to bottom spine
-    yPos = yTileHeight * (yTileCount - spacing / 2);
-    for (let i = 1; i <= repeats; i++) {
+    yPos = yTileHeight * (yTileCount - (bottomSpacing / 2 / (bottomRepeats == 1 ? 2 : 1)));
+    for (let i = 1; i <= bottomRepeats; i++) {
       const image = images.at(-i % images.length);
-      const xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);
+      let xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);
+      xPos = centered ? xCenter - image.halfWidth : xPos;
       const clone = image.svg.cloneNode(true);
       clone.setAttribute('y', yPos - image.halfHeight);
       clone.setAttribute('x', xPos);
@@ -466,7 +496,7 @@ class BookCover {
       if (!right) SVGHelper.mirror(clone);
       SVGHelper.rotate(clone, this.art.rotateAngle);
       right = !right;
-      yPos -= yTileHeight * spacing;
+      yPos -= yTileHeight * bottomSpacing;
     }
   }
 
@@ -642,6 +672,8 @@ function initializePage() {
   document.getElementById('numColumnsInput').value = Cover.art.numColumns;
   document.getElementById('mirrorCheckbox').checked = Cover.art.mirror;
   document.getElementById('rotateInput').value = Cover.art.rotateAngle;
+  document.getElementById('spineFontStyleInput').value = Cover.spine.fontStyle;
+  document.getElementById('spineArtStyleInput').value = Cover.spine.artStyle;
   document.getElementById('verticalLinesCheckbox').checked = Cover.art.vertLines;
   document.getElementById('xOverhangCheckbox').checked = Cover.art.xStretch;
   document.getElementById('yOverhangCheckbox').checked = Cover.art.yStretch;
@@ -661,6 +693,10 @@ function addEventListeners() {
       Cover.art.rotateAngle = parseInt(target.value);
     } else if (target.matches('#imageScale')) {
       Cover.art.scale = parseFloat(target.value);
+    } else if (target.matches('#spineFontStyleInput')) {
+      Cover.spine.fontStyle = parseFloat(target.value);
+    } else if (target.matches('#spineArtStyleInput')) {
+      Cover.spine.artStyle = parseFloat(target.value);
     } else if (target.matches('#lengthUnitInput')) {
       const borderThicknessElem = document.getElementById('borderThicknessInput');
       const borderGapElem = document.getElementById('borderGapInput');
@@ -771,8 +807,6 @@ function addEventListeners() {
       Cover.art.xStretch = target.checked;
     } else if (target.matches('#verticalLinesCheckbox')) {
       Cover.art.vertLines = target.checked;
-    } else if (target.matches('#spineFontRotationInput')) {
-      Cover.spine.fontRotation = target.checked;
     }
     Cover.updateCovers();
   });

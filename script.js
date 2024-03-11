@@ -427,15 +427,32 @@ class BookCover {
       });
       authorSvg.textContent = this.author.split(/[\n]+/).join(' ');
       this.spine.svgElem.appendChild(authorSvg);
-    } else if (this.spine.fontStyle == 3) {
+    } else if (this.spine.fontStyle == 3 || this.spine.fontStyle == 4) {
       // center rotated title
       const titleSvg = SVGHelper.create('text', {
         x: xCenter,
         transform: `rotate(90 ${xCenter},${yCenter - this.spine.fontSize / 4})`,
+        'letter-spacing': 3,
         ...commonTextAttrs
       });
       titleSvg.textContent = this.title.split(/[\n]+/).join(' ');
       this.spine.svgElem.appendChild(titleSvg);
+    }
+    if (this.spine.fontStyle == 4) {
+      // author at top
+      const text = this.author.split(/[ \n]+/).join('\n');
+      const longest = text.split(/[ \n]+/).reduce((acc, item) => Math.max(acc, item.length), 0);
+      const textSvg = SVGHelper.createCenteredText({
+        color: this.elementColor,
+        size: 4 * this.spine.innerWidth / (Math.log2(longest) * longest),
+        string: text,
+        y: this.spine.innerHeight / 12,
+        parent: this.spine.svgElem,
+        parentWidth: this.spine.innerWidth,
+        reposition: false,
+      });
+      this.spine.svgElem.appendChild(textSvg);
+
     }
 
     // Add a couple graphics

@@ -92,7 +92,7 @@ textarea {
 .input-group input[type="text"],
 .input-group input[type="number"],
 .input-group input[type="color"] {
-    padding: 3px;
+    padding: 2px;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 8.5rem;
@@ -169,7 +169,7 @@ textarea {
 }
 #settingsSection {
     background-color: var(--background-light);
-    padding: 20px;
+    padding: 16px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     min-width: 320px;

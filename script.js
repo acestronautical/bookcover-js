@@ -482,7 +482,7 @@ class BookCover {
       right = !right;
       yPos += yTileHeight * topSpacing;
     }
-    right = !right;
+    right = bottomRepeats % 2 == 0 ? !right : right;
     // Add art to bottom spine
     yPos = yTileHeight * (yTileCount - (bottomSpacing / 2 / (bottomRepeats == 1 ? 2 : 1)));
     for (let i = 1; i <= bottomRepeats; i++) {

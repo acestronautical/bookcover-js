@@ -85,14 +85,14 @@ textarea {
     display: block;
     margin-top: 3px;
     margin-top: 2px;
-    font-size: 15px;
+    font-size: 14px;
 }
 .input-group textarea,
 .input-group select,
 .input-group input[type="text"],
 .input-group input[type="number"],
 .input-group input[type="color"] {
-    padding: 4px;
+    padding: 3px;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 8.5rem;

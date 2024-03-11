@@ -172,13 +172,22 @@ class BookCover {
   title = 'Cats Cradle\nChronicles';
   outerWidth = 396; // 5.5 inches
   outerHeight = 648; // 9 inches
-  borderGap = this.outerWidth / 20;
+  borderGap = 18; // .25 inches
+  borderThickness = 3.6; // .05 inches
+  set borderGapInches(inches) { this.borderGap = inches * this.inchToPx; }
+  set borderThicknessInches(inches) { this.borderThickness = inches * this.inchToPx; }
   set outerWidthInches(inches) { this.outerWidth = inches * this.inchToPx; }
   set outerHeightInches(inches) { this.outerHeight = inches * this.inchToPx; }
+  get borderThicknessInches() { return this.borderThickness / this.inchToPx; }
+  get borderGapInches() { return this.borderGap / this.inchToPx; }
   get outerWidthInches() { return this.outerWidth / this.inchToPx; }
   get outerHeightInches() { return this.outerHeight / this.inchToPx; }
+  set borderThicknessMilli(mm) { this.borderThickness = mm * this.mmToPx; }
+  set borderGapMilli(mm) { this.borderGap = mm * this.mmToPx; }
   set outerWidthMilli(mm) { this.outerWidth = mm * this.mmToPx; }
   set outerHeightMilli(mm) { this.outerHeight = mm * this.mmToPx; }
+  get borderThicknessMilli() { return this.borderThickness / this.mmToPx; }
+  get borderGapMilli() { return this.borderGap / this.mmToPx; }
   get outerWidthMilli() { return this.outerWidth / this.mmToPx; }
   get outerHeightMilli() { return this.outerHeight / this.mmToPx; }
   // getters automatically update when other properties change
@@ -186,7 +195,6 @@ class BookCover {
   get proportions() { return this.outerHeight / this.outerWidth; }
   get innerWidth() { return (this.outerWidth - this.borderGap * 2); }
   get innerHeight() { return (this.outerHeight - this.borderGap * 2); }
-  borderThickness = 3.5;
   art = {
     increasePerColumn: 1,
     maxPerColumn: 5,
@@ -315,7 +323,7 @@ class BookCover {
 
     if (side == 'front') {
       // Create centered title
-      const titleY = this.borderGap * 2;
+      const titleY = this[side].innerHeight / 16;
       const titleString = this.title;
       const titleSvg = SVGHelper.createCenteredText({
         color: this.elementColor,
@@ -329,7 +337,7 @@ class BookCover {
       this[side].svgElem.appendChild(titleSvg);
 
       // Create centered author
-      const authorY = borderHeight - this.borderGap * 2;
+      const authorY = borderHeight - this[side].innerHeight / 16;
       const authorString = this.author;
       const authorSvg = SVGHelper.createCenteredText({
         color: this.elementColor,
@@ -421,7 +429,7 @@ class BookCover {
 
     // Add a couple graphics
     const images = this.art.defaultImages || this.art.images;
-    const maxWidth = this.art.scale * (this.spine.innerWidth - this.borderThickness * 6);
+    const maxWidth = this.art.scale * (this.spine.innerWidth);
     const maxHeight = this.art.scale * (this.spine.innerHeight / 8);
     images.forEach((image) => {
       this.sizeImage(image, this.spine.svgElem, maxHeight, maxWidth);
@@ -618,6 +626,8 @@ function initializePage() {
   document.getElementById('coverWidthInput').value = Cover.outerWidthInches;
   document.getElementById('coverHeightInput').value = Cover.outerHeightInches;
   document.getElementById('spineWidthInput').value = Cover.spine.outerWidthInches;
+  document.getElementById('borderThicknessInput').value = Cover.borderThicknessInches;
+  document.getElementById('borderGapInput').value = Cover.borderGapInches;
   document.getElementById('elementColorInput').value = Cover.elementColor;
   document.getElementById('authorInput').value = Cover.author;
   document.getElementById('coverFontSizeInput').value = Cover.front.fontSize;
@@ -652,18 +662,44 @@ function addEventListeners() {
     } else if (target.matches('#imageScale')) {
       Cover.art.scale = parseFloat(target.value);
     } else if (target.matches('#lengthUnitInput')) {
+      const borderThicknessElem = document.getElementById('borderThicknessInput');
+      const borderGapElem = document.getElementById('borderGapInput');
       const coverWidthElem = document.getElementById('coverWidthInput');
       const coverHeightElem = document.getElementById('coverHeightInput');
       const spineWidthElem = document.getElementById('spineWidthInput');
       if (target.value == 'inches') {
-        coverWidthElem.value = Cover.outerWidthInches.toPrecision(5);
-        coverHeightElem.value = Cover.outerHeightInches.toPrecision(5);
-        spineWidthElem.value = Cover.spine.outerWidthInches.toPrecision(5);
+        borderThicknessElem.value = Cover.borderThicknessInches.toPrecision(3);
+        borderGapElem.value = Cover.borderGapInches.toPrecision(3);
+        coverWidthElem.value = Cover.outerWidthInches.toPrecision(3);
+        coverHeightElem.value = Cover.outerHeightInches.toPrecision(3);
+        spineWidthElem.value = Cover.spine.outerWidthInches.toPrecision(3);
       } else if (target.value == 'millimeters') {
-        coverWidthElem.value = Cover.outerWidthMilli.toPrecision(4);
-        coverHeightElem.value = Cover.outerHeightMilli.toPrecision(4);
-        spineWidthElem.value = Cover.spine.outerWidthMilli.toPrecision(4);
+        borderThicknessElem.value = Cover.borderThicknessMilli.toPrecision(3);
+        borderGapElem.value = Cover.borderGapMilli.toPrecision(3);
+        coverWidthElem.value = Cover.outerWidthMilli.toPrecision(3);
+        coverHeightElem.value = Cover.outerHeightMilli.toPrecision(3);
+        spineWidthElem.value = Cover.spine.outerWidthMilli.toPrecision(3);
       }
+    } else if (target.matches('#borderThicknessInput')) {
+      const unitType = document.getElementById('lengthUnitInput').value;
+      const width = parseFloat(target.value);
+      if (unitType == 'inches') {
+        Cover.borderThicknessInches = width;
+      } else if (unitType == 'millimeters') {
+        Cover.borderThicknessMilli = width;
+      }
+      Cover.generateCovers();
+      return;
+    } else if (target.matches('#borderGapInput')) {
+      const unitType = document.getElementById('lengthUnitInput').value;
+      const width = parseFloat(target.value);
+      if (unitType == 'inches') {
+        Cover.borderGapInches = width;
+      } else if (unitType == 'millimeters') {
+        Cover.borderGapMilli = width;
+      }
+      Cover.generateCovers();
+      return;
     } else if (target.matches('#coverWidthInput')) {
       const unitType = document.getElementById('lengthUnitInput').value;
       const width = parseFloat(target.value);

@@ -23,24 +23,30 @@
         <div id="back-cover" class="cover"></div>
         <small>Save Back</small>
         <div class="center">
-          <button class="button-save button-split-left" id="saveBackSVG">SVG</button>
-          <button class="button-save button-split-right darker" id="saveBackPNG">PNG</button>
+          <button class="button-save button-split-left" id="saveBackSVG"
+            title="SVG will save as actual size with 72DPI">SVG</button>
+          <button class="button-save button-split-right darker" id="saveBackPNG"
+            title="PNG will save as 10X size&#013;for resolution purposes">PNG</button>
         </div>
       </div>
       <div class="center column">
         <div id="spine-cover" class="cover"></div>
         <small>Save Spine</small>
         <div class="center">
-          <button class="button-save button-split-left" id="saveSpineSVG">SVG</button>
-          <button class="button-save button-split-right darker" id="saveSpinePNG">PNG</button>
+          <button class="button-save button-split-left" id="saveSpineSVG"
+            title="SVG will save as actual size with 72DPI">SVG</button>
+          <button class="button-save button-split-right darker" id="saveSpinePNG"
+            title="PNG will save as 10X size&#013;for resolution purposes">PNG</button>
         </div>
       </div>
       <div class="center column pl-12">
         <div id="front-cover" class="cover"></div>
         <small>Save Front</small>
         <div class="center">
-          <button class="button-save button-split-left" id="saveFrontSVG">SVG</button>
-          <button class="button-save button-split-right darker" id="saveFrontPNG">PNG</button>
+          <button class="button-save button-split-left" id="saveFrontSVG"
+            title="SVG will save as actual size with 72DPI">SVG</button>
+          <button class="button-save button-split-right darker" id="saveFrontPNG"
+            title="PNG will save as 10X size&#013;for resolution purposes">PNG</button>
         </div>
       </div>
     </div>
@@ -124,22 +130,25 @@
       <div class="space-out">
         <div class="input-group">
           <label for="maxPerColumnInput">Maximum Rows</label>
-          <input type="number" id="maxPerColumnInput" min="1" max="8" />
+          <input type="number" id="maxPerColumnInput" title="Maximum rows allowed in a column" min="1" max="8" />
         </div>
         <div class="input-group">
           <label for="increasePerColumnInput">Increase Per Column</label>
-          <input type="number" id="increasePerColumnInput" min="0" max="8" />
+          <input type="number" id="increasePerColumnInput"
+            title="Number of elements to add each&#013;column going outwards from the middle" min="0" max="8" />
         </div>
       </div>
       <div class="space-out">
         <div class="input-group">
           <label for="backCoverInitialCopiesInput">Back Middle Rows</label>
-          <input type="number" id="backCoverInitialCopiesInput" min="0" max="8" />
+          <input type="number" id="backCoverInitialCopiesInput"
+            title="Number of elements to populate in the&#013;middle column of the back cover" min="0" max="8" />
         </div>
 
         <div class="input-group">
           <label for="frontCoverInitialCopiesInput">Front Middle Rows</label>
-          <input type="number" id="frontCoverInitialCopiesInput" min="0" max="8" />
+          <input type="number" id="frontCoverInitialCopiesInput"
+            title="Number of elements to populate in the&#013;middle column of the front cover" min="0" max="8" />
         </div>
       </div>
       <div class="space-out pb-12">

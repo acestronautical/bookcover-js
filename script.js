@@ -244,7 +244,7 @@ class BookCover {
     const _bookCover = this;
     return {
       artStyle: 4,
-      fontStyle: 1,
+      textStyle: 1,
       fontSize: 18,
       htmlElem: document.getElementById('spine-cover'),
       svgElem: null,
@@ -394,7 +394,7 @@ class BookCover {
       'font-family': FontFamilies, 'text-anchor': 'middle', 'white-space': 'pre'
     };
 
-    if (this.spine.fontStyle == 1) {
+    if (this.spine.textStyle == 1) {
       // center title and author
       const textY = this.spine.innerHeight / 2;
       let text = this.title.split(/[ \n]+/).join('\n');
@@ -410,7 +410,7 @@ class BookCover {
         reposition: true,
       });
       this.spine.svgElem.appendChild(textSvg);
-    } else if (this.spine.fontStyle == 2) {
+    } else if (this.spine.textStyle == 2) {
       // Rotated title and author
       const titleSvg = SVGHelper.create('text', {
         x: xCenter + this.spine.fontSize / 2,
@@ -427,7 +427,7 @@ class BookCover {
       });
       authorSvg.textContent = this.author.split(/[\n]+/).join(' ');
       this.spine.svgElem.appendChild(authorSvg);
-    } else if (this.spine.fontStyle == 3 || this.spine.fontStyle == 4) {
+    } else if (this.spine.textStyle == 3 || this.spine.textStyle == 4) {
       // center rotated title
       const titleSvg = SVGHelper.create('text', {
         x: xCenter,
@@ -438,7 +438,7 @@ class BookCover {
       titleSvg.textContent = this.title.split(/[\n]+/).join(' ');
       this.spine.svgElem.appendChild(titleSvg);
     }
-    if (this.spine.fontStyle == 4) {
+    if (this.spine.textStyle == 4) {
       // author at top
       const text = this.author.split(/[ \n]+/).join('\n');
       const longest = text.split(/[ \n]+/).reduce((acc, item) => Math.max(acc, item.length), 0);
@@ -689,7 +689,7 @@ function initializePage() {
   document.getElementById('numColumnsInput').value = Cover.art.numColumns;
   document.getElementById('mirrorCheckbox').checked = Cover.art.mirror;
   document.getElementById('rotateInput').value = Cover.art.rotateAngle;
-  document.getElementById('spineFontStyleInput').value = Cover.spine.fontStyle;
+  document.getElementById('spineTextStyleInput').value = Cover.spine.textStyle;
   document.getElementById('spineArtStyleInput').value = Cover.spine.artStyle;
   document.getElementById('verticalLinesCheckbox').checked = Cover.art.vertLines;
   document.getElementById('xOverhangCheckbox').checked = Cover.art.xStretch;
@@ -710,8 +710,8 @@ function addEventListeners() {
       Cover.art.rotateAngle = parseInt(target.value);
     } else if (target.matches('#imageScale')) {
       Cover.art.scale = parseFloat(target.value);
-    } else if (target.matches('#spineFontStyleInput')) {
-      Cover.spine.fontStyle = parseFloat(target.value);
+    } else if (target.matches('#spineTextStyleInput')) {
+      Cover.spine.textStyle = parseFloat(target.value);
     } else if (target.matches('#spineArtStyleInput')) {
       Cover.spine.artStyle = parseFloat(target.value);
     } else if (target.matches('#lengthUnitInput')) {

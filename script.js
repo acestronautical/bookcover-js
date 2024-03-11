@@ -444,7 +444,7 @@ class BookCover {
       const longest = text.split(/[ \n]+/).reduce((acc, item) => Math.max(acc, item.length), 0);
       const textSvg = SVGHelper.createCenteredText({
         color: this.elementColor,
-        size: 4 * this.spine.innerWidth / (Math.log2(longest) * longest),
+        size: 4 * this.spine.innerWidth / (Math.log2(longest) * longest - 1),
         string: text,
         y: this.spine.innerHeight / 12,
         parent: this.spine.svgElem,

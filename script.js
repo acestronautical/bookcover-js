@@ -830,19 +830,19 @@ function addEventListeners() {
 
   document.getElementById('coverSection').addEventListener('click', function (event) {
     const target = event.target;
-    const lastName = Cover.author.split(/[\s,]+/).at(-1).toLowerCase();
+    const lastTitle = Cover.title.split(/[\s,]+/).at(-1).toLowerCase();
     if (target.matches('#saveBackPNG')) {
-      SVGHelper.saveAsPng(`${lastName}_cover_back.png`, Cover.back.svgElem);
+      SVGHelper.saveAsPng(`${lastTitle}_cover_back.png`, Cover.back.svgElem);
     } else if (target.matches('#saveSpinePNG')) {
-      SVGHelper.saveAsPng(`${lastName}_cover_spine.png`, Cover.spine.svgElem);
+      SVGHelper.saveAsPng(`${lastTitle}_cover_spine.png`, Cover.spine.svgElem);
     } else if (target.matches('#saveFrontPNG')) {
-      SVGHelper.saveAsPng(`${lastName}_cover_front.png`, Cover.front.svgElem);
+      SVGHelper.saveAsPng(`${lastTitle}_cover_front.png`, Cover.front.svgElem);
     } else if (target.matches('#saveBackSVG')) {
-      SVGHelper.save(`${lastName}_cover_back.svg`, Cover.back.svgElem);
+      SVGHelper.save(`${lastTitle}_cover_back.svg`, Cover.back.svgElem);
     } else if (target.matches('#saveSpineSVG')) {
-      SVGHelper.save(`${lastName}_cover_spine.svg`, Cover.spine.svgElem);
+      SVGHelper.save(`${lastTitle}_cover_spine.svg`, Cover.spine.svgElem);
     } else if (target.matches('#saveFrontSVG')) {
-      SVGHelper.save(`${lastName}_cover_front.svg`, Cover.front.svgElem);
+      SVGHelper.save(`${lastTitle}_cover_front.svg`, Cover.front.svgElem);
     }
   });
 

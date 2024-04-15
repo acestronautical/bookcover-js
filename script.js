@@ -216,6 +216,7 @@ class BookCover {
     // We want shared properties to be available on BookCover and on relevant children
     const _bookCover = this;
     return {
+      disabled: false,
       fontSize: 26,
       htmlElem: document.getElementById('front-cover'),
       initialCopies: 3,
@@ -230,6 +231,7 @@ class BookCover {
   back = (() => {
     const _bookCover = this;
     return {
+      disabled: false,
       htmlElem: document.getElementById('back-cover'),
       initialCopies: 4,
       svgElem: null,
@@ -243,6 +245,7 @@ class BookCover {
   spine = (() => {
     const _bookCover = this;
     return {
+      disabled: false,
       artStyle: 4,
       textStyle: 1,
       fontSize: 18,
@@ -261,15 +264,15 @@ class BookCover {
   })();
 
   generateCovers() {
-    this.genFront();
-    this.genBack();
-    this.genSpine();
+    if (!this.front.disabled) this.genFront();
+    if (!this.back.disabled) this.genBack();
+    if (!this.spine.disabled) this.genSpine();
   }
 
   updateCovers() {
-    this.tesselate('back');
-    this.tesselate('front');
-    this.genSpine();
+    if (!this.front.disabled) this.tesselate('front');
+    if (!this.back.disabled) this.tesselate('back');
+    if (!this.spine.disabled) this.genSpine();
   }
 
   genFront() {
@@ -688,6 +691,7 @@ function initializePage() {
   document.getElementById('maxPerColumnInput').value = Cover.art.maxPerColumn;
   document.getElementById('numColumnsInput').value = Cover.art.numColumns;
   document.getElementById('mirrorCheckbox').checked = Cover.art.mirror;
+  document.getElementById('endpaperCheckbox').checked = false;
   document.getElementById('rotateInput').value = Cover.art.rotateAngle;
   document.getElementById('spineTextStyleInput').value = Cover.spine.textStyle;
   document.getElementById('spineArtStyleInput').value = Cover.spine.artStyle;
@@ -824,6 +828,49 @@ function addEventListeners() {
       Cover.art.xStretch = target.checked;
     } else if (target.matches('#verticalLinesCheckbox')) {
       Cover.art.vertLines = target.checked;
+    } else if (target.matches('#endpaperCheckbox')) {
+      if (target.checked) {
+        document.getElementById('frontCoverSection').classList.add('hidden');
+        Cover.front.disabled = true;
+        document.getElementById('spineCoverSection').classList.add('hidden');
+        Cover.spine.disabled = true;
+        document.getElementById('saveBackSVGLabel').innerHTML = 'Save Endpaper';
+        Cover.outerWidth *= 2;
+        Cover.art.numColumns *= 2;
+        Cover.art.numColumns += 1;
+        Cover.art.numColumns = Math.floor(Cover.art.numColumns);
+        Cover.borderGap = 0;
+        Cover.borderThickness = 0;
+      } else {
+        document.getElementById('frontCoverSection').classList.remove('hidden');
+        Cover.front.disabled = false;
+        document.getElementById('spineCoverSection').classList.remove('hidden');
+        Cover.spine.disabled = false;
+        document.getElementById('saveBackSVGLabel').innerHTML = 'Save Back';
+        Cover.outerWidth /= 2;
+        Cover.art.numColumns -= 1;
+        Cover.art.numColumns /= 2;
+        Cover.art.numColumns = Math.floor(Cover.art.numColumns);
+      }
+      const numColsElem = document.getElementById('numColumnsInput');
+      numColsElem.value = Cover.art.numColumns;
+      const coverWidthElem = document.getElementById('coverWidthInput');
+      const unitType = document.getElementById('lengthUnitInput').value;
+      if (unitType == 'inches') {
+        coverWidthElem.value = Cover.outerWidthInches.toPrecision(3);
+        if (!target.checked) {
+          Cover.borderGapInches = document.getElementById('borderGapInput').value;
+          Cover.borderThicknessInches = document.getElementById('borderThicknessInput').value;
+        }
+      } else if (unitType == 'millimeters') {
+        coverWidthElem.value = Cover.outerHeightMilli.toPrecision(3);
+        if (!target.checked) {
+          Cover.borderGapMilli = document.getElementById('borderGapInput').value;
+          Cover.borderThicknessMilli = document.getElementById('borderThicknessInput').value;
+        }
+      }
+      Cover.generateCovers();
+      return;
     }
     Cover.updateCovers();
   });
@@ -831,14 +878,21 @@ function addEventListeners() {
   document.getElementById('coverSection').addEventListener('click', function (event) {
     const target = event.target;
     const lastTitle = Cover.title.split(/[\s,]+/).at(-1).toLowerCase();
+    const isEndpaper = document.getElementById('endpaperCheckbox').checked;
     if (target.matches('#saveBackPNG')) {
-      SVGHelper.saveAsPng(`${lastTitle}_cover_back.png`, Cover.back.svgElem);
+      if (isEndpaper)
+        SVGHelper.saveAsPng(`${lastTitle}_endpaper.png`, Cover.back.svgElem);
+      else
+        SVGHelper.saveAsPng(`${lastTitle}_cover_back.png`, Cover.back.svgElem);
     } else if (target.matches('#saveSpinePNG')) {
       SVGHelper.saveAsPng(`${lastTitle}_cover_spine.png`, Cover.spine.svgElem);
     } else if (target.matches('#saveFrontPNG')) {
       SVGHelper.saveAsPng(`${lastTitle}_cover_front.png`, Cover.front.svgElem);
     } else if (target.matches('#saveBackSVG')) {
-      SVGHelper.save(`${lastTitle}_cover_back.svg`, Cover.back.svgElem);
+      if (isEndpaper)
+        SVGHelper.save(`${lastTitle}_endpaper.svg`, Cover.back.svgElem);
+      else
+        SVGHelper.save(`${lastTitle}_cover_back.svg`, Cover.back.svgElem);
     } else if (target.matches('#saveSpineSVG')) {
       SVGHelper.save(`${lastTitle}_cover_spine.svg`, Cover.spine.svgElem);
     } else if (target.matches('#saveFrontSVG')) {

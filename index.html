@@ -19,9 +19,9 @@
   </header>
   <main class="space-even">
     <div id="coverSection" class="space-out">
-      <div class="center column pr-12">
+      <div class="center column pr-12" id="backCoverSection">
         <div id="back-cover" class="cover"></div>
-        <small>Save Back</small>
+        <small id="saveBackSVGLabel">Save Back</small>
         <div class="center">
           <button class="button-save button-split-left" id="saveBackSVG"
             title="SVG will save as actual size with 72DPI">SVG</button>
@@ -29,7 +29,7 @@
             title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.">PNG</button>
         </div>
       </div>
-      <div class="center column">
+      <div class="center column" id="spineCoverSection">
         <div id="spine-cover" class="cover"></div>
         <small>Save Spine</small>
         <div class="center">
@@ -39,7 +39,7 @@
             title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.">PNG</button>
         </div>
       </div>
-      <div class="center column pl-12">
+      <div class="center column pl-12" id="frontCoverSection">
         <div id="front-cover" class="cover"></div>
         <small>Save Front</small>
         <div class="center">
@@ -72,6 +72,12 @@
         </div>
       </div>
       <hr>
+      <div class="space-out">
+        <div class="input-group space-out">
+          <label for="endpaperCheckbox">Show Endpaper Mode</label>
+          <input type="checkbox" id="endpaperCheckbox" />
+        </div>
+      </div>
       <div class="space-out">
         <div class="input-group">
           <label for="coverWidthInput">Cover Width</label>
@@ -157,7 +163,7 @@
       </div>
       <div class="input-group">
         <label for="numColumnsInput">Number of Columns</label>
-        <input style="width: 97%" type="number" id="numColumnsInput" min="1" max="8" />
+        <input style="width: 97%" type="number" id="numColumnsInput" min="1" max="20" />
       </div>
       <div class="space-out">
         <div class="input-group">

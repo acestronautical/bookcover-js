@@ -836,6 +836,7 @@ function addEventListeners() {
         Cover.spine.disabled = true;
         document.getElementById('saveBackSVGLabel').innerHTML = 'Save Endpaper';
         Cover.outerWidth *= 2;
+        Cover.outerHeight -= 0.5 * Cover.inchToPx;
         Cover.art.numColumns *= 2;
         Cover.art.numColumns += 1;
         Cover.art.numColumns = Math.floor(Cover.art.numColumns);
@@ -848,6 +849,7 @@ function addEventListeners() {
         Cover.spine.disabled = false;
         document.getElementById('saveBackSVGLabel').innerHTML = 'Save Back';
         Cover.outerWidth /= 2;
+        Cover.outerHeight += 0.5 * Cover.inchToPx;
         Cover.art.numColumns -= 1;
         Cover.art.numColumns /= 2;
         Cover.art.numColumns = Math.floor(Cover.art.numColumns);
@@ -855,15 +857,18 @@ function addEventListeners() {
       const numColsElem = document.getElementById('numColumnsInput');
       numColsElem.value = Cover.art.numColumns;
       const coverWidthElem = document.getElementById('coverWidthInput');
+      const coverHeightElem = document.getElementById('coverHeightInput');
       const unitType = document.getElementById('lengthUnitInput').value;
       if (unitType == 'inches') {
         coverWidthElem.value = Cover.outerWidthInches.toPrecision(3);
+        coverHeightElem.value = Cover.outerHeightInches.toPrecision(3);
         if (!target.checked) {
           Cover.borderGapInches = document.getElementById('borderGapInput').value;
           Cover.borderThicknessInches = document.getElementById('borderThicknessInput').value;
         }
       } else if (unitType == 'millimeters') {
         coverWidthElem.value = Cover.outerHeightMilli.toPrecision(3);
+        coverHeightElem.value = Cover.outerHeightMilli.toPrecision(3);
         if (!target.checked) {
           Cover.borderGapMilli = document.getElementById('borderGapInput').value;
           Cover.borderThicknessMilli = document.getElementById('borderThicknessInput').value;

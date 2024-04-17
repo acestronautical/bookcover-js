@@ -78,7 +78,7 @@ textarea {
     padding-left: 12px;
 }
 .input-group {
-    margin-bottom: 5px;
+    margin-bottom: 1.5%;
 }
 .input-group label {
     display: block;
@@ -172,7 +172,7 @@ textarea {
 }
 #settingsSection {
     background-color: var(--background-light);
-    padding: 16px;
+    padding: 1%;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     min-width: 21%;

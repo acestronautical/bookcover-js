@@ -17,7 +17,7 @@ body {
 header {
     background-color: var(--header-bg-color);
     color: var(--background-light);
-    padding: 10px;
+    padding: 0.5%;
     text-align: center;
     filter: brightness(95%);
 }
@@ -35,9 +35,6 @@ header a {
 h1 {
     margin: 0;
     font-size: 1.25rem;
-}
-main {
-    padding: 20px;
 }
 textarea {
     resize: none;
@@ -82,7 +79,6 @@ textarea {
 }
 .input-group label {
     display: block;
-    margin-top: 3px;
     margin-top: 2px;
     font-size: .875rem;
 }

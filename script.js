@@ -701,6 +701,16 @@ function initializePage() {
   Cover.generateCovers();
 }
 
+function calcCoverScaling() {
+  const isEndpaper = document.getElementById('endpaperCheckbox').checked;
+  const width = isEndpaper ? Cover.outerWidthInches / 2 : Cover.outerWidthInches;
+  const height = Cover.outerHeightInches;
+  const widthScale = 12 - Math.floor((width + 1) / 2);
+  const heightScale = 14 - Math.floor((height + 1) / 2);
+  const scale = Math.min(widthScale, heightScale, 9);
+  return scale / 10;
+}
+
 function addEventListeners() {
   document.getElementById('settingsSection').addEventListener('change', function (event) {
     const target = event.target;
@@ -765,10 +775,7 @@ function addEventListeners() {
       } else if (unitType == 'millimeters') {
         Cover.outerWidthMilli = width;
       }
-      const coverSection = document.getElementById('coverSection');
-      const widthScale = 12 - Math.floor((Cover.outerWidthInches + 1) / 2);
-      const heightScale = 14 - Math.floor((Cover.outerHeightInches + 1) / 2);
-      coverSection.style.scale = Math.min(widthScale, heightScale, 9) / 10;
+      document.getElementById('coverSection').style.scale = calcCoverScaling();
       Cover.generateCovers();
       return;
     } else if (target.matches('#coverHeightInput')) {
@@ -779,10 +786,7 @@ function addEventListeners() {
       } else if (unitType == 'millimeters') {
         Cover.outerHeightMilli = width;
       }
-      const coverSection = document.getElementById('coverSection');
-      const widthScale = 12 - Math.floor((Cover.outerWidthInches + 1) / 2);
-      const heightScale = 14 - Math.floor((Cover.outerHeightInches + 1) / 2);
-      coverSection.style.scale = Math.min(widthScale, heightScale, 9) / 10;
+      document.getElementById('coverSection').style.scale = calcCoverScaling();
       Cover.generateCovers();
       return;
     } else if (target.matches('#spineWidthInput')) {
@@ -882,6 +886,7 @@ function addEventListeners() {
           Cover.borderThicknessMilli = document.getElementById('borderThicknessInput').value;
         }
       }
+      document.getElementById('coverSection').style.scale = calcCoverScaling();
       Cover.generateCovers();
       return;
     }

@@ -34,7 +34,7 @@ header a {
 }
 h1 {
     margin: 0;
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 main {
     padding: 20px;
@@ -84,7 +84,7 @@ textarea {
     display: block;
     margin-top: 3px;
     margin-top: 2px;
-    font-size: 14px;
+    font-size: .875rem;
 }
 .input-group textarea,
 .input-group select,
@@ -95,11 +95,11 @@ textarea {
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 8.5rem;
-    font-size: 14px;
+    font-size: .875rem;
     background-color: white; 
 }
 .button {
-    height: 34px;
+    height: 8rem;
 }
 .button,
 .button-split-left,
@@ -111,7 +111,7 @@ textarea {
     border-radius: 5px;
     cursor: pointer;
     padding: 14px 24px;
-    font-size: 14px;
+    font-size: .875rem;
     text-align: center;
 }
 .button-split-left {
@@ -163,10 +163,9 @@ textarea {
     filter: brightness(60%);
 }
 #coverSection {
-    margin-top: 20px;
     scale: 0.9;
     position: absolute;
-    top: 51%;
+    top: 53%;
     left: 37%;
     transform: translateX(-50%) translateY(-50%);
     transform-origin: top left;
@@ -176,10 +175,13 @@ textarea {
     padding: 16px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    min-width: 320px;
+    min-width: 21%;
     max-width: 100%;
     position: absolute;
-    right: 2.5%;
+    top: 53%;
+    left: 86%;
+    transform: translateX(-50%) translateY(-50%);
+    transform-origin: top left;
 }
 #uploadSection {
     text-align: center;

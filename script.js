@@ -327,7 +327,7 @@ class BookCover {
 
     if (side == 'front') {
       // Create centered title
-      const titleY = this[side].innerHeight / 16;
+      const titleY = (this[side].innerHeight / 16) + this.borderThickness;
       const titleString = this.title;
       const titleSvg = SVGHelper.createCenteredText({
         color: this.elementColor,

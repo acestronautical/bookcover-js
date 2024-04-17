@@ -918,6 +918,7 @@ function addEventListeners() {
     if (split) {
       document.getElementById('fileDelete').classList.remove('hidden');
       document.getElementById('fileInputLabel').classList.remove('button');
+      document.getElementById('fileInputLabel').removeAttribute('title');
       document.getElementById('fileInputLabel').classList.add('button-split-left');
       document.getElementById('fileInputLabel').innerHTML = 'Another';
     } else {

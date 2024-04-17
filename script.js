@@ -765,6 +765,14 @@ function addEventListeners() {
       } else if (unitType == 'millimeters') {
         Cover.outerWidthMilli = width;
       }
+      const coverSection = document.getElementById('coverSection');
+      if (Cover.outerWidthInches >= 7) {
+        const scale = 12 - Math.ceil(Cover.outerWidthInches / 2);
+        coverSection.style.scale = scale / 10;
+
+      } else {
+        coverSection.style.scale = 0.9;
+      }
       Cover.generateCovers();
       return;
     } else if (target.matches('#coverHeightInput')) {

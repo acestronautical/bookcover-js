@@ -38,7 +38,6 @@ h1 {
 }
 main {
     padding: 20px;
-    align-items: center;
 }
 textarea {
     resize: none;
@@ -166,6 +165,11 @@ textarea {
 #coverSection {
     margin-top: 20px;
     scale: 0.9;
+    position: absolute;
+    top: 51%;
+    left: 37%;
+    transform: translateX(-50%) translateY(-50%);
+    transform-origin: top left;
 }
 #settingsSection {
     background-color: var(--background-light);
@@ -174,6 +178,8 @@ textarea {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     min-width: 320px;
     max-width: 100%;
+    position: absolute;
+    right: 2.5%;
 }
 #uploadSection {
     text-align: center;

@@ -174,33 +174,39 @@ class BookCover {
   outerHeight = 648; // 9 inches
   borderGap = 18; // .25 inches
   borderThickness = 3.6; // .5 inches
+
+  // Set Inches
   set borderGapInches(inches) { this.borderGap = inches * this.inchToPx; }
   set borderThicknessInches(inches) { this.borderThickness = inches * this.inchToPx; }
   set outerWidthInches(inches) { this.outerWidth = inches * this.inchToPx; }
   set outerHeightInches(inches) { this.outerHeight = inches * this.inchToPx; }
   get borderThicknessInches() { return this.borderThickness / this.inchToPx; }
+  // Get Inches
   get borderGapInches() { return this.borderGap / this.inchToPx; }
   get outerWidthInches() { return this.outerWidth / this.inchToPx; }
   get outerHeightInches() { return this.outerHeight / this.inchToPx; }
+  // Set Milli
   set borderThicknessMilli(mm) { this.borderThickness = mm * this.mmToPx; }
   set borderGapMilli(mm) { this.borderGap = mm * this.mmToPx; }
   set outerWidthMilli(mm) { this.outerWidth = mm * this.mmToPx; }
   set outerHeightMilli(mm) { this.outerHeight = mm * this.mmToPx; }
+  // Get Milli
   get borderThicknessMilli() { return this.borderThickness / this.mmToPx; }
   get borderGapMilli() { return this.borderGap / this.mmToPx; }
   get outerWidthMilli() { return this.outerWidth / this.mmToPx; }
   get outerHeightMilli() { return this.outerHeight / this.mmToPx; }
-  // getters automatically update when other properties change
+  // Other Getters
   get scale() { return (this.outerWidth * 2 + this.spine.outerWidth) / 360; }
   get proportions() { return this.outerHeight / this.outerWidth; }
   get innerWidth() { return (this.outerWidth - this.borderGap * 2); }
   get innerHeight() { return (this.outerHeight - this.borderGap * 2); }
+  // Image placement and properties
   art = {
     increasePerColumn: 1,
     maxPerColumn: 5,
     numColumns: 5,
     rotateAngle: 0,
-    scale: 1.7,
+    scale: 1.25,
     defaultImages: [{ svg: SVGHelper.fromString(DefaultSvgText) }],
     images: [],
     // determines which image to choose for multi-image placement
@@ -211,6 +217,7 @@ class BookCover {
     xStretch: true,
     yStretch: true,
   };
+  // Front Cover Properties
   front = (() => {
     // This is haunted but the only way to make the getters close over 'this'
     // We want shared properties to be available on BookCover and on relevant children
@@ -228,6 +235,7 @@ class BookCover {
       get proportions() { return _bookCover.proportions; },
     };
   })();
+  // Back Cover Properties
   back = (() => {
     const _bookCover = this;
     return {
@@ -242,6 +250,7 @@ class BookCover {
       get proportions() { return _bookCover.proportions; },
     };
   })();
+  // Spine 'Cover' Properties
   spine = (() => {
     const _bookCover = this;
     return {
@@ -285,6 +294,7 @@ class BookCover {
     this.tesselate('back');
   }
 
+  // Attempt to normalize the size of uploaded SVG
   sizeImage(image, parent, maxHeight, maxWidth) {
     if (!image.BBox) {
       image.BBox = SVGHelper.getBBoxAfterRender(parent, image.svg);
@@ -300,6 +310,7 @@ class BookCover {
     }
     image.svg.setAttribute('width', image.width);
     image.svg.setAttribute('height', image.height);
+    image.svg.setAttribute("viewBox", `${image.BBox.x} ${image.BBox.y} ${image.BBox.width} ${image.BBox.height}`);
     SVGHelper.color(image.svg, this.elementColor);
     image.halfHeight = image.height / 2;
     image.halfWidth = image.width / 2;

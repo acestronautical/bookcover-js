@@ -384,7 +384,7 @@ class BookCover {
     const innerHeight = this[side].innerHeight - this.borderThickness * 2;
     const innerWidth = this[side].innerWidth - this.borderThickness * 2;
     const innerRectangle = SVGHelper.create('rect', {
-      fill: 'none', stroke: this.elementColor, 'stroke-width': 0,
+      fill: 'none', stroke: this.elementColor, 'stroke-width': this.borderThickness / 10,
       x: this.borderThickness, y: this.borderThickness,
       width: innerWidth, height: innerHeight,
       id: `${side}InnerBorder`

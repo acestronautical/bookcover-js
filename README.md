@@ -9,13 +9,25 @@ click --> [HERE](https://acestronautical.github.io/bookcover-js/) <-- to use
 
 ## Tips and Gotchas
 
-* For import into cricut design space PNG is preferred at the moment
-* Silhoutte Studio works well with the provided SVG, and should size correctly on import
+Cricut Design Space:
+* For import into cricut design space PNG is preferred
+* Size will be 10x the correct dimensions on import, so divide by ten
+
+Silhoutte Studio:
+* Should size correctly on import
+* Spine text placement may be incorrect on import due to SS not respecting text-anchor: middle
+* To crop SVG select all shapes crossing the border and the INNER border and then crop
+
+Endpapers:
+* Select 'Show Endpaper Mode' and then save as PNG to create printable endpapers
+* Endpapers will save with color and a transparent background
+
+General:
 * When more than two images have been uploaded the image placement selection becomes random
-* The gap between the covers and borders is 1/20th the overall cover width is not curently settable
+* Image sizing attempts to scale correctly using 72 DPI or 72 PPI (not 96)
 * Font selection is based on your installed system fonts in this order:
     * Adobe Garamond Pro, EB Garamond, Garamond, Cormorant Garamond, Libre Baskerville, Crimson Text, Georgia, Palatino, Book Antiqua, Times New Roman, Baskerville, serif
-* Image sizing attempts to scale correctly using 72 DPI or 72 PPI (not 96)
+  
 
 ## Offline Usage
 

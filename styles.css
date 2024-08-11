@@ -14,6 +14,7 @@ body {
     margin: 0;
     padding: 0;
 }
+
 header {
     background-color: var(--header-bg-color);
     color: var(--background-light);
@@ -21,21 +22,32 @@ header {
     text-align: center;
     filter: brightness(95%);
 }
-small{
+
+small {
     color: var(--background-light);
     padding-bottom: 4px;
     text-align: center;
     line-height: .8;
     filter: brightness(35%);
 }
+
 header a {
     color: var(--loud-element);
     text-decoration: none;
 }
+
 h1 {
     margin: 0;
     font-size: 1.25rem;
 }
+
+hr {
+    margin: 6px 0;
+    height: 1px;
+    border: none;
+    background-color: var(--muted-element);
+}
+
 textarea {
     resize: none;
 }
@@ -44,59 +56,79 @@ textarea {
 .column {
     flex-direction: column;
 }
+
 .space-out,
 .space-even,
 .center {
     display: flex;
     align-items: center;
 }
+
 .space-out {
     justify-content: space-between;
 }
+
 .space-even {
     justify-content: space-evenly;
 }
+
 .center {
     justify-content: center;
 }
+
 .p-12 {
     padding: 12px;
 }
+
 .pt-12 {
     padding-top: 12px;
 }
+
 .pb-12 {
     padding-bottom: 12px;
 }
+
 .pr-12 {
     padding-right: 12px;
 }
+
 .pl-12 {
     padding-left: 12px;
 }
+
 .input-group {
     margin-bottom: 1.5%;
 }
+
 .input-group label {
     display: block;
-    margin-top: 2px;
-    font-size: .875rem;
+    margin-top: 1px;
+    font-size: .85rem;
 }
+
 .input-group textarea,
 .input-group select,
 .input-group input[type="text"],
 .input-group input[type="number"],
+.input-group input[type="range"],
 .input-group input[type="color"] {
     padding: 2px;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 8.5rem;
-    font-size: .875rem;
-    background-color: white; 
+    font-size: .85rem;
+    background-color: white;
 }
+
+.input-group input[type="range"] {
+    padding: 0;
+    margin: 0;
+}
+
 .button {
     height: 8rem;
 }
+
 .button,
 .button-split-left,
 .button-split-right,
@@ -110,28 +142,33 @@ textarea {
     font-size: .875rem;
     text-align: center;
 }
+
 .button-split-left {
     background-color: var(--loud-element);
     border-radius: 5px 0 0 5px;
     padding: 14px 12px;
     margin: 0;
 }
+
 .button-split-right {
     background-color: var(--muted-element);
     border-radius: 0 5px 5px 0;
     padding: 14px 12px;
     margin: 0;
 }
+
 .button-save {
     background-color: var(--muted-element);
     padding: 6px 10px;
 }
+
 .button:hover,
 .button-split-left:hover,
 .button-split-right:hover,
 .button-save:hover {
     filter: brightness(110%);
 }
+
 .cover {
     display: flex;
     justify-content: center;
@@ -142,22 +179,26 @@ textarea {
     height: auto;
     margin-bottom: 8px;
 }
+
 .darker {
     filter: brightness(90%);
 }
+
 .hidden {
     display: none;
 }
+
 .force-height {
     overflow: hidden;
     height: 42px;
 }
 
 /* ID STYLING */
-#subHeading{
+#subHeading {
     line-height: 1.8;
     filter: brightness(60%);
 }
+
 #coverSection {
     scale: 0.9;
     position: absolute;
@@ -166,6 +207,7 @@ textarea {
     transform: translateX(-50%) translateY(-50%);
     transform-origin: top left;
 }
+
 #settingsSection {
     background-color: var(--background-light);
     padding: 1%;
@@ -179,12 +221,14 @@ textarea {
     transform: translateX(-50%) translateY(-50%);
     transform-origin: top left;
 }
+
 #uploadSection {
     text-align: center;
     cursor: pointer;
     display: inline-block;
     border: none;
 }
+
 #uploadSection input[type="file"] {
     display: none;
 }

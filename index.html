@@ -71,10 +71,39 @@
           <input type="number" id="spineFontSizeInput" min="4" max="40" step="0.5" />
         </div>
       </div>
+      <div class="space-out">
+
+        <div class="input-group">
+          <label for="spineTextStyleInput">Spine Text Style</label>
+          <select id="spineTextStyleInput">
+            <option value="1">both centered</option>
+            <option value="2">both rotated</option>
+            <option value="3">title rotated</option>
+            <option value="4">author top</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="spineArtStyleInput">Spine Art Style</label>
+          <select id="spineArtStyleInput">
+            <option value="0">no art</option>
+            <option value="2">2 x 2 sides</option>
+            <option value="3">3 x 3 sides</option>
+            <option value="4">4 x 4 sides</option>
+            <option value="5">1 x 1 center</option>
+            <option value="6">2 x 2 center</option>
+            <option value="7">3 x 2 sides</option>
+            <option value="8">4 x 3 sides</option>
+            <option value="9">2 x 3 sides</option>
+            <option value="10">3 x 4 sides</option>
+            <option value="11">1 top</option>
+            <option value="12">1 bottom</option>
+          </select>
+        </div>
+      </div>
       <hr>
       <div class="space-out">
         <div class="input-group space-out">
-          <label for="endpaperCheckbox">Show Endpaper Mode</label>
+          <label for="endpaperCheckbox">Show Endpaper Mode: </label>
           <input
             title="Enter mode to create patterned endpaper&#013;Uses same controls as back cover when enabled&#013;Endpaper PNGs can be printed onto cardstock&#013;Endpaper SVGs can be drawn via pen holder"
             type="checkbox" id="endpaperCheckbox" />
@@ -115,32 +144,17 @@
       </div>
       <hr>
       <div class="space-out">
-
-        <div class="input-group">
-          <label for="spineTextStyleInput">Spine Text Style</label>
-          <select id="spineTextStyleInput">
-            <option value="1">both centered</option>
-            <option value="2">both rotated</option>
-            <option value="3">title rotated</option>
-            <option value="4">author top</option>
-          </select>
+        <div class="input-group space-out">
+          <label for="mirrorCheckbox">Mirror Diagonals: </label>
+          <input type="checkbox" id="mirrorCheckbox" />
         </div>
-        <div class="input-group">
-          <label for="spineArtStyleInput">Spine Art Style</label>
-          <select id="spineArtStyleInput">
-            <option value="0">no art</option>
-            <option value="2">2 x 2 sides</option>
-            <option value="3">3 x 3 sides</option>
-            <option value="4">4 x 4 sides</option>
-            <option value="5">1 x 1 center</option>
-            <option value="6">2 x 2 center</option>
-            <option value="7">3 x 2 sides</option>
-            <option value="8">4 x 3 sides</option>
-            <option value="9">2 x 3 sides</option>
-            <option value="10">3 x 4 sides</option>
-            <option value="11">1 top</option>
-            <option value="12">1 bottom</option>
-          </select>
+        <div class="input-group space-out">
+          <label for="flipCheckbox">Flip Diagonals: </label>
+          <input type="checkbox" id="flipCheckbox" />
+        </div>
+        <div class="input-group space-out hidden">
+          <label for="verticalLinesCheckbox">Lines</label>
+          <input type="checkbox" id="verticalLinesCheckbox" />
         </div>
       </div>
       <div class="space-out">
@@ -185,7 +199,6 @@
           <input type="number" id="backCoverInitialCopiesInput"
             title="Number of elements to populate in the&#013;middle column of the back cover" min="0" max="8" />
         </div>
-
         <div class="input-group">
           <label for="frontCoverInitialCopiesInput">Front Middle Rows</label>
           <input type="number" id="frontCoverInitialCopiesInput"
@@ -194,25 +207,19 @@
       </div>
       <div class="space-out pb-12">
         <div class="input-group">
-          <label for="mirrorCheckbox">Mirror</label>
-          <input type="checkbox" id="mirrorCheckbox" />
+          <label for="yStretchInput">Stretch Y</label>
+          <input type="range" id="yStretchInput" min="-0.5" max="1.5" step=".1" list="tickmarks" />
         </div>
         <div class="input-group">
-          <label for="flipCheckbox">Flip</label>
-          <input type="checkbox" id="flipCheckbox" />
+          <label for="xStretchInput">Stretch X</label>
+          <input type="range" id="xStretchInput" min="-0.5" max="1.5" step=".1" list="tickmarks" />
         </div>
-        <div class="input-group">
-          <label for="verticalLinesCheckbox">Lines</label>
-          <input type="checkbox" id="verticalLinesCheckbox" />
-        </div>
-        <div class="input-group">
-          <label for="yOverhangCheckbox">Stretch Y</label>
-          <input type="checkbox" id="yOverhangCheckbox" />
-        </div>
-        <div class="input-group">
-          <label for="xOverhangCheckbox">Stretch X</label>
-          <input type="checkbox" id="xOverhangCheckbox" />
-        </div>
+        <datalist id="tickmarks">
+          <option>-0.5</option>
+          <option>0</option>
+          <option>1</option>
+          <option>1.5</option>
+        </datalist>
       </div>
       <div class="center force-height">
         <div id="uploadSection">

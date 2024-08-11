@@ -222,8 +222,8 @@ class BookCover {
     flip: false,
     mirror: true,
     vertLines: false,
-    xStretch: true,
-    yStretch: true,
+    xStretch: 1,
+    yStretch: 1,
   };
   // Front Cover Properties
   front = (() => {
@@ -562,26 +562,29 @@ class BookCover {
     if (max > this.art.maxPerColumn) max = this.art.maxPerColumn;
     const maxColumnCopyCount = Math.max(max, this[side].initialCopies);
     const numRows = maxColumnCopyCount * 2 - 1;
+    const numColumns = this.art.numColumns;
     const middleRowIndex = Math.floor(numRows / 2);
 
     // Calculate X tiling units
-    const xOverhang = this.art.xStretch && this.art.numColumns > 1;
-    const xTileCount = xOverhang ? this.art.numColumns - 1 : this.art.numColumns;
-    const xOffset = xOverhang ? 0 : 0.5;
+    const xStretch = this.art.xStretch;
+    const xCanStretch = numColumns > 1;
+    const xTileCount = xCanStretch ? numColumns - xStretch : numColumns;
+    const xOffset = xCanStretch ? (-xStretch / 2) + 0.5 : 0.5;
     const xTileWidth = this[side].innerWidth / xTileCount;
 
     // Calculate Y tiling units
-    const yOverhang = this.art.yStretch && numRows > 1;
-    const yTileCount = yOverhang ? numRows - 1 : numRows + 1;
-    const yOffset = yOverhang ? 0 : 1;
+    const yStretch = this.art.yStretch;
+    const yCanStretch = numRows > 1;
+    const yTileCount = yCanStretch ? numRows - (yStretch - 0.5) * 2 : numRows + 1;
+    const yOffset = yCanStretch ? -yStretch + 1 : 1;
     const yTileHeight = this[side].innerHeight / yTileCount;
 
     // Columns x rows 2d array with elements either null or an object containing coordinates
     const placementGrid = {
       rows: numRows,
-      oddRows: this.art.numRows % 2 != 0,
-      cols: this.art.numColumns,
-      oddCols: this.art.numColumns % 2 != 0,
+      oddRows: numRows % 2 != 0,
+      cols: numColumns,
+      oddCols: numColumns % 2 != 0,
       grid: [],
     };
     // Decides which elements to mirror/flip/rotate
@@ -715,8 +718,8 @@ function initializePage() {
   document.getElementById('spineTextStyleInput').value = Cover.spine.textStyle;
   document.getElementById('spineArtStyleInput').value = Cover.spine.artStyle;
   document.getElementById('verticalLinesCheckbox').checked = Cover.art.vertLines;
-  document.getElementById('xOverhangCheckbox').checked = Cover.art.xStretch;
-  document.getElementById('yOverhangCheckbox').checked = Cover.art.yStretch;
+  document.getElementById('xStretchInput').value = Cover.art.xStretch;
+  document.getElementById('yStretchInput').value = Cover.art.yStretch;
   Cover.generateCovers();
 }
 
@@ -853,10 +856,10 @@ function addEventListeners() {
       Cover.art.mirror = target.checked;
     } else if (target.matches('#flipCheckbox')) {
       Cover.art.flip = target.checked;
-    } else if (target.matches('#yOverhangCheckbox')) {
-      Cover.art.yStretch = target.checked;
-    } else if (target.matches('#xOverhangCheckbox')) {
-      Cover.art.xStretch = target.checked;
+    } else if (target.matches('#yStretchInput')) {
+      Cover.art.yStretch = target.value;
+    } else if (target.matches('#xStretchInput')) {
+      Cover.art.xStretch = target.value;
     } else if (target.matches('#verticalLinesCheckbox')) {
       Cover.art.vertLines = target.checked;
     } else if (target.matches('#endpaperCheckbox')) {

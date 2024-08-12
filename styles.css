@@ -125,6 +125,10 @@ textarea {
     margin: 0;
 }
 
+.input-group input[type="file"] {
+    width: 11rem;
+}
+
 .button {
     height: 8rem;
 }

@@ -15,7 +15,7 @@ const DefaultSvgText = `<svg xmlns="http://www.w3.org/2000/svg" id="svg3228" xml
                 </g>
               </svg>`;
 // Fonts and fallback fonts
-const FontFamilies = "'Adobe Garamond Pro', 'EB Garamond','Cormorant Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
+const DefaultFontFamilies = "'Adobe Garamond Pro', 'EB Garamond','Cormorant Garamond', Garamond, 'Libre Baskerville', 'Crimson Text', Georgia, Palatino, 'Book Antiqua', 'Times New Roman', Baskerville, serif";
 
 // Static helper class, does not need to be instantiated it's just a namespace
 class SVGHelper {
@@ -92,7 +92,7 @@ class SVGHelper {
     });
   }
 
-  static createCenteredText({ color, size, string, y, parent, parentWidth, reposition }) {
+  static createCenteredText({ color, size, string, y, parent, parentWidth, reposition, fontFamilies }) {
     const lines = string.split('\n'); // Split string by line breaks
     const group = SVGHelper.create('g', {});
     const padding = size / 6; // Adjust to increase or decrease vertical spacing
@@ -100,7 +100,7 @@ class SVGHelper {
     let lineY;
     lines.forEach((line, index) => {
       const text = SVGHelper.create('text', {
-        fill: color, 'font-size': size, 'font-family': FontFamilies, 'white-space': 'pre'
+        fill: color, 'font-size': size, 'font-family': fontFamilies, 'white-space': 'pre'
       });
       text.textContent = line;
       lineSvgArr[index] = text;
@@ -137,16 +137,25 @@ class SVGHelper {
     URL.revokeObjectURL(url);
   }
 
-  static save(fileName, svgElem) {
+  static embedFonts(svgData, fontData) {
+    // Use a fixed font name 'customFont' and the uploaded font data URL
+    const fontCss = `@font-face { font-family: 'customFont'; src: url('${fontData}'); }\n`;
+    // Append a new <style> element before the closing </svg> tag
+    return svgData.replace(/<\/svg>/, `<style>${fontCss}</style></svg>`);
+  }
+
+  static saveAsSvg(fileName, svgElem, fontData) {
     if (svgElem) {
-      const svgData = new XMLSerializer().serializeToString(svgElem);
+      let svgData = new XMLSerializer().serializeToString(svgElem);
+      svgData = this.embedFonts(svgData, fontData);
       const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       SVGHelper.saveBlobAsFile(blob, fileName);
     }
   }
 
-  static saveAsPng(filename, svgElem, scaleFactor = 10) {
-    const svgData = new XMLSerializer().serializeToString(svgElem);
+  static saveAsPng(filename, svgElem, fontData, scaleFactor = 10) {
+    let svgData = new XMLSerializer().serializeToString(svgElem);
+    svgData = this.embedFonts(svgData, fontData);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
@@ -169,6 +178,17 @@ class SVGHelper {
     // Create a data URL from the SVG data and set it as the image source
     img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`;
   }
+
+  // Save function that delegates to saveAsSvg or saveAsPng based on file extension
+  static save(filename, svgElem, fontData, scaleFactor = 10) {
+    if (filename.endsWith('.svg')) {
+      this.saveAsSvg(filename, svgElem, fontData);
+    } else if (filename.endsWith('.png')) {
+      this.saveAsPng(filename, svgElem, fontData, scaleFactor);
+    } else {
+      console.error('Unsupported file type. Please use .svg or .png extension.');
+    }
+  }
 }
 
 class BookCover {
@@ -182,6 +202,8 @@ class BookCover {
   outerHeight = 648; // 9 inches
   borderGap = 18; // .25 inches
   borderThickness = 3.6; // .5 inches
+  customFontData = undefined;
+  fontFamilies = DefaultFontFamilies;
 
   // Set Inches
   set borderGapInches(inches) { this.borderGap = inches * this.inchToPx; }
@@ -356,6 +378,7 @@ class BookCover {
         parent: this[side].svgElem,
         parentWidth: this[side].innerWidth,
         reposition: false,
+        fontFamilies: this.fontFamilies
       });
       this[side].svgElem.appendChild(titleSvg);
 
@@ -370,6 +393,7 @@ class BookCover {
         parent: this[side].svgElem,
         parentWidth: this[side].innerWidth,
         reposition: true,
+        fontFamilies: this.fontFamilies
       });
       this[side].svgElem.appendChild(authorSvg);
     }
@@ -413,7 +437,7 @@ class BookCover {
     const yCenter = this.spine.innerHeight / 2;
     const commonTextAttrs = {
       y: yCenter, fill: this.elementColor, 'font-size': this.spine.fontSize,
-      'font-family': FontFamilies, 'text-anchor': 'middle', 'white-space': 'pre'
+      'font-family': this.fontFamilies, 'text-anchor': 'middle', 'white-space': 'pre'
     };
 
     if (this.spine.textStyle == 1) {
@@ -430,6 +454,7 @@ class BookCover {
         parent: this.spine.svgElem,
         parentWidth: this.spine.innerWidth,
         reposition: true,
+        fontFamilies: this.fontFamilies
       });
       this.spine.svgElem.appendChild(textSvg);
     } else if (this.spine.textStyle == 2) {
@@ -472,6 +497,7 @@ class BookCover {
         parent: this.spine.svgElem,
         parentWidth: this.spine.innerWidth,
         reposition: false,
+        fontFamilies: this.fontFamilies
       });
       this.spine.svgElem.appendChild(textSvg);
 
@@ -921,22 +947,22 @@ function addEventListeners() {
     const isEndpaper = document.getElementById('endpaperCheckbox').checked;
     if (target.matches('#saveBackPNG')) {
       if (isEndpaper)
-        SVGHelper.saveAsPng(`${lastTitle}_endpaper.png`, Cover.back.svgElem);
+        SVGHelper.save(`${lastTitle}_endpaper.png`, Cover.back.svgElem, Cover.customFontData);
       else
-        SVGHelper.saveAsPng(`${lastTitle}_cover_back.png`, Cover.back.svgElem);
+        SVGHelper.save(`${lastTitle}_cover_back.png`, Cover.back.svgElem, Cover.customFontData);
     } else if (target.matches('#saveSpinePNG')) {
-      SVGHelper.saveAsPng(`${lastTitle}_cover_spine.png`, Cover.spine.svgElem);
+      SVGHelper.save(`${lastTitle}_cover_spine.png`, Cover.spine.svgElem, Cover.customFontData);
     } else if (target.matches('#saveFrontPNG')) {
-      SVGHelper.saveAsPng(`${lastTitle}_cover_front.png`, Cover.front.svgElem);
+      SVGHelper.save(`${lastTitle}_cover_front.png`, Cover.front.svgElem, Cover.customFontData);
     } else if (target.matches('#saveBackSVG')) {
       if (isEndpaper)
-        SVGHelper.save(`${lastTitle}_endpaper.svg`, Cover.back.svgElem);
+        SVGHelper.save(`${lastTitle}_endpaper.svg`, Cover.back.svgElem, Cover.customFontData);
       else
-        SVGHelper.save(`${lastTitle}_cover_back.svg`, Cover.back.svgElem);
+        SVGHelper.save(`${lastTitle}_cover_back.svg`, Cover.back.svgElem, Cover.customFontData);
     } else if (target.matches('#saveSpineSVG')) {
-      SVGHelper.save(`${lastTitle}_cover_spine.svg`, Cover.spine.svgElem);
+      SVGHelper.save(`${lastTitle}_cover_spine.svg`, Cover.spine.svgElem, Cover.customFontData);
     } else if (target.matches('#saveFrontSVG')) {
-      SVGHelper.save(`${lastTitle}_cover_front.svg`, Cover.front.svgElem);
+      SVGHelper.save(`${lastTitle}_cover_front.svg`, Cover.front.svgElem, Cover.customFontData);
     }
   });
 
@@ -965,7 +991,6 @@ function addEventListeners() {
   }
 
   document.getElementById('fileInput').addEventListener('change', function (event) {
-    // Load user uploaded SVG to tile
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = function () {
@@ -981,6 +1006,29 @@ function addEventListeners() {
     };
     reader.readAsText(file);
   });
+
+  document.getElementById('fontInput').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      const fontData = e.target.result;
+      const fontFace = new FontFace('customFont', `url(${fontData})`);
+      fontFace.load().then(function (loadedFontFace) {
+        document.fonts.add(loadedFontFace);
+        Cover.customFontData = fontData;
+        Cover.fontFamilies = `'customFont'`;
+        Cover.generateCovers();
+      }).catch(function (error) {
+        Cover.customFontData = undefined;
+        Cover.fontFamilies = DefaultFontFamilies;
+        console.error('Failed to load font:', error);
+        alert(`Failed to load the font. Please check the file format and try again.\nError: ${error.message}`);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+
 
   document.querySelector('main').addEventListener('dragover', function (event) {
     event.preventDefault();

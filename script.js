@@ -240,7 +240,7 @@ class BookCover {
     defaultImages: [{ svg: SVGHelper.fromString(DefaultSvgText) }],
     images: [],
     // determines which image to choose for multi-image placement
-    get step() { return this.images.length > 2 ? Math.floor(Math.random() * 13) : 2; },
+    get step() { return this.images.length > 2 ? this.images.length + 1 : 2; },
     flip: false,
     mirror: true,
     vertLines: false,

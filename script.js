@@ -137,23 +137,23 @@ class SVGHelper {
     URL.revokeObjectURL(url);
   }
 
-  static embedFonts(svgData, fontData) {
+  static embedFonts(svgData, fontName, fontData) {
     // Use a fixed font name 'customFont' and the uploaded font data URL
-    const fontCss = `@font-face { font-family: 'customFont'; src: url('${fontData}'); }\n`;
+    const fontCss = `@font-face { font-family: '${fontName}'; src: url('${fontData}'); }\n`;
     // Append a new <style> element before the closing </svg> tag
     return svgData.replace(/<\/svg>/, `<style>${fontCss}</style></svg>`);
   }
 
-  static saveAsSvg(fileName, svgElem, fontData) {
+  static saveAsSvg(fileName, svgElem, fontName, fontData) {
     if (svgElem) {
       let svgData = new XMLSerializer().serializeToString(svgElem);
-      svgData = this.embedFonts(svgData, fontData);
+      svgData = this.embedFonts(svgData, fontName, fontData);
       const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       SVGHelper.saveBlobAsFile(blob, fileName);
     }
   }
 
-  static saveAsPng(filename, svgElem, fontData, scaleFactor = 10) {
+  static saveAsPng(filename, svgElem, fontName, fontData, scaleFactor = 10) {
     let svgData = new XMLSerializer().serializeToString(svgElem);
     svgData = this.embedFonts(svgData, fontData);
     const canvas = document.createElement('canvas');
@@ -180,11 +180,11 @@ class SVGHelper {
   }
 
   // Save function that delegates to saveAsSvg or saveAsPng based on file extension
-  static save(filename, svgElem, fontData, scaleFactor = 10) {
+  static save(filename, svgElem, fontName, fontData, scaleFactor = 10) {
     if (filename.endsWith('.svg')) {
-      this.saveAsSvg(filename, svgElem, fontData);
+      this.saveAsSvg(filename, svgElem, fontName, fontData);
     } else if (filename.endsWith('.png')) {
-      this.saveAsPng(filename, svgElem, fontData, scaleFactor);
+      this.saveAsPng(filename, svgElem, fontName, fontData, scaleFactor);
     } else {
       console.error('Unsupported file type. Please use .svg or .png extension.');
     }
@@ -947,22 +947,22 @@ function addEventListeners() {
     const isEndpaper = document.getElementById('endpaperCheckbox').checked;
     if (target.matches('#saveBackPNG')) {
       if (isEndpaper)
-        SVGHelper.save(`${lastTitle}_endpaper.png`, Cover.back.svgElem, Cover.customFontData);
+        SVGHelper.save(`${lastTitle}_endpaper.png`, Cover.back.svgElem, Cover.fontFamilies, Cover.customFontData);
       else
-        SVGHelper.save(`${lastTitle}_cover_back.png`, Cover.back.svgElem, Cover.customFontData);
+        SVGHelper.save(`${lastTitle}_cover_back.png`, Cover.back.svgElem, Cover.fontFamilies, Cover.customFontData);
     } else if (target.matches('#saveSpinePNG')) {
-      SVGHelper.save(`${lastTitle}_cover_spine.png`, Cover.spine.svgElem, Cover.customFontData);
+      SVGHelper.save(`${lastTitle}_cover_spine.png`, Cover.spine.svgElem, Cover.fontFamilies, Cover.customFontData);
     } else if (target.matches('#saveFrontPNG')) {
-      SVGHelper.save(`${lastTitle}_cover_front.png`, Cover.front.svgElem, Cover.customFontData);
+      SVGHelper.save(`${lastTitle}_cover_front.png`, Cover.front.svgElem, Cover.fontFamilies, Cover.customFontData);
     } else if (target.matches('#saveBackSVG')) {
       if (isEndpaper)
-        SVGHelper.save(`${lastTitle}_endpaper.svg`, Cover.back.svgElem, Cover.customFontData);
+        SVGHelper.save(`${lastTitle}_endpaper.svg`, Cover.back.svgElem, Cover.fontFamilies, Cover.customFontData);
       else
-        SVGHelper.save(`${lastTitle}_cover_back.svg`, Cover.back.svgElem, Cover.customFontData);
+        SVGHelper.save(`${lastTitle}_cover_back.svg`, Cover.back.svgElem, Cover.fontFamilies, Cover.customFontData);
     } else if (target.matches('#saveSpineSVG')) {
-      SVGHelper.save(`${lastTitle}_cover_spine.svg`, Cover.spine.svgElem, Cover.customFontData);
+      SVGHelper.save(`${lastTitle}_cover_spine.svg`, Cover.spine.svgElem, Cover.fontFamilies, Cover.customFontData);
     } else if (target.matches('#saveFrontSVG')) {
-      SVGHelper.save(`${lastTitle}_cover_front.svg`, Cover.front.svgElem, Cover.customFontData);
+      SVGHelper.save(`${lastTitle}_cover_front.svg`, Cover.front.svgElem, Cover.fontFamilies, Cover.customFontData);
     }
   });
 
@@ -1013,11 +1013,19 @@ function addEventListeners() {
 
     reader.onload = function (e) {
       const fontData = e.target.result;
-      const fontFace = new FontFace('customFont', `url(${fontData})`);
+      const fileName = file.name.split('.')[0]; // Get file name without extension
+      const baseName = fileName.split('-')[0]; // Ignore everything after hyphen
+
+      // Split the base name by capital letters
+      const formattedName = baseName
+        .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before capital letters
+        .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // Handle cases like "PDFDocument"
+        .trim();
+      const fontFace = new FontFace(formattedName, `url(${fontData})`);
       fontFace.load().then(function (loadedFontFace) {
         document.fonts.add(loadedFontFace);
         Cover.customFontData = fontData;
-        Cover.fontFamilies = `'customFont'`;
+        Cover.fontFamilies = formattedName;
         Cover.generateCovers();
       }).catch(function (error) {
         Cover.customFontData = undefined;

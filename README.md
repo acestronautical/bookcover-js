@@ -25,8 +25,7 @@ Endpapers:
 General:
 * When more than two images have been uploaded the image placement selection becomes random
 * Image sizing attempts to scale correctly using 72 DPI or 72 PPI (not 96)
-* Font selection is based on your installed system fonts in this order:
-    * Adobe Garamond Pro, EB Garamond, Garamond, Cormorant Garamond, Libre Baskerville, Crimson Text, Georgia, Palatino, Book Antiqua, Times New Roman, Baskerville, serif
+* The default font is Garamond, but custom fonts can be uploaded
   
 
 ## Offline Usage

@@ -18,38 +18,52 @@
     </small>
   </header>
   <main>
-    <div id="coverSection" class="center">
-      <div class="center column pr-12" id="backCoverSection">
-        <div id="back-cover" class="cover"></div>
-        <small id="saveBackSVGLabel">Save Back</small>
-        <div class="center">
-          <button class="button-save button-split-left" id="saveBackSVG"
-            title="SVG will save as actual size with 72DPI.&#013;SVG will require manual cropping at inner border.">SVG</button>
-          <button class="button-save button-split-right darker" id="saveBackPNG"
-            title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.&#013;PNG saves with transparent background.">PNG</button>
+    <div id="coverSection">
+      <div>
+        <div class="center column pb-4">
+          <div class="center pb-2">
+            <button class="button-save button-split-left" id="saveCombinedSVG"
+              title="SVG will save as actual size with 72DPI.&#013;SVG will require manual cropping at inner border.">SVG</button>
+            <button class="button-save button-split-right darker" id="saveCombinedPNG"
+              title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.&#013;PNG saves with transparent background.">PNG</button>
+          </div>
+          <small>Save Combined</small>
         </div>
       </div>
-      <div class="center column" id="spineCoverSection">
-        <div id="spine-cover" class="cover"></div>
-        <small>Save Spine</small>
-        <div class="center">
-          <button class="button-save button-split-left" id="saveSpineSVG"
-            title="SVG will save as actual size with 72DPI.&#013;SVG will require manual cropping at inner border.">SVG</button>
-          <button class="button-save button-split-right darker" id="saveSpinePNG"
-            title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.&#013;PNG saves with transparent background.">PNG</button>
+      <div class="center">
+        <div class="center column pr-12" id="backCoverSection">
+          <div id="back-cover" class="cover"></div>
+          <small id="saveBackSVGLabel">Save Back</small>
+          <div class="center">
+            <button class="button-save button-split-left" id="saveBackSVG"
+              title="SVG will save as actual size with 72DPI.&#013;SVG will require manual cropping at inner border.">SVG</button>
+            <button class="button-save button-split-right darker" id="saveBackPNG"
+              title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.&#013;PNG saves with transparent background.">PNG</button>
+          </div>
         </div>
-      </div>
-      <div class="center column pl-12" id="frontCoverSection">
-        <div id="front-cover" class="cover"></div>
-        <small>Save Front</small>
-        <div class="center">
-          <button class="button-save button-split-left" id="saveFrontSVG"
-            title="SVG will save as actual size with 72DPI.&#013;SVG will require manual cropping at inner border.">SVG</button>
-          <button class="button-save button-split-right darker" id="saveFrontPNG"
-            title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.&#013;PNG saves with transparent background.">PNG</button>
+        <div class="center column" id="spineCoverSection">
+          <div id="spine-cover" class="cover"></div>
+          <small>Save Spine</small>
+          <div class="center">
+            <button class="button-save button-split-left" id="saveSpineSVG"
+              title="SVG will save as actual size with 72DPI.&#013;SVG will require manual cropping at inner border.">SVG</button>
+            <button class="button-save button-split-right darker" id="saveSpinePNG"
+              title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.&#013;PNG saves with transparent background.">PNG</button>
+          </div>
+        </div>
+        <div class="center column pl-12" id="frontCoverSection">
+          <div id="front-cover" class="cover"></div>
+          <small>Save Front</small>
+          <div class="center">
+            <button class="button-save button-split-left" id="saveFrontSVG"
+              title="SVG will save as actual size with 72DPI.&#013;SVG will require manual cropping at inner border.">SVG</button>
+            <button class="button-save button-split-right darker" id="saveFrontPNG"
+              title="PNG saves as 10X size for high resolution.&#013;Scale down to 10% for actual size.&#013;PNG saves with transparent background.">PNG</button>
+          </div>
         </div>
       </div>
     </div>
+
     <div id="settingsSection">
       <div class="space-out">
         <div class="input-group">
@@ -109,10 +123,14 @@
       <hr>
       <div class="space-out">
         <div class="input-group space-out">
-          <label for="endpaperCheckbox">Show Endpaper Mode: </label>
+          <label for="endpaperCheckbox">Endpaper Mode: </label>
           <input
             title="Enter mode to create patterned endpaper&#013;Uses same controls as back cover when enabled&#013;Endpaper PNGs can be printed onto cardstock&#013;Endpaper SVGs can be drawn via pen holder"
             type="checkbox" id="endpaperCheckbox" />
+        </div>
+        <div class="input-group space-out">
+          <label for="transparentCheckbox">Save Transparent: </label>
+          <input title="Save PNG without background color" type="checkbox" id="transparentCheckbox" />
         </div>
       </div>
       <div class="space-out">
@@ -238,7 +256,7 @@
       </div>
     </div>
   </main>
-  <script src="script.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 
 </html>

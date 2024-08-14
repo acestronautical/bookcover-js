@@ -88,6 +88,14 @@ textarea {
     padding-bottom: 12px;
 }
 
+.pb-4 {
+    padding-bottom: 6px;
+}
+
+.pb-2 {
+    padding-bottom: 2px;
+}
+
 .pr-12 {
     padding-right: 12px;
 }

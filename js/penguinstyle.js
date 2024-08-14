@@ -291,8 +291,6 @@ export class PenguinCover {
         this.genCoverFrame('spine');
 
         // Some placement calculations
-        const yTileCount = 12;
-        const yTileHeight = this.spine.innerHeight / yTileCount;
         const xCenter = this.spine.innerWidth / 2;
         const yCenter = this.spine.innerHeight / 2;
         const commonTextAttrs = {
@@ -340,7 +338,7 @@ export class PenguinCover {
             const titleSvg = SVGHelper.create('text', {
                 x: xCenter,
                 transform: `rotate(90 ${xCenter},${yCenter - this.spine.fontSize / 4})`,
-                'letter-spacing': 3,
+                'letter-spacing': 2,
                 ...commonTextAttrs
             });
             titleSvg.textContent = this.title.split(/[\n]+/).join(' ');
@@ -389,12 +387,14 @@ export class PenguinCover {
 
         };
         const [topRepeats, bottomRepeats, centered] = artStyles[this.spine.artStyle];
-        const topSpacing = 3.5 / topRepeats;
-        const bottomSpacing = 3.5 / bottomRepeats;
+        const topSpacing = 3 / topRepeats;
+        const bottomSpacing = 3 / bottomRepeats;
         const xNudge = .65 + this.spine.innerWidth / 200;
         let right = false;
         // Add art to top spine
-        let yPos = yTileHeight * (topSpacing / 2) / (topRepeats == 1 ? 2 : 1);
+        const yTileCount = 10;
+        const yTileHeight = this.spine.innerHeight / yTileCount;
+        let yPos = yTileHeight * (topSpacing / 2);
         for (let i = 1; i <= topRepeats; i++) {
             const image = images.at(-i % images.length);
             let xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);
@@ -410,7 +410,7 @@ export class PenguinCover {
         }
         right = bottomRepeats % 2 == 0 ? !right : right;
         // Add art to bottom spine
-        yPos = yTileHeight * (yTileCount - (bottomSpacing / 2 / (bottomRepeats == 1 ? 2 : 1)));
+        yPos = yTileHeight * (yTileCount - (bottomSpacing / 2));
         for (let i = 1; i <= bottomRepeats; i++) {
             const image = images.at(-i % images.length);
             let xPos = right ? 2 * xCenter - image.halfWidth * xNudge : -image.halfWidth * (2 - xNudge);

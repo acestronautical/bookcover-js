@@ -300,12 +300,13 @@ export class PenguinCover {
             'font-family': this.fontFamilies, 'text-anchor': 'middle', 'white-space': 'pre'
         };
 
-        if (this.spine.textStyle == 1) {
+        if (this.spine.textStyle == 1 || this.spine.textStyle == 5) {
             // center title and author
+            const changeBreaks = this.spine.textStyle == 1;
             const textY = this.spine.innerHeight / 2;
-            let text = this.title.split(/[ \n]+/).join('\n');
+            let text = changeBreaks ? this.title.split(/[ \n]+/).join('\n') : this.title;
             text += '\n\n';
-            text += this.author.split(/[ \n]+/).join('\n');
+            text += changeBreaks ? this.author.split(/[ \n]+/).join('\n') : this.author;
             const textSvg = SVGHelper.createCenteredText({
                 color: this.elementColor,
                 size: this.spine.fontSize,
@@ -388,8 +389,8 @@ export class PenguinCover {
 
         };
         const [topRepeats, bottomRepeats, centered] = artStyles[this.spine.artStyle];
-        const topSpacing = 4 / topRepeats;
-        const bottomSpacing = 4 / bottomRepeats;
+        const topSpacing = 3.5 / topRepeats;
+        const bottomSpacing = 3.5 / bottomRepeats;
         const xNudge = .65 + this.spine.innerWidth / 200;
         let right = false;
         // Add art to top spine

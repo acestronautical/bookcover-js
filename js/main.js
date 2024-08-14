@@ -191,6 +191,7 @@ function addEventListeners() {
         Cover.front.disabled = true;
         document.getElementById('spineCoverSection').classList.add('hidden');
         Cover.spine.disabled = true;
+        document.getElementById('coverSectionHeader').classList.add('hidden');
         document.getElementById('saveBackSVGLabel').innerHTML = 'Save Endpaper';
         Cover.outerWidth *= 2;
         Cover.outerHeight -= 0.5 * Cover.inchToPx;
@@ -204,6 +205,7 @@ function addEventListeners() {
         Cover.front.disabled = false;
         document.getElementById('spineCoverSection').classList.remove('hidden');
         Cover.spine.disabled = false;
+        document.getElementById('coverSectionHeader').classList.remove('hidden');
         document.getElementById('saveBackSVGLabel').innerHTML = 'Save Back';
         Cover.outerWidth /= 2;
         Cover.outerHeight += 0.5 * Cover.inchToPx;
